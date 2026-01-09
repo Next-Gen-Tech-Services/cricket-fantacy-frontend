@@ -143,7 +143,7 @@ export default function Home() {
 
 
             {/* ================= BLOGS / CAROUSEL ================= */}
-            <section className="max-w-[1440px] mx-auto">
+            <section className="max-w-[1440px] mx-auto px-4">
                 <h2 className="text-2xl md:text-3xl font-bold text-[rgb(var(--color-text))] mb-6">
                     Our Latest Blogs
                 </h2>
