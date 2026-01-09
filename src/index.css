@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/** Theme1 **/
+:root {
+  --color-primary: 99 102 241;   
+  --color-secondary: 236 72 153;
+  --color-bg: 2 6 23;            
+  --color-surface: 15 23 42;     
+  --color-text: 226 232 240;    
+}
+
+/** Theme2 **/
+/* :root {
+  --color-primary: 168 85 247;   
+  --color-secondary: 59 130 246; 
+  --color-bg: 24 24 27;          
+  --color-surface: 39 39 42;    
+  --color-text: 244 244 245;     
+} */
+
+/** Theme3 **/
+/* :root { 
+    --color-primary: 16 185 129;  
+    --color-secondary: 59 130 246;  
+    --color-bg: 15 23 42;  
+    --color-surface: 30 41 59;  
+    --color-text: 241 245 249;  
+} */
