@@ -1,28 +1,209 @@
 @import "tailwindcss";
 
-/** Theme1 **/
+/* =========================
+   THEME VARIABLES (FANTASY APP)
+========================= */
 :root {
-  --color-primary: 99 102 241;   
-  --color-secondary: 236 72 153;
-  --color-bg: 2 6 23;            
-  --color-surface: 15 23 42;     
-  --color-text: 226 232 240;    
+  /* =================
+     BACKGROUNDS
+  ================= */
+  /* Main page background */
+  --bg-main: #f5f6f8;
+
+  /* Sections & cards */
+  --bg-section: #ffffff;
+  --bg-section-alt: #f1f5f9;
+
+  /* Highlight / dark card */
+  --bg-dark-card: #020617;
+
+  /* Gradient (Hero / Match Header) */
+  --bg-gradient-primary: linear-gradient(
+    135deg,
+    #2563eb,
+    #1d4ed8
+  );
+
+  /* =================
+     BUTTON COLORS
+  ================= */
+  /* Primary CTA */
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+
+  /* Secondary CTA */
+  --btn-secondary: #0f172a;
+  --btn-secondary-hover: #020617;
+
+  /* Outline button */
+  --btn-outline: #2563eb;
+  --btn-outline-hover: #dbeafe;
+
+  /* Success (Join / Available) */
+  --btn-success: #16a34a;
+  --btn-success-hover: #15803d;
+
+  /* Danger (Full / Remove) */
+  --btn-danger: #dc2626;
+  --btn-danger-hover: #b91c1c;
+
+  /* =================
+     TEXT COLORS
+  ================= */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  /* =================
+     BORDERS & SHADOW
+  ================= */
+  --border: #e5e7eb;
+  --shadow-soft: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
-/** Theme2 **/
-/* :root {
-  --color-primary: 168 85 247;   
-  --color-secondary: 59 130 246; 
-  --color-bg: 24 24 27;          
-  --color-surface: 39 39 42;    
-  --color-text: 244 244 245;     
-} */
+/* =========================
+   GLOBAL STYLES
+========================= */
+html,
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
 
-/** Theme3 **/
-/* :root { 
-    --color-primary: 16 185 129;  
-    --color-secondary: 59 130 246;  
-    --color-bg: 15 23 42;  
-    --color-surface: 30 41 59;  
-    --color-text: 241 245 249;  
-} */
+/* =========================
+   REUSABLE UTILITIES
+========================= */
+.bg-main {
+  background-color: var(--bg-main);
+}
+
+.bg-section {
+  background-color: var(--bg-section);
+}
+
+.bg-section-alt {
+  background-color: var(--bg-section-alt);
+}
+
+.bg-gradient-primary {
+  background: var(--bg-gradient-primary);
+}
+
+/* =========================
+   BUTTON STYLES
+========================= */
+.btn-primary {
+  background-color: var(--btn-primary);
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+.btn-outline {
+  border: 1px solid var(--btn-outline);
+  color: var(--btn-outline);
+  background-color: #fff;
+}
+
+.btn-outline:hover {
+  background-color: var(--btn-outline-hover);
+}
+
+.btn-success {
+  background-color: var(--btn-success);
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: var(--btn-success-hover);
+}
+
+.btn-danger {
+  background-color: var(--btn-danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: var(--btn-danger-hover);
+}
+
+/* =========================
+   TEXT HELPERS
+========================= */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* =========================
+   CARD BASE STYLE
+========================= */
+.app-card {
+  background-color: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+/* =========================
+   BADGES
+========================= */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.badge-primary {
+  background-color: var(--btn-primary);
+  color: #fff;
+}
+
+.badge-success {
+  background-color: var(--btn-success);
+  color: #fff;
+}
+
+.badge-danger {
+  background-color: var(--btn-danger);
+  color: #fff;
+}
+
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 18s linear infinite;
+}

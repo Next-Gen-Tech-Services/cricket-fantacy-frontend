@@ -12,7 +12,7 @@ export default function Footer() {
       title: "More",
       links: ["Latest Video", "Clubs", "Players"],
     },
-  ]
+  ];
 
   const bottomLinks = [
     "Modern Slavery Statement",
@@ -23,17 +23,16 @@ export default function Footer() {
     "Contact Us",
     "Appearance",
     "Back To Top",
-  ]
+  ];
 
   return (
-    <footer className="mt-6 bg-[rgb(var(--color-bg))] border-t border-white/10">
+    <footer className="mt-16 bg-white border-t border-slate-200">
       <div className="max-w-[1440px] mx-auto px-4 py-14">
-        
         {/* ================= TOP LINKS ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {footerLinks.map((section, index) => (
             <div key={index}>
-              <h3 className="text-sm font-semibold text-[rgb(var(--color-text))] mb-4">
+              <h3 className="text-sm font-semibold text-slate-900 mb-5 tracking-wide">
                 {section.title}
               </h3>
 
@@ -43,10 +42,9 @@ export default function Footer() {
                     <a
                       href="#"
                       className="
-                        text-sm
-                        text-[rgb(var(--color-text)/0.75)]
-                        hover:text-[rgb(var(--color-text))]
-                        transition
+                        text-sm text-slate-600
+                        hover:text-blue-600
+                        transition-colors duration-200
                       "
                     >
                       {link}
@@ -59,23 +57,23 @@ export default function Footer() {
         </div>
 
         {/* ================= DIVIDER ================= */}
-        <div className="my-10 border-t border-white/10" />
+        <div className="my-12 border-t border-slate-200" />
 
         {/* ================= BOTTOM BAR ================= */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
-          <p className="text-xs text-[rgb(var(--color-text)/0.6)]">
-            © Premier League 2026
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <p className="text-xs text-slate-500">
+            © 2026 CricLeague. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             {bottomLinks.map((item, index) => (
               <a
                 key={index}
                 href="#"
                 className="
-                  text-[rgb(var(--color-text)/0.6)]
-                  hover:text-[rgb(var(--color-text))]
-                  transition
+                  text-slate-500
+                  hover:text-slate-900
+                  transition-colors duration-200
                 "
               >
                 {item}
@@ -85,5 +83,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -1,111 +1,146 @@
-import { FcGoogle } from "react-icons/fc"
-import { Link } from "react-router-dom"
+import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { GiCricketBat } from "react-icons/gi";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 export default function Signup() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[rgb(var(--color-bg))] px-4">
-      <div className="w-full max-w-md bg-[rgb(var(--color-surface))] rounded-3xl p-8 border border-white/10 shadow-xl">
-        {/* Header */}
-        <h1 className="text-3xl font-bold text-[rgb(var(--color-text))]">
+    <main className="min-h-screen flex items-center justify-center px-4 bg-main">
+      <div className="w-full max-w-md app-card p-6 relative">
+        {/* ================= BACK TO HOME ================= */}
+        <Link
+          to="/"
+          className="absolute left-4 top-4 text-xs font-medium
+                     px-3 py-1.5 rounded-lg
+                     border border-[var(--border)]
+                     bg-white/5 text-secondary
+                     hover:bg-black/10 hover:text-primary
+                     transition"
+        >
+          ← Back to Home
+        </Link>
+
+        {/* ================= LOGO ================= */}
+        <div className="flex flex-col items-center mb-4">
+          <div className="h-11 w-11 rounded-xl bg-[var(--btn-primary)] flex items-center justify-center text-white">
+            <GiCricketBat size={24} />
+          </div>
+
+          <h2 className="mt-1.5 text-lg font-bold text-primary">
+            CricLeague
+          </h2>
+        </div>
+
+        {/* ================= HEADER ================= */}
+        <h1 className="text-xl font-bold text-primary text-center">
           Create Account
         </h1>
-        <p className="mt-1 text-sm text-[rgb(var(--color-text)/0.7)]">
+        <p className="mt-0.5 text-sm text-secondary text-center">
           Start building your fantasy cricket team
         </p>
 
-        {/* Google Signup */}
-        <button
-          className="
-            mt-6 w-full flex items-center justify-center gap-3
-            py-3 rounded-xl
-            bg-white text-black font-semibold
-            hover:opacity-90 transition
-          "
-        >
-          <FcGoogle size={22} />
+        {/* ================= GOOGLE SIGNUP ================= */}
+        <button className="mt-4 w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold btn-outline">
+          <FcGoogle size={20} />
           Sign up with Google
         </button>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
-          <div className="h-px bg-white/20 flex-1" />
-          <span className="text-xs text-white/50">OR</span>
-          <div className="h-px bg-white/20 flex-1" />
+        {/* ================= DIVIDER ================= */}
+        <div className="flex items-center gap-3 my-4">
+          <div className="h-px flex-1 bg-[var(--border)]" />
+          <span className="text-xs text-muted">OR</span>
+          <div className="h-px flex-1 bg-[var(--border)]" />
         </div>
 
-        {/* Form */}
-        <form className="space-y-4">
+        {/* ================= FORM ================= */}
+        <form className="space-y-3">
+          {/* Full Name */}
           <div>
-            <label className="text-sm text-white/80">Full Name</label>
+            <label className="text-sm font-medium text-secondary">
+              Full Name
+            </label>
             <input
               type="text"
               placeholder="Your name"
-              className="
-                mt-1 w-full px-4 py-3 rounded-xl
-                bg-black/30 border border-white/10
-                text-white placeholder:text-white/40
-                focus:outline-none focus:ring-2
-                focus:ring-[rgb(var(--color-primary))]
-              "
+              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
+                         text-primary focus:outline-none focus:ring-2
+                         focus:ring-[var(--btn-primary)]"
             />
           </div>
 
+          {/* Email */}
           <div>
-            <label className="text-sm text-white/80">Email</label>
+            <label className="text-sm font-medium text-secondary">
+              Email
+            </label>
             <input
               type="email"
               placeholder="you@example.com"
-              className="
-                mt-1 w-full px-4 py-3 rounded-xl
-                bg-black/30 border border-white/10
-                text-white placeholder:text-white/40
-                focus:outline-none focus:ring-2
-                focus:ring-[rgb(var(--color-primary))]
-              "
+              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
+                         text-primary focus:outline-none focus:ring-2
+                         focus:ring-[var(--btn-primary)]"
             />
           </div>
 
+          {/* Password with Eye */}
           <div>
-            <label className="text-sm text-white/80">Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              className="
-                mt-1 w-full px-4 py-3 rounded-xl
-                bg-black/30 border border-white/10
-                text-white placeholder:text-white/40
-                focus:outline-none focus:ring-2
-                focus:ring-[rgb(var(--color-primary))]
-              "
-            />
+            <label className="text-sm font-medium text-secondary">
+              Password
+            </label>
+
+            <div className="relative mt-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2.5 pr-11 rounded-xl border border-[var(--border)]
+                           text-primary focus:outline-none focus:ring-2
+                           focus:ring-[var(--btn-primary)]"
+              />
+
+              {/* Eye icon ONLY when password typed */}
+              {password.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2
+                             text-secondary hover:text-primary transition"
+                >
+                  {showPassword ? (
+                    <AiOutlineEyeInvisible size={18} />
+                  ) : (
+                    <AiOutlineEye size={18} />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
 
+          {/* CTA */}
           <button
             type="submit"
-            className="
-              w-full py-3 rounded-xl
-              bg-gradient-to-r
-              from-[rgb(var(--color-primary))]
-              to-[rgb(var(--color-secondary))]
-              font-semibold text-white
-              hover:opacity-90 transition
-            "
+            className="w-full py-2.5 rounded-xl font-semibold btn-primary"
           >
             Create Account
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="mt-6 text-center text-sm text-white/60">
+        {/* ================= FOOTER ================= */}
+        <p className="mt-4 text-center text-sm text-secondary">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-[rgb(var(--color-primary))] font-semibold hover:underline"
+            className="font-semibold text-[var(--btn-primary)] hover:underline"
           >
             Login
           </Link>
         </p>
       </div>
     </main>
-  )
+  );
 }
