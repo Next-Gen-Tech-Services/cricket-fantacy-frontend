@@ -1,145 +1,185 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { GiCricketBat } from "react-icons/gi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link } from "react-router-dom";
+
+import image1 from "../assets/img1-login.png";
+import image2 from "../assets/img2-login.png";
+import image3 from "../assets/img1-login.png";
+import logo from "../assets/Logo.webp";
+
+const images = [image1, image2, image3];
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [currentImage, setCurrentImage] = useState(0);
+
+  /* ================= IMAGE AUTO SLIDER ================= */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 bg-main">
-      <div className="w-full max-w-md app-card p-6 relative">
-        {/* ================= BACK TO HOME ================= */}
-        <Link
-          to="/"
-          className="absolute left-4 top-4 text-xs font-medium
-                     px-3 py-1.5 rounded-lg
-                     border border-[var(--border)]
-                     bg-white/5 text-secondary
-                     hover:bg-black/10 hover:text-primary
-                     transition"
-        >
-          ← Back to Home
-        </Link>
+    <main className="h-screen w-screen grid grid-cols-1 md:grid-cols-[65%_35%] bg-main">
+      {/* ================= LEFT : SIGNUP ================= */}
+      <div className="relative flex items-center justify-center px-6">
+        <div className="w-full max-w-md">
+          {/* Back */}
+          <Link
+            to="/"
+            className="absolute left-6 top-6 text-xs font-medium
+                       px-3 py-1.5 rounded-lg border border-[var(--border)]
+                       bg-white/5 text-secondary hover:bg-black/10
+                       hover:text-primary transition"
+          >
+            ← Back to Home
+          </Link>
 
-        {/* ================= LOGO ================= */}
-        <div className="flex flex-col items-center mb-4">
-          <div className="h-11 w-11 rounded-xl bg-[var(--btn-primary)] flex items-center justify-center text-white">
-            <GiCricketBat size={24} />
-          </div>
-
-          <h2 className="mt-1.5 text-lg font-bold text-primary">
-            CricLeague
-          </h2>
-        </div>
-
-        {/* ================= HEADER ================= */}
-        <h1 className="text-xl font-bold text-primary text-center">
-          Create Account
-        </h1>
-        <p className="mt-0.5 text-sm text-secondary text-center">
-          Start building your fantasy cricket team
-        </p>
-
-        {/* ================= GOOGLE SIGNUP ================= */}
-        <button className="mt-4 w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold btn-outline">
-          <FcGoogle size={20} />
-          Sign up with Google
-        </button>
-
-        {/* ================= DIVIDER ================= */}
-        <div className="flex items-center gap-3 my-4">
-          <div className="h-px flex-1 bg-[var(--border)]" />
-          <span className="text-xs text-muted">OR</span>
-          <div className="h-px flex-1 bg-[var(--border)]" />
-        </div>
-
-        {/* ================= FORM ================= */}
-        <form className="space-y-3">
-          {/* Full Name */}
-          <div>
-            <label className="text-sm font-medium text-secondary">
-              Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="Your name"
-              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
-                         text-primary focus:outline-none focus:ring-2
-                         focus:ring-[var(--btn-primary)]"
+          {/* Logo */}
+          <div className="flex flex-col items-center mb-5">
+            <img
+              src={logo}
+              alt="CricLeague Logo"
+              className="h-20 w-auto object-contain"
             />
+           
           </div>
 
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-secondary">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
-                         text-primary focus:outline-none focus:ring-2
-                         focus:ring-[var(--btn-primary)]"
-            />
+          {/* Header */}
+          <h1 className="text-xl font-bold text-primary text-center">
+            Create Account
+          </h1>
+          <p className="mt-1 text-sm text-secondary text-center">
+            Start building your fantasy cricket team
+          </p>
+
+          {/* Google Signup */}
+          <button className="mt-6 w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold btn-outline">
+            <FcGoogle size={20} />
+            Sign up with Google
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="h-px flex-1 bg-[var(--border)]" />
+            <span className="text-xs text-muted">OR</span>
+            <div className="h-px flex-1 bg-[var(--border)]" />
           </div>
 
-          {/* Password with Eye */}
-          <div>
-            <label className="text-sm font-medium text-secondary">
-              Password
-            </label>
-
-            <div className="relative mt-1">
+          {/* Form */}
+          <form className="space-y-4">
+            {/* Full Name */}
+            <div>
+              <label className="text-sm font-medium text-secondary">
+                Full Name
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 pr-11 rounded-xl border border-[var(--border)]
+                type="text"
+                placeholder="Your name"
+                className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
                            text-primary focus:outline-none focus:ring-2
                            focus:ring-[var(--btn-primary)]"
               />
-
-              {/* Eye icon ONLY when password typed */}
-              {password.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2
-                             text-secondary hover:text-primary transition"
-                >
-                  {showPassword ? (
-                    <AiOutlineEyeInvisible size={18} />
-                  ) : (
-                    <AiOutlineEye size={18} />
-                  )}
-                </button>
-              )}
             </div>
-          </div>
 
-          {/* CTA */}
-          <button
-            type="submit"
-            className="w-full py-2.5 rounded-xl font-semibold btn-primary"
-          >
-            Create Account
-          </button>
-        </form>
+            {/* Email */}
+            <div>
+              <label className="text-sm font-medium text-secondary">
+                Email
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
+                           text-primary focus:outline-none focus:ring-2
+                           focus:ring-[var(--btn-primary)]"
+              />
+            </div>
 
-        {/* ================= FOOTER ================= */}
-        <p className="mt-4 text-center text-sm text-secondary">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-[var(--btn-primary)] hover:underline"
-          >
-            Login
-          </Link>
-        </p>
+            {/* Password */}
+            <div>
+              <label className="text-sm font-medium text-secondary">
+                Password
+              </label>
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2.5 pr-11 rounded-xl border border-[var(--border)]
+                             text-primary focus:outline-none focus:ring-2
+                             focus:ring-[var(--btn-primary)]"
+                />
+
+                {password.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2
+                               text-secondary hover:text-primary transition"
+                  >
+                    {showPassword ? (
+                      <AiOutlineEyeInvisible size={18} />
+                    ) : (
+                      <AiOutlineEye size={18} />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* CTA */}
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl font-semibold btn-primary"
+            >
+              Create Account
+            </button>
+          </form>
+
+          {/* Footer */}
+          <p className="mt-5 text-center text-sm text-secondary">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-semibold text-[var(--btn-primary)] hover:underline"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* ================= RIGHT : IMAGE SLIDER ================= */}
+      <div className="hidden md:block relative h-full w-full overflow-hidden">
+        {images.map((img, index) => (
+          <img
+            key={index}
+            src={img}
+            alt="Signup visual"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000
+              ${index === currentImage ? "opacity-100" : "opacity-0"}`}
+          />
+        ))}
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/40" />
+
+        {/* Caption */}
+        <div className="absolute bottom-10 left-10 right-10 text-white">
+          <h3 className="text-2xl font-bold">
+            Build. Play. Win.
+          </h3>
+          <p className="text-sm opacity-90 mt-1 max-w-sm">
+            Create fantasy teams and compete with players worldwide.
+          </p>
+        </div>
       </div>
     </main>
   );

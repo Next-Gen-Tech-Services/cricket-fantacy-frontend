@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GiCricketBat } from "react-icons/gi";
 import { Link, NavLink } from "react-router-dom";
+import logo from "../assets/Logo.webp"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,14 +20,14 @@ export default function Navbar() {
         <div className="max-w-[1440px] mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* LOGO */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-                <GiCricketBat size={20} />
-              </div>
-              <span className="text-lg font-bold text-slate-900">
-                CricLeague
-              </span>
-            </Link>
+           <Link to="/" className="flex items-center gap-2">
+  <img
+    src={logo}
+    alt="CricLeague Logo"
+    className="h-14 w-auto object-contain"
+  />
+</Link>
+
 
             {/* DESKTOP NAV LINKS */}
             <div className="hidden md:flex items-center gap-8">
