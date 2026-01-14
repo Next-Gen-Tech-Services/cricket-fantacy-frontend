@@ -20,13 +20,13 @@ export default function Navbar() {
         <div className="max-w-[1440px] mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* LOGO */}
-           <Link to="/" className="flex items-center gap-2">
-  <img
-    src={logo}
-    alt="CricLeague Logo"
-    className="h-14 w-auto object-contain"
-  />
-</Link>
+            <Link to="/" className="flex items-center gap-2">
+              <img
+                src={logo}
+                alt="CricLeague Logo"
+                className="h-14 w-auto object-contain"
+              />
+            </Link>
 
 
             {/* DESKTOP NAV LINKS */}
@@ -36,10 +36,9 @@ export default function Navbar() {
                   key={link.name}
                   to={link.href}
                   className={({ isActive }) =>
-                    `text-sm font-medium transition ${
-                      isActive
-                        ? "text-blue-600"
-                        : "text-slate-600 hover:text-slate-900"
+                    `text-sm font-medium transition ${isActive
+                      ? "text-blue-600"
+                      : "text-slate-600 hover:text-slate-900"
                     }`
                   }
                 >
@@ -108,8 +107,7 @@ export default function Navbar() {
                   to={link.href}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-sm font-medium ${
-                      isActive ? "text-blue-600" : "text-slate-700"
+                    `block text-sm font-medium ${isActive ? "text-blue-600" : "text-slate-700"
                     }`
                   }
                 >
@@ -132,7 +130,7 @@ export default function Navbar() {
                 </button>
               </Link>
 
-              
+
             </div>
           </div>
         )}
