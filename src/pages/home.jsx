@@ -2,6 +2,8 @@ import heroHome from "../assets/hero-home.png";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
+import CountdownModal from "../components/countDownModal";
+import { useEffect, useState } from "react";
 
 const features = [
   {
@@ -45,6 +47,13 @@ const responsiveBlogs = {
 };
 
 export default function Home() {
+
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    setShowModal(true); // open modal on page load
+  }, []);
+
   return (
     <main className="px-4 py-12 space-y-20 bg-main">
       {/* ================= HERO ================= */}
@@ -166,6 +175,13 @@ export default function Home() {
           ))}
         </Carousel>
       </section>
+
+      {/* ================= COUNTDOWN MODAL ================= */}
+      <CountdownModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+      />
+
     </main>
   );
 }
