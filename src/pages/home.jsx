@@ -2,41 +2,43 @@ import heroHome from "../assets/hero-home.png";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
-import CountdownModal from "../components/countDownModal";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { fetchTournaments } from "../store/slices/tournamentsSlice";
+import { fetchLiveMatches } from "../store/slices/matchesSlice";
 
 const features = [
   {
-    title: "Pick Your Squad",
+    title: "Create a Login",
     description:
-      "Use your budget to pick a squad of 15 players and build your ultimate fantasy team.",
+      "Sign up for free and create your fantasy cricket account to get started.",
     image:
       "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
-    link: "/teams",
+    link: "/signup",
   },
   {
-    title: "Create & Join Leagues",
+    title: "Pick Your Tournament",
     description:
-      "Play against friends, family, or colleagues in private and public leagues.",
+      "Browse and select from live and upcoming cricket tournaments worldwide.",
+    image:
+      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    link: "/tournaments",
+  },
+  {
+    title: "Build Your Team",
+    description:
+      "Create your ultimate fantasy XI for each match within your budget.",
+    image:
+      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    link: "/tournaments",
+  },
+  {
+    title: "Invite Your Friends",
+    description:
+      "Share leagues with friends and compete against each other for glory.",
     image:
       "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
     link: "/leagues",
-  },
-  {
-    title: "Compete Against Friends",
-    description:
-      "Track points, climb leaderboards, and prove your fantasy skills.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
-    link: "/matches",
-  },
-  {
-    title: "Win Exciting Rewards",
-    description:
-      "Compete throughout the season and win exciting prizes and bragging rights.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
-    link: "/matches",
   },
 ];
 
@@ -47,12 +49,15 @@ const responsiveBlogs = {
 };
 
 export default function Home() {
-
-  const [showModal, setShowModal] = useState(false);
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useAppSelector(state => state.auth);
 
   useEffect(() => {
-    setShowModal(true); // open modal on page load
-  }, []);
+
+    // Fetch tournaments and live matches on component mount
+    dispatch(fetchTournaments());
+    dispatch(fetchLiveMatches());
+  }, [dispatch]);
 
   return (
     <main className="px-4 py-12 space-y-20 bg-main">
@@ -63,29 +68,58 @@ export default function Home() {
 
           <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 p-8 lg:p-14 items-center">
             <div className="text-white">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
-                Register to Play <br />
-                Fantasy Cricket League
-              </h1>
+              {isAuthenticated ? (
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  Welcome back, {user?.name?.split(' ')[0]}! <br />
+                  Ready to dominate?
+                </h1>
+              ) : (
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  Register to Play <br />
+                  Fantasy Cricket League
+                </h1>
+              )}
 
-              <p className="mt-4 max-w-xl text-sm md:text-base text-white/90">
-                Join millions of cricket fans and build your dream team. It’s{" "}
-                <span className="font-semibold">FREE to play</span>.
-              </p>
+              {isAuthenticated ? (
+                <p className="mt-4 max-w-xl text-sm md:text-base text-white/90">
+                  Your fantasy teams are waiting. Join live tournaments and climb the leaderboard!
+                </p>
+              ) : (
+                <p className="mt-4 max-w-xl text-sm md:text-base text-white/90">
+                  Join millions of cricket fans and build your dream team. It's{" "}
+                  <span className="font-semibold">FREE to play</span>.
+                </p>
+              )}
 
-              <div className="mt-6 flex gap-4">
-                <Link to="/login">
-                  <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white hover:text-black transition">
-                    Log in
-                  </button>
-                </Link>
+              {isAuthenticated ? (
+                <div className="mt-6 flex gap-4 flex-wrap">
+                  <Link to="/tournaments">
+                    <button className="px-8 py-3 rounded-full text-sm font-semibold bg-yellow-400 text-[#273470] hover:bg-yellow-500 transition">
+                      View Live Tournaments
+                    </button>
+                  </Link>
 
-                <Link to="/signup">
-                  <button className="px-6 py-3 rounded-full text-sm font-semibold bg-white text-black">
-                    Register now
-                  </button>
-                </Link>
-              </div>
+                  <Link to="/leagues">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition">
+                      My Leagues
+                    </button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="mt-6 flex gap-4 flex-wrap">
+                  <Link to="/login">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-white/10 transition">
+                      Log in
+                    </button>
+                  </Link>
+
+                  <Link to="/signup">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition">
+                      Sign up
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             <div className="hidden lg:flex justify-end">
@@ -105,8 +139,8 @@ export default function Home() {
           How It Works
         </h2>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.slice(0, 3).map((item, index) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((item, index) => (
             <Link
               to={item.link}
               key={index}
@@ -132,6 +166,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+
 
       {/* ================= BLOGS ================= */}
       <section className="max-w-[1440px] mx-auto">
@@ -177,10 +213,7 @@ export default function Home() {
       </section>
 
       {/* ================= COUNTDOWN MODAL ================= */}
-      <CountdownModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-      />
+
 
     </main>
   );

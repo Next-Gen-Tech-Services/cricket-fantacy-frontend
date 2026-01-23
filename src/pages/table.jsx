@@ -52,7 +52,7 @@ export default function Table() {
   return (
     <main className="max-w-[1440px] mx-auto px-4 mt-6 space-y-10">
       {/* ================= HEADER ================= */}
-      <section className="rounded-3xl overflow-hidden bg-blue-600">
+      <section className="rounded-3xl overflow-hidden bg-[#273470]">
         <div className="px-6 py-14">
           <h1 className="text-4xl font-bold text-white">League Table</h1>
         </div>
@@ -73,7 +73,7 @@ export default function Table() {
           ].map((item) => (
             <select
               key={item}
-              className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#273470]"
             >
               <option>{item}</option>
             </select>

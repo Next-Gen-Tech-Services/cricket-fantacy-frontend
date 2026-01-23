@@ -1,6 +1,93 @@
 @import "tailwindcss";
 
 /* =========================
+   ANIMATIONS
+========================= */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.8s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* =========================
    THEME VARIABLES (FANTASY APP)
 ========================= */
 :root {
@@ -20,24 +107,24 @@
   /* Gradient (Hero / Match Header) */
   --bg-gradient-primary: linear-gradient(
     135deg,
-    #2563eb,
-    #1d4ed8
+    #273470,
+    #1e2859
   );
 
   /* =================
      BUTTON COLORS
   ================= */
   /* Primary CTA */
-  --btn-primary: #2563eb;
-  --btn-primary-hover: #1d4ed8;
+  --btn-primary: #273470;
+  --btn-primary-hover: #1e2859;
 
   /* Secondary CTA */
   --btn-secondary: #0f172a;
   --btn-secondary-hover: #020617;
 
   /* Outline button */
-  --btn-outline: #2563eb;
-  --btn-outline-hover: #dbeafe;
+  --btn-outline: #273470;
+  --btn-outline-hover: #f1f5f9;
 
   /* Success (Join / Available) */
   --btn-success: #16a34a;
@@ -206,4 +293,139 @@ body {
 
 .animate-marquee {
   animation: marquee 18s linear infinite;
+}
+
+/* =========================
+   MOBILE OPTIMIZATIONS
+========================= */
+
+/* Hide scrollbar for mobile tabs */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+/* Mobile-friendly touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Safe area handling for mobile */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Mobile navigation animations */
+.bottom-nav-item {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.95);
+}
+
+/* Mobile card styles */
+.mobile-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.mobile-card:active {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Enhanced focus states for mobile */
+.mobile-focus:focus {
+  outline: 2px solid theme('colors.yellow.400');
+  outline-offset: 2px;
+}
+
+/* Mobile-optimized button styles */
+.mobile-btn-primary {
+  @apply bg-gradient-to-r from-yellow-400 to-[#c41e3a] text-white font-semibold py-3 px-6 rounded-xl shadow-lg;
+  transition: all 0.2s ease;
+}
+
+.mobile-btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.mobile-btn-secondary {
+  @apply bg-white text-gray-700 font-medium py-2.5 px-5 rounded-lg border border-gray-200 shadow-sm;
+  transition: all 0.2s ease;
+}
+
+.mobile-btn-secondary:active {
+  @apply bg-gray-50 border-gray-300;
+}
+
+/* Mobile-specific spacing utilities */
+.mobile-container {
+  @apply px-4 py-4;
+}
+
+.mobile-section {
+  @apply mb-6;
+}
+
+.mobile-spacing {
+  @apply space-y-4;
+}
+
+/* Prevent zoom on iOS input focus */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+  font-size: 16px;
+}
+
+/* Mobile-optimized loading states */
+.mobile-skeleton {
+  @apply bg-gray-200 animate-pulse rounded-md;
+}
+
+/* Mobile pull-to-refresh indicator */
+.pull-to-refresh {
+  transform: translateY(var(--pull-distance, 0));
+  transition: transform 0.2s ease-out;
+}
+
+/* =========================
+   RESPONSIVE IMPROVEMENTS
+========================= */
+
+/* Ensure proper spacing on mobile for main content */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 80px; /* Space for bottom navigation */
+    padding-top: 0;
+  }
+  
+  .page-container {
+    min-height: calc(100vh - 64px); /* Account for mobile header */
+  }
+}
+
+/* Optimize carousel for mobile */
+@media (max-width: 640px) {
+  .react-multi-carousel-list {
+    padding: 0 16px;
+  }
+  
+  .react-multi-carousel-item {
+    margin-right: 12px;
+  }
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { signupUser, clearError } from "../store/slices/authSlice";
 
 import image1 from "../assets/img1-login.png";
 import image2 from "../assets/img2-login.png";
@@ -12,8 +14,37 @@ const images = [image1, image2, image3];
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
   const [currentImage, setCurrentImage] = useState(0);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, isLoading, error: reduxError } = useAppSelector(state => state.auth);
+  const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Clear errors when component unmounts
+  useEffect(() => {
+    return () => {
+      if (reduxError) {
+        dispatch(clearError());
+      }
+    };
+  }, [dispatch, reduxError]);
 
   /* ================= IMAGE AUTO SLIDER ================= */
   useEffect(() => {
@@ -24,110 +55,223 @@ export default function Signup() {
     return () => clearInterval(interval);
   }, []);
 
+  /* ================= FORM HANDLERS ================= */
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (error) setError("");
+    if (success) setSuccess("");
+    if (reduxError) {
+      dispatch(clearError());
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setIsSubmitting(true);
+
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate password strength
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const signupData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      };
+
+      await dispatch(signupUser(signupData)).unwrap();
+      setSuccess("Account created successfully! You can now log in.");
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+
+    } catch (err) {
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <main className="h-screen w-screen grid grid-cols-1 md:grid-cols-[65%_35%] bg-main">
+    <main className="min-h-screen w-screen grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#273470] to-[#1e2859]">
       {/* ================= LEFT : SIGNUP ================= */}
-      <div className="relative flex items-center justify-center px-6">
-        <div className="w-full max-w-md">
+      <div className="relative flex items-center justify-center px-6 py-8 lg:px-12">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0"></div>
+        
+        <div className="relative w-full max-w-md z-10">
           {/* Back */}
-          <Link
-            to="/"
-            className="absolute left-6 top-6 text-xs font-medium
-                       px-3 py-1.5 rounded-lg border border-[var(--border)]
-                       bg-white/5 text-secondary hover:bg-black/10
-                       hover:text-primary transition"
-          >
-            ← Back to Home
-          </Link>
+         
 
           {/* Logo */}
-          <div className="flex flex-col items-center mb-5">
+          <div className="flex flex-col items-center mb-8">
+            <Link to="/">
             <img
               src={logo}
               alt="CricLeague Logo"
-              className="h-20 w-auto object-contain"
+              className="h-16 w-auto object-contain mb-4"
             />
-           
+            </Link>
           </div>
 
           {/* Header */}
-          <h1 className="text-xl font-bold text-primary text-center">
-            Create Account
-          </h1>
-          <p className="mt-1 text-sm text-secondary text-center">
-            Start building your fantasy cricket team
-          </p>
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Create Account
+            </h1>
+            <p className="text-white/70">
+              Start building your fantasy cricket team
+            </p>
+          </div>
 
           {/* Google Signup */}
-          <button className="mt-6 w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold btn-outline">
+          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 hover:bg-gray-50 transition shadow-lg mb-6">
             <FcGoogle size={20} />
             Sign up with Google
           </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="h-px flex-1 bg-[var(--border)]" />
-            <span className="text-xs text-muted">OR</span>
-            <div className="h-px flex-1 bg-[var(--border)]" />
+          <div className="flex items-center gap-4 my-6">
+            <div className="h-px flex-1 bg-white/20" />
+            <span className="text-sm text-white/60">OR</span>
+            <div className="h-px flex-1 bg-white/20" />
           </div>
 
+          {/* Error Message */}
+          {(error || reduxError) && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur">
+              <p className="text-sm text-red-300">{error || reduxError}</p>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 backdrop-blur">
+              <p className="text-sm text-green-300">{success}</p>
+            </div>
+          )}
+
           {/* Form */}
-          <form className="space-y-4">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Full Name */}
             <div>
-              <label className="text-sm font-medium text-secondary">
+              <label className="block text-sm font-medium text-white/80 mb-2">
                 Full Name
               </label>
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
                 placeholder="Your name"
-                className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
-                           text-primary focus:outline-none focus:ring-2
-                           focus:ring-[var(--btn-primary)]"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                required
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="text-sm font-medium text-secondary">
+              <label className="block text-sm font-medium text-white/80 mb-2">
                 Email
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 placeholder="you@example.com"
-                className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
-                           text-primary focus:outline-none focus:ring-2
-                           focus:ring-[var(--btn-primary)]"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                required
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-sm font-medium text-secondary">
+              <label className="block text-sm font-medium text-white/80 mb-2">
                 Password
               </label>
-              <div className="relative mt-1">
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-11 rounded-xl border border-[var(--border)]
-                             text-primary focus:outline-none focus:ring-2
-                             focus:ring-[var(--btn-primary)]"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                  required
+                  minLength={6}
                 />
 
-                {password.length > 0 && (
+                {formData.password.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2
-                               text-secondary hover:text-primary transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
                   >
                     {showPassword ? (
-                      <AiOutlineEyeInvisible size={18} />
+                      <AiOutlineEyeInvisible size={20} />
                     ) : (
-                      <AiOutlineEye size={18} />
+                      <AiOutlineEye size={20} />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label className="block text-sm font-medium text-white/80 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                  required
+                />
+
+                {formData.confirmPassword.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
+                  >
+                    {showConfirmPassword ? (
+                      <AiOutlineEyeInvisible size={20} />
+                    ) : (
+                      <AiOutlineEye size={20} />
                     )}
                   </button>
                 )}
@@ -137,18 +281,19 @@ export default function Signup() {
             {/* CTA */}
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl font-semibold btn-primary"
+              disabled={isSubmitting || isLoading}
+              className="w-full py-3 rounded-xl font-semibold bg-yellow-400 text-[#273470] hover:bg-[#c4722a] disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg"
             >
-              Create Account
+              {(isSubmitting || isLoading) ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           {/* Footer */}
-          <p className="mt-5 text-center text-sm text-secondary">
+          <p className="mt-8 text-center text-sm text-white/70">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-[var(--btn-primary)] hover:underline"
+              className="font-semibold text-yellow-400 hover:text-[#c4722a] transition"
             >
               Login
             </Link>
@@ -157,7 +302,9 @@ export default function Signup() {
       </div>
 
       {/* ================= RIGHT : IMAGE SLIDER ================= */}
-      <div className="hidden md:block relative h-full w-full overflow-hidden">
+      <div className="hidden lg:block relative h-full w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#273470]/80 to-[#1e2859]/80 z-10"></div>
+        
         {images.map((img, index) => (
           <img
             key={index}
@@ -168,17 +315,28 @@ export default function Signup() {
           />
         ))}
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/40" />
-
-        {/* Caption */}
-        <div className="absolute bottom-10 left-10 right-10 text-white">
-          <h3 className="text-2xl font-bold">
-            Build. Play. Win.
-          </h3>
-          <p className="text-sm opacity-90 mt-1 max-w-sm">
-            Create fantasy teams and compete with players worldwide.
-          </p>
+        {/* Content Overlay */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-12">
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-md">
+            <h3 className="text-3xl font-bold text-white mb-4">
+              Join the League
+            </h3>
+            <p className="text-white/80 text-lg leading-relaxed">
+              Experience the thrill of fantasy cricket with millions of players.
+            </p>
+            
+            {/* Dots indicator */}
+            <div className="flex justify-center gap-2 mt-8">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === currentImage ? 'bg-yellow-400' : 'bg-white/40'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </main>

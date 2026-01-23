@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { GiCricketBat } from "react-icons/gi";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { loginUser, clearError } from "../store/slices/authSlice";
 import image1 from '../assets/img1-login.png';
 import image2 from '../assets/img2-login.png';
 import image3 from '../assets/img1-login.png';
@@ -16,8 +17,33 @@ const images = [
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
   const [currentImage, setCurrentImage] = useState(0);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, isLoading, error: authError } = useAppSelector(state => state.auth);
+  const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Clear errors when component unmounts
+  useEffect(() => {
+    return () => {
+      if (authError) {
+        dispatch(clearError());
+      }
+    };
+  }, [dispatch, authError]);
 
   /* ================= IMAGE AUTO SLIDER ================= */
   useEffect(() => {
@@ -28,94 +54,131 @@ export default function Login() {
     return () => clearInterval(interval);
   }, []);
 
+  /* ================= FORM HANDLERS ================= */
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (error) {
+      setError("");
+    }
+    if (authError) {
+      dispatch(clearError());
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    dispatch(clearError());
+    setIsSubmitting(true);
+
+    try {
+      await dispatch(loginUser(formData)).unwrap();
+      // Navigation will be handled by the useEffect above
+    } catch (err) {
+      setError(err || "Login failed. Please check your credentials.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <main className="h-screen w-screen grid grid-cols-1 md:grid-cols-[65%_35%] bg-main">
+    <main className="min-h-screen w-screen grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#273470] to-[#1e2859]">
       {/* ================= LEFT : LOGIN ================= */}
-      <div className="relative flex items-center justify-center px-6">
-        <div className="w-full max-w-md">
+      <div className="relative flex items-center justify-center px-6 py-8 lg:px-12">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0"></div>
+
+        <div className="relative w-full max-w-md z-10">
           {/* Back */}
-          <Link
-            to="/"
-            className="absolute left-6 top-6 text-xs font-medium
-                       px-3 py-1.5 rounded-lg border border-[var(--border)]
-                       bg-white/5 text-secondary hover:bg-black/10
-                       hover:text-primary transition"
-          >
-            ← Back to Home
-          </Link>
 
           {/* Logo */}
-          <div className="flex flex-col items-center mb-5">
-            <img
-              src={logo}
-              alt="CricLeague Logo"
-              className="h-20 w-auto object-contain"
-            />
-           
+          <div className="flex flex-col items-center mb-8">
+            <Link to="/">
+              <img
+                src={logo}
+                alt="CricLeague Logo"
+                className="h-16 w-auto object-contain mb-4"
+              />
+            </Link>
           </div>
 
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-white/70">
+              Login to manage your fantasy teams
+            </p>
+          </div>
 
-          <h1 className="text-xl font-bold text-primary text-center">
-            Welcome Back
-          </h1>
-          <p className="mt-1 text-sm text-secondary text-center">
-            Login to manage your fantasy teams
-          </p>
-
-          {/* Google */}
-          <button className="mt-6 w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold btn-outline">
+          {/* Google Button */}
+          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 hover:bg-gray-50 transition shadow-lg mb-6">
             <FcGoogle size={20} />
             Continue with Google
           </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="h-px flex-1 bg-[var(--border)]" />
-            <span className="text-xs text-muted">OR</span>
-            <div className="h-px flex-1 bg-[var(--border)]" />
+          <div className="flex items-center gap-4 my-6">
+            <div className="h-px flex-1 bg-white/20" />
+            <span className="text-sm text-white/60">OR</span>
+            <div className="h-px flex-1 bg-white/20" />
           </div>
 
+          {/* Error Message */}
+          {(error || authError) && (
+            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur">
+              <p className="text-sm text-red-300">{error || authError}</p>
+            </div>
+          )}
+
           {/* Form */}
-          <form className="space-y-4">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="text-sm font-medium text-secondary">
+              <label className="block text-sm font-medium text-white/80 mb-2">
                 Email
               </label>
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 placeholder="you@example.com"
-                className="mt-1 w-full px-4 py-2.5 rounded-xl border border-[var(--border)]
-                           text-primary focus:outline-none focus:ring-2
-                           focus:ring-[var(--btn-primary)]"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                required
               />
             </div>
 
             <div>
-              <label className="text-sm font-medium text-secondary">
+              <label className="block text-sm font-medium text-white/80 mb-2">
                 Password
               </label>
-              <div className="relative mt-1">
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2.5 pr-11 rounded-xl border border-[var(--border)]
-                             text-primary focus:outline-none focus:ring-2
-                             focus:ring-[var(--btn-primary)]"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                  required
                 />
 
-                {password.length > 0 && (
+                {formData.password.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2
-                               text-secondary hover:text-primary transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
                   >
                     {showPassword ? (
-                      <AiOutlineEyeInvisible size={18} />
+                      <AiOutlineEyeInvisible size={20} />
                     ) : (
-                      <AiOutlineEye size={18} />
+                      <AiOutlineEye size={20} />
                     )}
                   </button>
                 )}
@@ -124,17 +187,18 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl font-semibold btn-primary"
+              disabled={isSubmitting || isLoading}
+              className="w-full py-3 rounded-xl font-semibold bg-yellow-400 text-[#273470] hover:bg-[#c4722a] disabled:opacity-50 disabled:cursor-not-allowed transition shadow-lg"
             >
-              Login
+              {(isSubmitting || isLoading) ? "Signing in..." : "Login"}
             </button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-secondary">
-            Don’t have an account?{" "}
+          <p className="mt-8 text-center text-sm text-white/70">
+            Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-semibold text-[var(--btn-primary)] hover:underline"
+              className="font-semibold text-yellow-400 hover:text-[#c4722a] transition"
             >
               Sign up
             </Link>
@@ -143,7 +207,9 @@ export default function Login() {
       </div>
 
       {/* ================= RIGHT : IMAGE SLIDER ================= */}
-      <div className="hidden md:block relative h-full w-full overflow-hidden">
+      <div className="hidden lg:block relative h-full w-full overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#273470]/80 to-[#1e2859]/80 z-10"></div>
+
         {images.map((img, index) => (
           <img
             key={img}
@@ -154,17 +220,27 @@ export default function Login() {
           />
         ))}
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Content Overlay */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-12">
+          <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 max-w-md">
+            <h3 className="text-3xl font-bold text-white mb-4">
+              Build. Play. Win.
+            </h3>
+            <p className="text-white/80 text-lg leading-relaxed">
+              Create fantasy teams and compete with players worldwide.
+            </p>
 
-        {/* Caption */}
-        <div className="absolute bottom-10 left-10 right-10 text-white">
-          <h3 className="text-2xl font-bold">
-            Build. Play. Win.
-          </h3>
-          <p className="text-sm opacity-90 mt-1 max-w-sm">
-            Create fantasy teams and compete with players worldwide.
-          </p>
+            {/* Dots indicator */}
+            <div className="flex justify-center gap-2 mt-8">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${index === currentImage ? 'bg-yellow-400' : 'bg-white/40'
+                    }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </main>

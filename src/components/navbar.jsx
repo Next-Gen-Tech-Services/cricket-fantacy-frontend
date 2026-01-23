@@ -1,22 +1,66 @@
-import { useState } from "react";
-import { GiCricketBat } from "react-icons/gi";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaDownload } from "react-icons/fa";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { logoutUser } from "../store/slices/authSlice";
+import { usePWA } from "../hooks/usePWA";
 import logo from "../assets/Logo.webp"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useAppSelector(state => state.auth);
+  const { isInstallable, showInstallPrompt } = usePWA();
+  const navigate = useNavigate();
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Leagues", href: "/leagues" },
-    { name: "Teams", href: "/teams" },
-    { name: "Matches", href: "/matches" },
-    { name: "Table", href: "/table" },
+    { name: "How to play?", href: "/" },
+    { name: "Tournaments", href: "/tournaments" },
+    { name: "My Leagues", href: "/leagues" },
+    { name: "How to earn points", href: "/how-to-earn-points" },
   ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      setUserDropdownOpen(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const handleInstallPWA = async () => {
+    try {
+      await showInstallPrompt();
+    } catch (error) {
+      console.error('Failed to install PWA:', error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50">
-      <nav className="bg-white/80 backdrop-blur border-b border-slate-200">
+      <nav className="bg-[#273470] backdrop-blur border-b border-white/10 shadow-xl py-3">
         <div className="max-w-[1440px] mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* LOGO */}
@@ -36,9 +80,9 @@ export default function Navbar() {
                   key={link.name}
                   to={link.href}
                   className={({ isActive }) =>
-                    `text-sm font-medium transition ${isActive
-                      ? "text-blue-600"
-                      : "text-slate-600 hover:text-slate-900"
+                    `text-sm font-medium transition-all duration-200 ${isActive
+                      ? "text-yellow-400 border-b-2 border-yellow-400"
+                      : "text-white hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 border-b-2 border-transparent"
                     }`
                   }
                 >
@@ -49,26 +93,134 @@ export default function Navbar() {
 
             {/* RIGHT ACTIONS (IMPROVED) */}
             <div className="hidden md:flex items-center gap-5">
-              {/* Login - text */}
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-xl text-sm font-semibold bg-slat-600 text-black/70 hover:text-black  transition"
-              >
-                Login
-              </Link>
-
-              {/* Sign up - primary */}
-              <Link to="/signup">
-                <button className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
-                  Sign up
+              {/* PWA Install Button - Always visible when installable */}
+              {isInstallable && (
+                <button
+                  onClick={handleInstallPWA}
+                  className="px-4 py-2 rounded-full text-sm font-medium border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#273470] transition flex items-center gap-2"
+                >
+                  <FaDownload size={14} />
+                  Install App
                 </button>
-              </Link>
+              )}
+              
+              {isAuthenticated && user ? (
+                /* User Profile Dropdown */
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition"
+                  >
+                    {/* Profile Avatar */}
+                    <div className="w-8 h-8 bg-yellow-400 text-[#273470] rounded-full flex items-center justify-center text-xs font-bold">
+                      {getUserInitials(user.name)}
+                    </div>
+                    
+                    {/* User Name */}
+                    <span className="max-w-[120px] truncate">
+                      {user.name || user.email}
+                    </span>
+                    
+                    {/* Dropdown Arrow */}
+                    <FaChevronDown 
+                      className={`text-xs transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} 
+                    />
+                  </button>
 
+                  {/* Dropdown Menu */}
+                  {userDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 border-b border-slate-100">
+                        <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      </div>
+                      
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            navigate('/profile');
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                        >
+                          <FaUser className="text-slate-400" />
+                          My Profile
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
+                            navigate('/settings');
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                        >
+                          <FaCog className="text-slate-400" />
+                          Settings
+                        </button>
+                        
+                        {/* Install PWA Button */}
+                        {isInstallable && (
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              handleInstallPWA();
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                          >
+                            <FaDownload className="text-slate-400" />
+                            Install App
+                          </button>
+                        )}
+                        
+                        <div className="h-px bg-slate-100 my-2"></div>
+                        
+                        <button
+                          onClick={handleLogout}
+                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                        >
+                          <FaSignOutAlt className="text-red-400" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Login/Signup Buttons */
+                <>
+                 {/* Install PWA Button for non-authenticated users */}
+                 {isInstallable && (
+                   <button
+                     onClick={handleInstallPWA}
+                     className="px-4 py-2 rounded-full text-sm font-medium border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#273470] transition flex items-center gap-2"
+                   >
+                     <FaDownload size={14} />
+                     Install App
+                   </button>
+                 )}
+                 
+                 <Link to="/login">
+                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-white/10 transition">
+                      Log in
+                    </button>
+                </Link>
+
+                <Link to="/signup">
+                  <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition cursor-pointer">
+                    Sign up
+                  </button>
+                </Link>
+
+                 
+                </>
+              )}
             </div>
 
             {/* MOBILE TOGGLE */}
             <button
-              className="md:hidden text-slate-800"
+              className="md:hidden text-white"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               <svg
@@ -107,7 +259,9 @@ export default function Navbar() {
                   to={link.href}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-sm font-medium ${isActive ? "text-blue-600" : "text-slate-700"
+                    `block text-sm font-medium transition-all duration-200 ${isActive 
+                      ? "text-yellow-400 border-l-4 border-yellow-400 pl-4" 
+                      : "text-slate-700 hover:text-yellow-400 hover:border-l-4 hover:border-yellow-400 border-l-4 border-transparent pl-4"
                     }`
                   }
                 >
@@ -117,20 +271,84 @@ export default function Navbar() {
 
               <div className="h-px bg-slate-200" />
 
-              {/* AUTH + CTA */}
-              <Link to="/login" onClick={() => setMenuOpen(false)}>
-                <button className="w-full px-4 py-2 rounded-xl text-sm font-semibold border border-slate-300 text-slate-700">
-                  Login
+              {/* PWA Install Button for Mobile */}
+              {isInstallable && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    handleInstallPWA();
+                  }}
+                  className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-yellow-400 hover:bg-orange-50 flex items-center gap-3 border border-orange-200"
+                >
+                  <FaDownload className="text-yellow-400" />
+                  Install App
                 </button>
-              </Link>
+              )}
 
-              <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                <button className="w-full px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white">
-                  Sign up
-                </button>
-              </Link>
+              {/* MOBILE USER SECTION */}
+              {isAuthenticated && user ? (
+                <>
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 py-2">
+                    <div className="w-10 h-10 bg-[#273470] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                      {getUserInitials(user.name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
+                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  
+                  {/* User Actions */}
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate('/profile');
+                    }}
+                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                  >
+                    <FaUser className="text-slate-400" />
+                    My Profile
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate('/settings');
+                    }}
+                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                  >
+                    <FaCog className="text-slate-400" />
+                    Settings
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-red-600 hover:bg-red-50 flex items-center gap-3"
+                  >
+                    <FaSignOutAlt className="text-red-400" />
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                /* Login/Signup for Mobile */
+                <>
+                  <Link to="/login" onClick={() => setMenuOpen(false)}>
+                    <button className="w-full px-4 py-2 rounded-xl text-sm font-semibold border border-slate-300 text-slate-700">
+                      Login
+                    </button>
+                  </Link>
 
-
+                  <Link to="/signup" onClick={() => setMenuOpen(false)}>
+                    <button className="w-full px-4 py-2 rounded-xl text-sm font-semibold bg-[#273470] text-white">
+                      Sign up
+                    </button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}

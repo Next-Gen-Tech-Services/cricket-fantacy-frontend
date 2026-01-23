@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cricket Lovers Global PWA Icon -->
+  <rect width="192" height="192" rx="20" fill="#fff"/>
+  
+  <!-- Background circle -->
+  <circle cx="96" cy="96" r="80" fill="#f8f9fa" stroke="#d4822a" stroke-width="2"/>
+  
+  <!-- Cricket ball -->
+  <circle cx="96" cy="75" r="12" fill="#c41e3a"/>
+  <path d="M84 75 Q96 65 108 75" stroke="#fff" stroke-width="1.5" fill="none"/>
+  <path d="M84 75 Q96 85 108 75" stroke="#fff" stroke-width="1.5" fill="none"/>
+  
+  <!-- Cricket bat -->
+  <rect x="88" y="100" width="16" height="40" rx="8" fill="#d4822a"/>
+  <rect x="90" y="95" width="12" height="10" rx="2" fill="#8b4513"/>
+  
+  <!-- Text -->
+  <text x="96" y="160" text-anchor="middle" font-family="Arial, sans-serif" 
+        font-size="14" font-weight="bold" fill="#d4822a">CRICKET</text>
+  <text x="96" y="176" text-anchor="middle" font-family="Arial, sans-serif" 
+        font-size="10" fill="#c41e3a">LOVERS</text>
+</svg>

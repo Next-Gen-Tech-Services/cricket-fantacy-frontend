@@ -1,0 +1,142 @@
+{
+  "name": "Cricket Lovers Global - Fantasy Cricket",
+  "short_name": "Cricket Lovers",
+  "description": "Cricket Lovers Global - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d4822a",
+  "orientation": "portrait-primary",
+  "scope": ".",
+  "lang": "en",
+  "categories": ["sports", "games", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Home screen showing latest matches and tournaments"
+    },
+    {
+      "src": "/screenshots/mobile-team.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Create your fantasy cricket team"
+    },
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop dashboard with live scores and team management"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Team",
+      "short_name": "New Team",
+      "description": "Create a new fantasy cricket team",
+      "url": "/create-team",
+      "icons": [
+        {
+          "src": "/icons/team-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Live Scores",
+      "short_name": "Scores",
+      "description": "Check live cricket scores",
+      "url": "/live-scores",
+      "icons": [
+        {
+          "src": "/icons/score-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "My Contests",
+      "short_name": "Contests",
+      "description": "View your active contests",
+      "url": "/contests",
+      "icons": [
+        {
+          "src": "/icons/trophy-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share-team",
+    "method": "POST",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+cricket",
+      "url": "/match?id=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 480
+  }
+}
