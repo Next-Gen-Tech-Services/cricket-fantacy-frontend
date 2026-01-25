@@ -8,18 +8,22 @@ export const loginUser = createAsyncThunk(
     async (credentials, { rejectWithValue }) => {
         try {
             const response = await authService.login(credentials);
-
+            // response here is response.data from the API
+            // which contains: { _id, name, email, role, token }
+            
+            const { token, ...user } = response;
+            
             // Store in persistent storage
-            if (response.token) {
-                storage.setItem('token', response.token);
+            if (token) {
+                storage.setItem('token', token);
             }
-            if (response.user) {
-                storage.setItem('user', response.user);
+            if (user) {
+                storage.setItem('user', user);
             }
 
             return {
-                user: response.user,
-                token: response.token
+                user: user,
+                token: token
             };
         } catch (error) {
             return rejectWithValue(error.message || 'Login failed');
@@ -186,11 +190,30 @@ export const initializeAuth = createAsyncThunk(
 // Get initial state from storage
 const getInitialAuthState = () => {
     try {
+        // Clear any corrupted storage first
+        const checkStorageIntegrity = () => {
+            try {
+                const testToken = localStorage.getItem('token');
+                const testUser = localStorage.getItem('user');
+                
+                if (testToken && (testToken === 'undefined' || testToken === 'null')) {
+                    localStorage.removeItem('token');
+                }
+                if (testUser && (testUser === 'undefined' || testUser === 'null')) {
+                    localStorage.removeItem('user');
+                }
+            } catch (e) {
+                console.warn('Storage integrity check failed:', e);
+            }
+        };
+        
+        checkStorageIntegrity();
+        
         // Check both storage methods for compatibility
         const token = storage.getItem('token') || authService.getToken();
         const user = storage.getItem('user') || authService.getCurrentUser();
 
-        if (token && user) {
+        if (token && user && typeof user === 'object') {
             return {
                 user,
                 token,

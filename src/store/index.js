@@ -6,6 +6,8 @@ import teamsSlice from './slices/teamsSlice';
 import leaderboardSlice from './slices/leaderboardSlice';
 import fantasyTeamsSlice from './slices/fantasyTeamsSlice';
 import playersSlice from './slices/playersSlice';
+import contestsSlice from './slices/contestsSlice';
+import leaguesSlice from './slices/leaguesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,8 @@ export const store = configureStore({
     leaderboard: leaderboardSlice,
     fantasyTeams: fantasyTeamsSlice,
     players: playersSlice,
+    contests: contestsSlice,
+    leagues: leaguesSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -24,3 +28,6 @@ export const store = configureStore({
       },
     }),
 });
+
+// Export store for use in components
+export default store;

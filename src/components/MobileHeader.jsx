@@ -69,14 +69,14 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
           )}
 
           {/* Install App Button */}
-          {isInstallable && (
+          {/* {isInstallable && (
             <button
               onClick={showInstallPrompt}
               className="p-2 rounded-lg hover:bg-white/10 transition"
             >
               <FaDownload size={16} />
             </button>
-          )}
+          )} */}
 
           {/* Notifications */}
           {isAuthenticated && (

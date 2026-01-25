@@ -1,77 +1,52 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { leaderboardAPI } from '../../services/api';
 
 // Async thunks for leaderboard
 export const fetchLeaderboard = createAsyncThunk(
   'leaderboard/fetchLeaderboard',
-  async ({ tournamentId, matchId }, { rejectWithValue }) => {
+  async ({ tournamentId, matchId, contestId, leagueId }, { rejectWithValue }) => {
     try {
-      let url = '/api/leaderboard';
+      let response;
       
-      if (tournamentId && matchId) {
-        url = `/api/tournaments/${tournamentId}/matches/${matchId}/leaderboard`;
+      if (contestId) {
+        response = await leaderboardAPI.getContest(contestId);
+      } else if (tournamentId && matchId) {
+        response = await leaderboardAPI.getMatch(matchId);
       } else if (tournamentId) {
-        url = `/api/tournaments/${tournamentId}/leaderboard`;
+        response = await leaderboardAPI.getTournament(tournamentId);
+      } else if (leagueId) {
+        response = await leaderboardAPI.getLeague(leagueId);
+      } else {
+        response = await leaderboardAPI.getGlobal();
       }
       
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
-      }
-      
-      const data = await response.json();
-      return data;
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to fetch leaderboard');
     }
   }
 );
 
 export const fetchUserRank = createAsyncThunk(
   'leaderboard/fetchUserRank',
-  async ({ tournamentId, matchId }, { rejectWithValue, getState }) => {
+  async ({ userId, type = 'global' }, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      
-      let url = `/api/user/rank`;
-      if (tournamentId && matchId) {
-        url = `/api/tournaments/${tournamentId}/matches/${matchId}/user/rank`;
-      } else if (tournamentId) {
-        url = `/api/tournaments/${tournamentId}/user/rank`;
-      }
-      
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch user rank');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await leaderboardAPI.getUserRank(userId, type);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to fetch user rank');
     }
   }
 );
 
 export const fetchMatchResults = createAsyncThunk(
   'leaderboard/fetchMatchResults',
-  async ({ tournamentId, matchId }, { rejectWithValue }) => {
+  async ({ matchId }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/tournaments/${tournamentId}/matches/${matchId}/results`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch match results');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await leaderboardAPI.getMatch(matchId);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to fetch match results');
     }
   }
 );

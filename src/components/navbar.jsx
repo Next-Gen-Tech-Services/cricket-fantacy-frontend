@@ -3,7 +3,6 @@ import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaDownload } from "react-ic
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
-import { usePWA } from "../hooks/usePWA";
 import logo from "../assets/Logo.webp"
 
 export default function Navbar() {
@@ -13,7 +12,6 @@ export default function Navbar() {
   
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector(state => state.auth);
-  const { isInstallable, showInstallPrompt } = usePWA();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -50,13 +48,6 @@ export default function Navbar() {
     return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  const handleInstallPWA = async () => {
-    try {
-      await showInstallPrompt();
-    } catch (error) {
-      console.error('Failed to install PWA:', error);
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50">
@@ -93,16 +84,7 @@ export default function Navbar() {
 
             {/* RIGHT ACTIONS (IMPROVED) */}
             <div className="hidden md:flex items-center gap-5">
-              {/* PWA Install Button - Always visible when installable */}
-              {isInstallable && (
-                <button
-                  onClick={handleInstallPWA}
-                  className="px-4 py-2 rounded-full text-sm font-medium border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#273470] transition flex items-center gap-2"
-                >
-                  <FaDownload size={14} />
-                  Install App
-                </button>
-              )}
+             
               
               {isAuthenticated && user ? (
                 /* User Profile Dropdown */
@@ -112,7 +94,7 @@ export default function Navbar() {
                     className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition"
                   >
                     {/* Profile Avatar */}
-                    <div className="w-8 h-8 bg-yellow-400 text-[#273470] rounded-full flex items-center justify-center text-xs font-bold">
+                    <div className="w-8 h-8 bg-[#273470] text-white rounded-full flex items-center justify-center text-xs font-bold">
                       {getUserInitials(user.name)}
                     </div>
                     
@@ -160,20 +142,6 @@ export default function Navbar() {
                           Settings
                         </button>
                         
-                        {/* Install PWA Button */}
-                        {isInstallable && (
-                          <button
-                            onClick={() => {
-                              setUserDropdownOpen(false);
-                              handleInstallPWA();
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                          >
-                            <FaDownload className="text-slate-400" />
-                            Install App
-                          </button>
-                        )}
-                        
                         <div className="h-px bg-slate-100 my-2"></div>
                         
                         <button
@@ -190,19 +158,10 @@ export default function Navbar() {
               ) : (
                 /* Login/Signup Buttons */
                 <>
-                 {/* Install PWA Button for non-authenticated users */}
-                 {isInstallable && (
-                   <button
-                     onClick={handleInstallPWA}
-                     className="px-4 py-2 rounded-full text-sm font-medium border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-[#273470] transition flex items-center gap-2"
-                   >
-                     <FaDownload size={14} />
-                     Install App
-                   </button>
-                 )}
+                
                  
                  <Link to="/login">
-                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-white/10 transition">
+                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-[#273470] text-white hover:bg-[#1e2859] transition">
                       Log in
                     </button>
                 </Link>
@@ -271,19 +230,7 @@ export default function Navbar() {
 
               <div className="h-px bg-slate-200" />
 
-              {/* PWA Install Button for Mobile */}
-              {isInstallable && (
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    handleInstallPWA();
-                  }}
-                  className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-yellow-400 hover:bg-orange-50 flex items-center gap-3 border border-orange-200"
-                >
-                  <FaDownload className="text-yellow-400" />
-                  Install App
-                </button>
-              )}
+             
 
               {/* MOBILE USER SECTION */}
               {isAuthenticated && user ? (

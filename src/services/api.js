@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4001/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -68,7 +68,7 @@ export const authAPI = {
 
   // Update user profile
   updateProfile: async (userData) => {
-    const response = await api.put('/auth/me', userData);
+    const response = await api.put('/auth/profile', userData);
     return response.data;
   },
 
@@ -86,7 +86,19 @@ export const authAPI = {
 
   // Reset password
   resetPassword: async (resetData) => {
-    const response = await api.post('/auth/reset-password', resetData);
+    const response = await api.put('/auth/reset-password', resetData);
+    return response.data;
+  },
+
+  // Verify email
+  verifyEmail: async (token) => {
+    const response = await api.post('/auth/verify-email', { token });
+    return response.data;
+  },
+
+  // Refresh token
+  refreshToken: async () => {
+    const response = await api.post('/auth/refresh');
     return response.data;
   }
 };
@@ -95,7 +107,15 @@ export const authAPI = {
 export const tournamentsAPI = {
   // Get all tournaments
   getAll: async (params = {}) => {
-    const response = await api.get('/tournaments', { params });
+    // Remove empty status to get all tournaments
+    const cleanParams = {};
+    Object.keys(params).forEach(key => {
+      if (params[key] !== '' && params[key] !== null && params[key] !== undefined) {
+        cleanParams[key] = params[key];
+      }
+    });
+    
+    const response = await api.get('/tournaments', { params: cleanParams });
     return response.data;
   },
 
@@ -144,9 +164,15 @@ export const matchesAPI = {
     return response.data;
   },
 
+  // Get match by key
+  getByKey: async (matchKey) => {
+    const response = await api.get(`/matches/key/${matchKey}`);
+    return response.data;
+  },
+
   // Get live matches
   getLive: async () => {
-    const response = await api.get('/matches?status=ongoing');
+    const response = await api.get('/matches?status=live');
     return response.data;
   },
 
@@ -162,9 +188,9 @@ export const matchesAPI = {
     return response.data;
   },
 
-  // Get match leaderboard
-  getLeaderboard: async (matchId, params = {}) => {
-    const response = await api.get(`/matches/${matchId}/leaderboard`, { params });
+  // Get matches by tournament
+  getByTournament: async (tournamentId) => {
+    const response = await api.get(`/tournaments/${tournamentId}/matches`);
     return response.data;
   },
 
@@ -172,27 +198,55 @@ export const matchesAPI = {
   getPlayers: async (matchId) => {
     const response = await api.get(`/matches/${matchId}/players`);
     return response.data;
+  },
+
+  // Get match players by match ID (for team creation)
+  getPlayersById: async (matchId) => {
+    const response = await api.get(`/matches/${matchId}/players`);
+    return response.data;
+  },
+
+  // Sync match players from Roanuz API (admin only)
+  syncPlayers: async (matchKey) => {
+    const response = await api.post(`/matches/${matchKey}/sync-players`);
+    return response.data;
+  },
+
+  // Get match leaderboard
+  getLeaderboard: async (matchId, params = {}) => {
+    const response = await api.get(`/matches/${matchId}/leaderboard`, { params });
+    return response.data;
+  },
+
+  // Get match scorecard
+  getScorecard: async (matchId) => {
+    const response = await api.get(`/matches/${matchId}/scorecard`);
+    return response.data;
   }
 };
 
 // ================= TEAMS API =================
 export const teamsAPI = {
   // Get real teams
-  getRealTeams: async () => {
-    const response = await api.get('/teams');
+  getRealTeams: async (params = {}) => {
+    const response = await api.get('/real-teams', { params });
     return response.data;
   },
 
   // Get real team by ID
   getRealTeamById: async (teamId) => {
-    const response = await api.get(`/teams/${teamId}`);
+    const response = await api.get(`/real-teams/${teamId}`);
     return response.data;
   },
 
-  // Get real team players
-  getRealTeamPlayers: async (teamId) => {
-    const response = await api.get(`/teams/${teamId}/players`);
-    return response.data;
+  // Get all teams (legacy alias)
+  getAll: async (params = {}) => {
+    return await teamsAPI.getRealTeams(params);
+  },
+
+  // Get team by ID (legacy alias)
+  getById: async (teamId) => {
+    return await teamsAPI.getRealTeamById(teamId);
   }
 };
 
@@ -228,15 +282,27 @@ export const fantasyTeamsAPI = {
     return response.data;
   },
 
+  // Copy fantasy team
+  copy: async (teamId, newName) => {
+    const response = await api.post(`/fantasy-teams/${teamId}/copy`, { name: newName });
+    return response.data;
+  },
+
   // Submit fantasy team for match
   submit: async (teamId, matchId) => {
-    const response = await api.post(`/fantasy-teams/${teamId}/submit`, { matchId });
+    const response = await api.put(`/fantasy-teams/${teamId}/submit`, { matchId });
     return response.data;
   },
 
   // Get fantasy team performance
   getPerformance: async (teamId) => {
     const response = await api.get(`/fantasy-teams/${teamId}/performance`);
+    return response.data;
+  },
+
+  // Get all fantasy teams (admin or with filters)
+  getAll: async (params = {}) => {
+    const response = await api.get('/fantasy-teams', { params });
     return response.data;
   }
 };
@@ -255,21 +321,45 @@ export const playersAPI = {
     return response.data;
   },
 
-  // Get player statistics
-  getStats: async (playerId) => {
-    const response = await api.get(`/players/${playerId}/stats`);
+  // Get players by team
+  getByTeam: async (teamId) => {
+    const response = await api.get(`/real-teams/${teamId}/players`);
     return response.data;
   },
 
-  // Get players by team
-  getByTeam: async (teamId) => {
-    const response = await api.get(`/players?team=${teamId}`);
+  // Get players by tournament
+  getByTournament: async (tournamentId) => {
+    const response = await api.get(`/tournaments/${tournamentId}/players`);
     return response.data;
   },
 
   // Get players by role
   getByRole: async (role) => {
     const response = await api.get(`/players?role=${role}`);
+    return response.data;
+  },
+
+  // Get player statistics
+  getStats: async (playerId) => {
+    const response = await api.get(`/players/${playerId}/stats`);
+    return response.data;
+  },
+
+  // Create player (Admin)
+  create: async (playerData) => {
+    const response = await api.post('/players', playerData);
+    return response.data;
+  },
+
+  // Update player (Admin)
+  update: async (playerId, playerData) => {
+    const response = await api.put(`/players/${playerId}`, playerData);
+    return response.data;
+  },
+
+  // Delete player (Admin)
+  delete: async (playerId) => {
+    const response = await api.delete(`/players/${playerId}`);
     return response.data;
   }
 };
@@ -285,6 +375,12 @@ export const leaguesAPI = {
   // Get league by ID
   getById: async (leagueId) => {
     const response = await api.get(`/leagues/${leagueId}`);
+    return response.data;
+  },
+
+  // Create league
+  create: async (leagueData) => {
+    const response = await api.post('/leagues', leagueData);
     return response.data;
   },
 
@@ -312,10 +408,9 @@ export const leaguesAPI = {
     return response.data;
   },
 
-  // Create private league
+  // Create private league (legacy alias)
   createPrivate: async (leagueData) => {
-    const response = await api.post('/leagues/private', leagueData);
-    return response.data;
+    return await leaguesAPI.create({ ...leagueData, type: 'PRIVATE' });
   }
 };
 
@@ -327,6 +422,12 @@ export const contestsAPI = {
     return response.data;
   },
 
+  // Get contests by match
+  getByMatch: async (matchId, params = {}) => {
+    const response = await api.get(`/matches/${matchId}/contests`, { params });
+    return response.data;
+  },
+
   // Get contest by ID
   getById: async (contestId) => {
     const response = await api.get(`/contests/${contestId}`);
@@ -335,7 +436,7 @@ export const contestsAPI = {
 
   // Join contest
   join: async (contestId, teamId) => {
-    const response = await api.post(`/contests/${contestId}/join`, { teamId });
+    const response = await api.post(`/contests/${contestId}/join`, { fantasyTeamId: teamId });
     return response.data;
   },
 
@@ -352,8 +453,8 @@ export const contestsAPI = {
   },
 
   // Get user's contests
-  getMyContests: async () => {
-    const response = await api.get('/contests/my-contests');
+  getMyContests: async (params = {}) => {
+    const response = await api.get('/contests', { params: { ...params, myContests: true } });
     return response.data;
   }
 };
@@ -362,25 +463,31 @@ export const contestsAPI = {
 export const leaderboardAPI = {
   // Get global leaderboard
   getGlobal: async (params = {}) => {
-    const response = await api.get('/leaderboard/global', { params });
+    const response = await api.get('/leaderboard', { params });
     return response.data;
   },
 
   // Get match leaderboard
   getMatch: async (matchId, params = {}) => {
-    const response = await api.get(`/leaderboard/match/${matchId}`, { params });
+    const response = await api.get(`/matches/${matchId}/leaderboard`, { params });
     return response.data;
   },
 
   // Get tournament leaderboard
   getTournament: async (tournamentId, params = {}) => {
-    const response = await api.get(`/leaderboard/tournament/${tournamentId}`, { params });
+    const response = await api.get(`/tournaments/${tournamentId}/leaderboard`, { params });
     return response.data;
   },
 
   // Get league leaderboard
   getLeague: async (leagueId, params = {}) => {
-    const response = await api.get(`/leaderboard/league/${leagueId}`, { params });
+    const response = await api.get(`/leagues/${leagueId}/leaderboard`, { params });
+    return response.data;
+  },
+
+  // Get contest leaderboard
+  getContest: async (contestId, params = {}) => {
+    const response = await api.get(`/contests/${contestId}/leaderboard`, { params });
     return response.data;
   },
 
@@ -394,14 +501,16 @@ export const leaderboardAPI = {
 // ================= PUSH NOTIFICATIONS API =================
 export const notificationsAPI = {
   // Subscribe to notifications
-  subscribe: async (subscription) => {
+  subscribe: async (subscription, preferences = {}) => {
     const response = await api.post('/push-notifications/subscribe', {
       subscription,
       preferences: {
-        matches: true,
-        contests: true,
-        teams: true,
-        general: true
+        matchUpdates: true,
+        contestReminders: true,
+        teamUpdates: true,
+        leaderboardUpdates: false,
+        adminAlerts: false,
+        ...preferences
       }
     });
     return response.data;
@@ -425,19 +534,19 @@ export const notificationsAPI = {
     return response.data;
   },
 
-  // Get user notifications
+  // Get user notifications (if available)
   getNotifications: async (params = {}) => {
     const response = await api.get('/push-notifications', { params });
     return response.data;
   },
 
-  // Mark notification as read
+  // Mark notification as read (if available)
   markAsRead: async (notificationId) => {
     const response = await api.put(`/push-notifications/${notificationId}/read`);
     return response.data;
   },
 
-  // Mark all notifications as read
+  // Mark all notifications as read (if available)
   markAllAsRead: async () => {
     const response = await api.put('/push-notifications/mark-all-read');
     return response.data;
@@ -468,6 +577,121 @@ export const userStatsAPI = {
   getTransactions: async (params = {}) => {
     const response = await api.get('/user/transactions', { params });
     return response.data;
+  }
+};
+
+// ================= ADMIN API =================
+export const adminAPI = {
+  // Dashboard
+  dashboard: {
+    getStats: async () => {
+      const response = await api.get('/admin/dashboard/stats');
+      return response.data;
+    }
+  },
+
+  // User management
+  users: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/admin/users', { params });
+      return response.data;
+    },
+    getById: async (userId) => {
+      const response = await api.get(`/admin/users/${userId}`);
+      return response.data;
+    },
+    update: async (userId, userData) => {
+      const response = await api.put(`/admin/users/${userId}`, userData);
+      return response.data;
+    },
+    delete: async (userId) => {
+      const response = await api.delete(`/admin/users/${userId}`);
+      return response.data;
+    }
+  },
+
+  // Tournament management
+  tournaments: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/admin/tournaments', { params });
+      return response.data;
+    },
+    create: async (tournamentData) => {
+      const response = await api.post('/admin/tournaments', tournamentData);
+      return response.data;
+    },
+    update: async (tournamentId, tournamentData) => {
+      const response = await api.put(`/admin/tournaments/${tournamentId}`, tournamentData);
+      return response.data;
+    },
+    delete: async (tournamentId) => {
+      const response = await api.delete(`/admin/tournaments/${tournamentId}`);
+      return response.data;
+    }
+  },
+
+  // Match management
+  matches: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/admin/matches', { params });
+      return response.data;
+    },
+    create: async (matchData) => {
+      const response = await api.post('/admin/matches', matchData);
+      return response.data;
+    },
+    update: async (matchId, matchData) => {
+      const response = await api.put(`/admin/matches/${matchId}`, matchData);
+      return response.data;
+    },
+    delete: async (matchId) => {
+      const response = await api.delete(`/admin/matches/${matchId}`);
+      return response.data;
+    }
+  },
+
+  // Team management
+  teams: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/admin/teams', { params });
+      return response.data;
+    },
+    create: async (teamData) => {
+      const response = await api.post('/admin/teams', teamData);
+      return response.data;
+    },
+    update: async (teamId, teamData) => {
+      const response = await api.put(`/admin/teams/${teamId}`, teamData);
+      return response.data;
+    },
+    delete: async (teamId) => {
+      const response = await api.delete(`/admin/teams/${teamId}`);
+      return response.data;
+    }
+  },
+
+  // Player management
+  players: {
+    getAll: async (params = {}) => {
+      const response = await api.get('/admin/players', { params });
+      return response.data;
+    },
+    create: async (playerData) => {
+      const response = await api.post('/admin/players', playerData);
+      return response.data;
+    },
+    bulkCreate: async (playersData) => {
+      const response = await api.post('/admin/players/bulk-create', playersData);
+      return response.data;
+    },
+    update: async (playerId, playerData) => {
+      const response = await api.put(`/admin/players/${playerId}`, playerData);
+      return response.data;
+    },
+    delete: async (playerId) => {
+      const response = await api.delete(`/admin/players/${playerId}`);
+      return response.data;
+    }
   }
 };
 

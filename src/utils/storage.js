@@ -62,14 +62,21 @@ class StorageService {
     try {
       if (this.isLocalStorageAvailable()) {
         const item = localStorage.getItem(key);
-        return item ? JSON.parse(item) : null;
+        if (!item || item === 'undefined' || item === 'null') {
+          return null;
+        }
+        return JSON.parse(item);
       } else {
-        return this.getCookie(key);
+        const cookieValue = this.getCookie(key);
+        return cookieValue;
       }
     } catch (error) {
       console.error('Error getting storage item:', error);
-      // Fallback to cookie if localStorage fails
-      return this.getCookie(key);
+      // Clear the corrupted item
+      if (this.isLocalStorageAvailable()) {
+        localStorage.removeItem(key);
+      }
+      return null;
     }
   }
 

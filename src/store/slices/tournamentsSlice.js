@@ -4,11 +4,10 @@ import { tournamentsAPI } from '../../services/api';
 // Async thunks for tournaments
 export const fetchTournaments = createAsyncThunk(
   'tournaments/fetchTournaments',
-  async (params, { rejectWithValue }) => {
-    const queryParams = params || {};
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const response = await tournamentsAPI.getAll(queryParams);
-      return response.data || [];
+      const response = await tournamentsAPI.getAll(params);
+      return response.data || response || [];
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch tournaments');
     }
@@ -20,7 +19,8 @@ export const fetchTournamentById = createAsyncThunk(
   async (tournamentId, { rejectWithValue }) => {
     try {
       const response = await tournamentsAPI.getById(tournamentId);
-      return response.data;
+      // API returns { success: true, data: { tournament: {...}, matches: [...] } }
+      return response.data || response;
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch tournament details');
     }
@@ -32,7 +32,7 @@ export const fetchTournamentMatches = createAsyncThunk(
   async ({ tournamentId, params = {} }, { rejectWithValue }) => {
     try {
       const response = await tournamentsAPI.getMatches(tournamentId, params);
-      return response.data || [];
+      return response.data?.matches || response.data || [];
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch tournament matches');
     }
@@ -127,7 +127,8 @@ const tournamentsSlice = createSlice({
       })
       .addCase(fetchTournamentById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentTournament = action.payload;
+        state.currentTournament = action.payload.tournament || action.payload;
+        state.tournamentMatches = action.payload.matches || [];
         state.error = null;
       })
       .addCase(fetchTournamentById.rejected, (state, action) => {

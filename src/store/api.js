@@ -1,42 +1,66 @@
 // API Configuration and Utilities for Redux
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4001/api';
 
 // API endpoints
 export const API_ENDPOINTS = {
   // Auth
-  LOGIN: '/api/auth/login',
-  SIGNUP: '/api/auth/signup',
-  CHECK_AUTH: '/api/auth/me',
-  LOGOUT: '/api/auth/logout',
+  LOGIN: '/auth/login',
+  SIGNUP: '/auth/register',
+  CHECK_AUTH: '/auth/me',
+  LOGOUT: '/auth/logout',
   
   // Tournaments
-  TOURNAMENTS: '/api/tournaments',
-  TOURNAMENT_BY_ID: (id) => `/api/tournaments/${id}`,
+  TOURNAMENTS: '/tournaments',
+  TOURNAMENT_BY_ID: (id) => `/tournaments/${id}`,
   
   // Matches
-  MATCHES: '/api/matches',
-  LIVE_MATCHES: '/api/matches/live',
-  TOURNAMENT_MATCHES: (tournamentId) => `/api/tournaments/${tournamentId}/matches`,
-  MATCH_BY_ID: (tournamentId, matchId) => `/api/tournaments/${tournamentId}/matches/${matchId}`,
+  MATCHES: '/matches',
+  LIVE_MATCHES: '/matches?status=live',
+  TOURNAMENT_MATCHES: (tournamentId) => `/tournaments/${tournamentId}/matches`,
+  MATCH_BY_ID: (tournamentId, matchId) => `/tournaments/${tournamentId}/matches/${matchId}`,
   
   // Players
-  MATCH_PLAYERS: (matchId) => `/api/matches/${matchId}/players`,
+  MATCH_PLAYERS: (matchId) => `/matches/${matchId}/players`,
   
-  // Teams
-  USER_TEAMS: '/api/user/teams',
-  TEAMS: '/api/teams',
-  TEAM_BY_ID: (id) => `/api/teams/${id}`,
+  // Fantasy Teams
+  USER_TEAMS: '/fantasy-teams',
+  TEAMS: '/fantasy-teams',
+  TEAM_BY_ID: (id) => `/fantasy-teams/${id}`,
   
   // Leaderboard
-  LEADERBOARD: '/api/leaderboard',
-  TOURNAMENT_LEADERBOARD: (tournamentId) => `/api/tournaments/${tournamentId}/leaderboard`,
-  MATCH_LEADERBOARD: (tournamentId, matchId) => `/api/tournaments/${tournamentId}/matches/${matchId}/leaderboard`,
-  USER_RANK: '/api/user/rank',
-  TOURNAMENT_USER_RANK: (tournamentId) => `/api/tournaments/${tournamentId}/user/rank`,
-  MATCH_USER_RANK: (tournamentId, matchId) => `/api/tournaments/${tournamentId}/matches/${matchId}/user/rank`,
+  LEADERBOARD: '/leaderboard',
+  TOURNAMENT_LEADERBOARD: (tournamentId) => `/tournaments/${tournamentId}/leaderboard`,
+  MATCH_LEADERBOARD: (matchId) => `/matches/${matchId}/leaderboard`,
+  CONTEST_LEADERBOARD: (contestId) => `/contests/${contestId}/leaderboard`,
+  LEAGUE_LEADERBOARD: (leagueId) => `/leagues/${leagueId}/leaderboard`,
+  USER_RANK: '/leaderboard/user-rank',
+  
+  // Contests
+  CONTESTS: '/contests',
+  CONTEST_BY_ID: (id) => `/contests/${id}`,
+  MATCH_CONTESTS: (matchId) => `/matches/${matchId}/contests`,
+  JOIN_CONTEST: (contestId) => `/contests/${contestId}/join`,
+  LEAVE_CONTEST: (contestId) => `/contests/${contestId}/leave`,
+  
+  // Leagues
+  LEAGUES: '/leagues',
+  LEAGUE_BY_ID: (id) => `/leagues/${id}`,
+  JOIN_LEAGUE: (leagueId) => `/leagues/${leagueId}/join`,
+  LEAVE_LEAGUE: (leagueId) => `/leagues/${leagueId}/leave`,
+  MY_LEAGUES: '/leagues/my-leagues',
+  
+  // Players
+  PLAYERS: '/players',
+  PLAYER_BY_ID: (id) => `/players/${id}`,
+  PLAYER_STATS: (id) => `/players/${id}/stats`,
+  PLAYERS_BY_TEAM: (teamId) => `/real-teams/${teamId}/players`,
+  
+  // Real Teams
+  REAL_TEAMS: '/real-teams',
+  REAL_TEAM_BY_ID: (id) => `/real-teams/${id}`,
   
   // Results
-  MATCH_RESULTS: (tournamentId, matchId) => `/api/tournaments/${tournamentId}/matches/${matchId}/results`,
+  MATCH_RESULTS: (matchId) => `/matches/${matchId}/leaderboard`,
 };
 
 // Helper function to create authenticated headers

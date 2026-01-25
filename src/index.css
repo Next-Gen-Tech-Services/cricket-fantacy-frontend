@@ -117,6 +117,8 @@
   /* Primary CTA */
   --btn-primary: #273470;
   --btn-primary-hover: #1e2859;
+  --btn-accent: #273470;
+  --btn-accent-hover: #1e2859;
 
   /* Secondary CTA */
   --btn-secondary: #0f172a;

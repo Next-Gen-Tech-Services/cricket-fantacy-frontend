@@ -1,100 +1,51 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fantasyTeamsAPI, playersAPI } from '../../services/api';
 
 // Async thunks for teams
 export const fetchUserTeams = createAsyncThunk(
   'teams/fetchUserTeams',
-  async (_, { rejectWithValue, getState }) => {
+  async (params = {}, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      const response = await fetch('/api/user/teams', {
-        headers: {
-          'Authorization': `Bearer ${auth.token}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch user teams');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await fantasyTeamsAPI.getMyTeams(params);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to fetch user teams');
     }
   }
 );
 
 export const createTeam = createAsyncThunk(
   'teams/createTeam',
-  async (teamData, { rejectWithValue, getState }) => {
+  async (teamData, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      const response = await fetch('/api/teams', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify(teamData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create team');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await fantasyTeamsAPI.create(teamData);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to create team');
     }
   }
 );
 
 export const updateTeam = createAsyncThunk(
   'teams/updateTeam',
-  async ({ teamId, teamData }, { rejectWithValue, getState }) => {
+  async ({ teamId, teamData }, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      const response = await fetch(`/api/teams/${teamId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify(teamData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update team');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await fantasyTeamsAPI.update(teamId, teamData);
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to update team');
     }
   }
 );
 
 export const deleteTeam = createAsyncThunk(
   'teams/deleteTeam',
-  async (teamId, { rejectWithValue, getState }) => {
+  async (teamId, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      const response = await fetch(`/api/teams/${teamId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${auth.token}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete team');
-      }
-      
+      await fantasyTeamsAPI.delete(teamId);
       return teamId;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to delete team');
     }
   }
 );
@@ -103,16 +54,10 @@ export const fetchAvailablePlayers = createAsyncThunk(
   'teams/fetchAvailablePlayers',
   async (matchId, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/matches/${matchId}/players`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch available players');
-      }
-      
-      const data = await response.json();
-      return data;
+      const response = await playersAPI.getAll({ matchId });
+      return response.data || response;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Failed to fetch available players');
     }
   }
 );

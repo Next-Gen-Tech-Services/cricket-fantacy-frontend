@@ -89,29 +89,11 @@ export default defineConfig({
 
   server: {
     host: true,
-    port: 5174,
-    strictPort: false,
-    allowedHosts: [
-      '.ngrok-free.app',
-      '.ngrok.io',
-      '.ngrok.app',
-      'localhost',
-      '127.0.0.1'
-    ],
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Cross-Origin-Embedder-Policy': 'unsafe-none'
-    }
+    port: 5173,
+    strictPort: false
   },
   preview: {
     host: true,
-    port: 4173,
-    allowedHosts: [
-      '.ngrok-free.app',
-      '.ngrok.io', 
-      '.ngrok.app',
-      'localhost',
-      '127.0.0.1'
-    ]
+    port: 4173
   }
 })

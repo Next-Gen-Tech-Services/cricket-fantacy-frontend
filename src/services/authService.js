@@ -60,16 +60,30 @@ export const authService = {
   getCurrentUser: () => {
     try {
       const userStr = localStorage.getItem('user');
-      return userStr ? JSON.parse(userStr) : null;
+      if (!userStr || userStr === 'undefined' || userStr === 'null') {
+        return null;
+      }
+      return JSON.parse(userStr);
     } catch (error) {
       console.error('Error parsing user data:', error);
+      // Clear corrupted data
+      localStorage.removeItem('user');
       return null;
     }
   },
 
   // Get auth token
   getToken: () => {
-    return localStorage.getItem('authToken');
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token || token === 'undefined' || token === 'null') {
+        return null;
+      }
+      return token;
+    } catch (error) {
+      console.error('Error getting token:', error);
+      return null;
+    }
   },
 
   // Check if user is authenticated
