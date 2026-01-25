@@ -526,19 +526,8 @@ export default function CreateTeam() {
           </div>
         </div>
       </div>
-                      {currentMatch.venue.city && `, ${currentMatch.venue.city}`}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
-                  <FiShield className="mr-2 text-white" size={16} />
-                  <span className="text-sm font-medium">{currentMatch.format.toUpperCase() || 'Cricket'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
+      {/* Main Content */}
       <div className="max-w-[1440px] mx-auto px-4  lg:pb-8 flex flex-col lg:grid lg:grid-cols-[420px_1fr] gap-6">
         {/* ================= LEFT : PLAYER LIST ================= */}
         <section className="bg-white border border-gray-200 rounded-xl shadow-sm order-2 lg:order-1 lg:h-fit lg:sticky lg:top-6">
