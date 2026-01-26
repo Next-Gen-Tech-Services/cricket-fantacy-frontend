@@ -1,12 +1,14 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FiChevronLeft, FiAward, FiUsers, FiClock, FiMapPin, FiShield, FiLoader, FiAlertCircle, FiTrendingUp, FiStar, FiBarChart2 } from "react-icons/fi";
+import { FiChevronLeft, FiAward, FiUsers, FiClock, FiMapPin, FiShield, FiLoader, FiAlertCircle, FiTrendingUp, FiStar, FiBarChart2, FiEdit } from "react-icons/fi";
 import { fetchMatchById } from "../store/slices/matchesSlice";
+import { fetchMyFantasyTeams } from "../store/slices/fantasyTeamsSlice";
 
 const MatchDetails = () => {
   const { tournamentId, matchId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   // Redux state
@@ -16,12 +18,45 @@ const MatchDetails = () => {
     error
   } = useSelector((state) => state.matches);
 
+  const { teams: userFantasyTeams } = useSelector((state) => state.fantasyTeams);
+
   // Fetch match data on component mount
   useEffect(() => {
     if (matchId) {
       dispatch(fetchMatchById(matchId));
     }
   }, [dispatch, matchId]);
+
+  // Fetch user's fantasy teams - refetch whenever location changes (e.g., navigating back from create-team)
+  useEffect(() => {
+    if (tournamentId) {
+      dispatch(fetchMyFantasyTeams({ tournament: tournamentId }));
+    }
+  }, [dispatch, tournamentId, location.pathname]);
+
+  // Helper function to check if user has created a team for this match
+  const hasTeamForMatch = () => {
+    if (!Array.isArray(userFantasyTeams)) return false;
+    return userFantasyTeams.some(team => {
+      // Handle match as string ID or populated object with id or _id
+      const teamMatchId = typeof team.match === 'string' 
+        ? team.match 
+        : (team.match?.id || team.match?._id);
+      return teamMatchId === matchId;
+    });
+  };
+
+  // Get team for this match
+  const getTeamForMatch = () => {
+    if (!Array.isArray(userFantasyTeams)) return null;
+    return userFantasyTeams.find(team => {
+      // Handle match as string ID or populated object with id or _id
+      const teamMatchId = typeof team.match === 'string' 
+        ? team.match 
+        : (team.match?.id || team.match?._id);
+      return teamMatchId === matchId;
+    });
+  };
 
   // Helper functions
   const formatDate = (timestamp) => {
@@ -153,13 +188,26 @@ const MatchDetails = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               {(currentMatch.status === 'scheduled' || currentMatch.status === 'upcoming') && (
                 <>
-                  <button
-                    onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/create-team`)}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-[#273470] font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
-                  >
-                    <FiUsers size={18} />
-                    Create Your Team
-                  </button>
+                  {hasTeamForMatch() ? (
+                    <button
+                      onClick={() => {
+                        const team = getTeamForMatch();
+                        navigate(`/tournaments/${tournamentId}/matches/${matchId}/edit-team/${team._id}`);
+                      }}
+                      className="bg-yellow-400 hover:bg-[#c4722a] text-[#273470] font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <FiEdit size={18} />
+                      Edit Your Team
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/create-team`)}
+                      className="bg-yellow-400 hover:bg-yellow-500 text-[#273470] font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                    >
+                      <FiUsers size={18} />
+                      Create Your Team
+                    </button>
+                  )}
                   <button
                     onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/leaderboard`)}
                     className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border border-white/30 font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"

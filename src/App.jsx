@@ -60,6 +60,7 @@ export default function App() {
           <Route path="/tournaments/:tournamentId" element={<TournamentDetails />} />
           <Route path="/tournaments/:tournamentId/matches/:matchId" element={<MatchDetails />} />
           <Route path="/tournaments/:tournamentId/matches/:matchId/create-team" element={<CreateTeam />} />
+          <Route path="/tournaments/:tournamentId/matches/:matchId/edit-team/:teamId" element={<CreateTeam />} />
           <Route path="/tournaments/:tournamentId/matches/:matchId/leaderboard" element={<Leaderboard />} />
           
           {/* Legacy Routes (kept for backward compatibility) */}

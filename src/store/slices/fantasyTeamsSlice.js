@@ -8,7 +8,8 @@ export const fetchMyFantasyTeams = createAsyncThunk(
     const queryParams = params || {};
     try {
       const response = await fantasyTeamsAPI.getMyTeams(queryParams);
-      return response.data || [];
+      // Backend returns { teams, pagination } inside data
+      return response.data?.teams || [];
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch fantasy teams');
     }

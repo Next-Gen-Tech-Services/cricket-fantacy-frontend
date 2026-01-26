@@ -1,55 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiAward, FiSearch, FiFilter } from "react-icons/fi";
 
-const TABS = ["All", "Mega", "Head to Head", "Winner Takes All", "Practice"];
+const TABS = ["All", "Upcoming", "Live", "Completed"];
 
 const leaguesData = [
-  {
-    id: 1,
-    type: "Mega",
-    prizePool: 150000,
-    entryFee: 49,
-    totalSpots: 10000,
-    joinedSpots: 7200,
-    firstPrize: 50000,
-    guaranteed: true,
-  },
-  {
-    id: 2,
-    type: "Head to Head",
-    prizePool: 198,
-    entryFee: 99,
-    totalSpots: 2,
-    joinedSpots: 1,
-    firstPrize: 198,
-    guaranteed: true,
-  },
-  {
-    id: 3,
-    type: "Winner Takes All",
-    prizePool: 10000,
-    entryFee: 199,
-    totalSpots: 50,
-    joinedSpots: 18,
-    firstPrize: 10000,
-    guaranteed: false,
-  },
-  {
-    id: 4,
-    type: "Practice",
-    prizePool: 0,
-    entryFee: 0,
-    totalSpots: 100,
-    joinedSpots: 40,
-    firstPrize: 0,
-    guaranteed: true,
-  },
+  
 ];
 
 export default function Leagues() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const filtered =
     activeTab === "All"
@@ -61,36 +25,46 @@ export default function Leagues() {
       className="px-4 py-10 space-y-10"
       style={{ backgroundColor: "var(--bg-main)" }}
     >
-      {/* ================= MATCH HEADER ================= */}
-      <section
-        className="max-w-[1440px] mx-auto rounded-3xl p-8 text-white"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--btn-primary), var(--btn-primary-hover))",
-        }}
-      >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">India vs Australia</h1>
-            <p className="opacity-90 mt-1 text-sm">
-              ODI Match • Today • 7:30 PM IST
+      {/* ================= HEADER SECTION ================= */}
+      <section className="max-w-[1440px] mx-auto">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+          {/* Left: Title and Description */}
+          <div className="flex-1">
+            <div className="flex items-center mb-4">
+              <FiAward className="text-slate-600 mr-3" size={40} />
+              <h1 className="text-4xl font-bold text-slate-800">
+                Cricket Tournaments
+              </h1>
+            </div>
+            <p className="text-lg text-slate-600 max-w-2xl">
+              Join the ultimate fantasy cricket experience. Pick your tournament, select your team, and compete for glory!
             </p>
           </div>
 
-          <div className="flex gap-3 text-sm font-semibold">
-            <div className="bg-white/20 px-4 py-1 rounded-full">
-              ⏳ 02h 18m left
+          {/* Right: Search and Filter */}
+          <div className="flex items-center gap-4 lg:min-w-[400px]">
+            <div className="relative flex-1">
+              <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search tournaments..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-full text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all"
+              />
             </div>
-            <div
-              className="px-4 py-1 rounded-full bg-white"
-              style={{ color: "var(--btn-primary)" }}
+            
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-4 bg-white border border-slate-200 rounded-full text-slate-600 hover:text-slate-800 hover:bg-slate-50 transition-all shadow-sm"
             >
-              120+ Contests
-            </div>
+              <FiFilter size={20} />
+            </button>
           </div>
         </div>
       </section>
-
+     
       {/* ================= TABS ================= */}
       <section className="max-w-[1440px] mx-auto flex flex-wrap gap-3">
         {TABS.map((tab) => (
@@ -214,6 +188,68 @@ export default function Leagues() {
           );
         })}
       </section>
+
+      {/* Filter Sidebar */}
+      <div className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform transition-transform duration-300 z-50 ${
+        sidebarOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        <div className="p-6 border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-slate-800">Filters</h3>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 space-y-6">
+          {/* Status Filter */}
+          <div>
+            <p className="text-sm font-medium text-slate-700 mb-3">Status</p>
+            <div className="flex flex-wrap gap-2">
+              {TABS.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    activeTab === tab
+                      ? "bg-blue-500 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clear Filters */}
+          <div className="pt-4 border-t border-slate-200">
+            <button
+              onClick={() => {
+                setActiveTab("All");
+                setSearchQuery("");
+              }}
+              className="w-full px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </main>
   );
 }

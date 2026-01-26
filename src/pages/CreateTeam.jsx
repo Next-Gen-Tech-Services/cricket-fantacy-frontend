@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { FiPlus, FiX, FiShield, FiStar, FiSearch, FiInfo, FiRefreshCw, FiChevronLeft, FiAward, FiClock, FiMapPin, FiUsers } from "react-icons/fi";
-import { matchesAPI } from "../services/api";
+import { matchesAPI, fantasyTeamsAPI } from "../services/api";
 
 /* ------------------ CONFIG ------------------ */
 const TEAM_RULES = {
@@ -63,43 +63,6 @@ const formatTime = (dateString) => {
   });
 };
 
-/* ------------------ SAMPLE DATA - 30 PLAYERS (15 IND + 15 AUS) ------------------ */
-const players = [
-  // INDIA TEAM (15 players)
-  { id: 1, name: "Rohit Sharma", role: "BAT", team: "IND", teamColor: "#FF9933", price: 9.5, points: 125, avatar: "https://ui-avatars.com/api/?name=Rohit+Sharma&background=FF9933&color=fff&size=80" },
-  { id: 2, name: "Virat Kohli", role: "BAT", team: "IND", teamColor: "#FF9933", price: 10.0, points: 140, avatar: "https://ui-avatars.com/api/?name=Virat+Kohli&background=FF9933&color=fff&size=80" },
-  { id: 3, name: "Shubman Gill", role: "BAT", team: "IND", teamColor: "#FF9933", price: 8.5, points: 115, avatar: "https://ui-avatars.com/api/?name=Shubman+Gill&background=FF9933&color=fff&size=80" },
-  { id: 4, name: "Shreyas Iyer", role: "BAT", team: "IND", teamColor: "#FF9933", price: 8.0, points: 105, avatar: "https://ui-avatars.com/api/?name=Shreyas+Iyer&background=FF9933&color=fff&size=80" },
-  { id: 5, name: "KL Rahul", role: "WK", team: "IND", teamColor: "#FF9933", price: 9.0, points: 118, avatar: "https://ui-avatars.com/api/?name=KL+Rahul&background=FF9933&color=fff&size=80" },
-  { id: 6, name: "Rishabh Pant", role: "WK", team: "IND", teamColor: "#FF9933", price: 9.0, points: 120, avatar: "https://ui-avatars.com/api/?name=Rishabh+Pant&background=FF9933&color=fff&size=80" },
-  { id: 7, name: "Hardik Pandya", role: "AR", team: "IND", teamColor: "#FF9933", price: 9.5, points: 130, avatar: "https://ui-avatars.com/api/?name=Hardik+Pandya&background=FF9933&color=fff&size=80" },
-  { id: 8, name: "Ravindra Jadeja", role: "AR", team: "IND", teamColor: "#FF9933", price: 9.0, points: 125, avatar: "https://ui-avatars.com/api/?name=Ravindra+Jadeja&background=FF9933&color=fff&size=80" },
-  { id: 9, name: "Axar Patel", role: "AR", team: "IND", teamColor: "#FF9933", price: 8.0, points: 110, avatar: "https://ui-avatars.com/api/?name=Axar+Patel&background=FF9933&color=fff&size=80" },
-  { id: 10, name: "Jasprit Bumrah", role: "BOWL", team: "IND", teamColor: "#FF9933", price: 9.5, points: 135, avatar: "https://ui-avatars.com/api/?name=Jasprit+Bumrah&background=FF9933&color=fff&size=80" },
-  { id: 11, name: "Mohammed Shami", role: "BOWL", team: "IND", teamColor: "#FF9933", price: 8.5, points: 122, avatar: "https://ui-avatars.com/api/?name=Mohammed+Shami&background=FF9933&color=fff&size=80" },
-  { id: 12, name: "Mohammed Siraj", role: "BOWL", team: "IND", teamColor: "#FF9933", price: 8.5, points: 118, avatar: "https://ui-avatars.com/api/?name=Mohammed+Siraj&background=FF9933&color=fff&size=80" },
-  { id: 13, name: "Kuldeep Yadav", role: "BOWL", team: "IND", teamColor: "#FF9933", price: 8.0, points: 112, avatar: "https://ui-avatars.com/api/?name=Kuldeep+Yadav&background=FF9933&color=fff&size=80" },
-  { id: 14, name: "Yuzvendra Chahal", role: "BOWL", team: "IND", teamColor: "#FF9933", price: 8.0, points: 108, avatar: "https://ui-avatars.com/api/?name=Yuzvendra+Chahal&background=FF9933&color=fff&size=80" },
-  { id: 15, name: "Shardul Thakur", role: "AR", team: "IND", teamColor: "#FF9933", price: 7.5, points: 102, avatar: "https://ui-avatars.com/api/?name=Shardul+Thakur&background=FF9933&color=fff&size=80" },
-
-  // AUSTRALIA TEAM (15 players)
-  { id: 16, name: "David Warner", role: "BAT", team: "AUS", teamColor: "#FFD700", price: 9.5, points: 128, avatar: "https://ui-avatars.com/api/?name=David+Warner&background=FFD700&color=000&size=80" },
-  { id: 17, name: "Steve Smith", role: "BAT", team: "AUS", teamColor: "#FFD700", price: 9.5, points: 132, avatar: "https://ui-avatars.com/api/?name=Steve+Smith&background=FFD700&color=000&size=80" },
-  { id: 18, name: "Marnus Labuschagne", role: "BAT", team: "AUS", teamColor: "#FFD700", price: 9.0, points: 120, avatar: "https://ui-avatars.com/api/?name=Marnus+Labuschagne&background=FFD700&color=000&size=80" },
-  { id: 19, name: "Travis Head", role: "BAT", team: "AUS", teamColor: "#FFD700", price: 8.5, points: 115, avatar: "https://ui-avatars.com/api/?name=Travis+Head&background=FFD700&color=000&size=80" },
-  { id: 20, name: "Alex Carey", role: "WK", team: "AUS", teamColor: "#FFD700", price: 8.0, points: 105, avatar: "https://ui-avatars.com/api/?name=Alex+Carey&background=FFD700&color=000&size=80" },
-  { id: 21, name: "Josh Inglis", role: "WK", team: "AUS", teamColor: "#FFD700", price: 8.0, points: 108, avatar: "https://ui-avatars.com/api/?name=Josh+Inglis&background=FFD700&color=000&size=80" },
-  { id: 22, name: "Glenn Maxwell", role: "AR", team: "AUS", teamColor: "#FFD700", price: 9.0, points: 125, avatar: "https://ui-avatars.com/api/?name=Glenn+Maxwell&background=FFD700&color=000&size=80" },
-  { id: 23, name: "Mitchell Marsh", role: "AR", team: "AUS", teamColor: "#FFD700", price: 8.5, points: 118, avatar: "https://ui-avatars.com/api/?name=Mitchell+Marsh&background=FFD700&color=000&size=80" },
-  { id: 24, name: "Cameron Green", role: "AR", team: "AUS", teamColor: "#FFD700", price: 8.5, points: 115, avatar: "https://ui-avatars.com/api/?name=Cameron+Green&background=FFD700&color=000&size=80" },
-  { id: 25, name: "Pat Cummins", role: "BOWL", team: "AUS", teamColor: "#FFD700", price: 9.5, points: 130, avatar: "https://ui-avatars.com/api/?name=Pat+Cummins&background=FFD700&color=000&size=80" },
-  { id: 26, name: "Mitchell Starc", role: "BOWL", team: "AUS", teamColor: "#FFD700", price: 9.0, points: 126, avatar: "https://ui-avatars.com/api/?name=Mitchell+Starc&background=FFD700&color=000&size=80" },
-  { id: 27, name: "Josh Hazlewood", role: "BOWL", team: "AUS", teamColor: "#FFD700", price: 8.5, points: 120, avatar: "https://ui-avatars.com/api/?name=Josh+Hazlewood&background=FFD700&color=000&size=80" },
-  { id: 28, name: "Adam Zampa", role: "BOWL", team: "AUS", teamColor: "#FFD700", price: 8.0, points: 112, avatar: "https://ui-avatars.com/api/?name=Adam+Zampa&background=FFD700&color=000&size=80" },
-  { id: 29, name: "Nathan Lyon", role: "BOWL", team: "AUS", teamColor: "#FFD700", price: 8.0, points: 110, avatar: "https://ui-avatars.com/api/?name=Nathan+Lyon&background=FFD700&color=000&size=80" },
-  { id: 30, name: "Marcus Stoinis", role: "AR", team: "AUS", teamColor: "#FFD700", price: 7.5, points: 105, avatar: "https://ui-avatars.com/api/?name=Marcus+Stoinis&background=FFD700&color=000&size=80" },
-];
-
 const roleLabel = {
   WK: "Wicket Keeper",
   BAT: "Batsman",
@@ -148,8 +111,9 @@ function validateTeam(players, walletBalance = 100) {
 }
 
 export default function CreateTeam() {
-  const { matchId } = useParams(); // Get match ID from route params
+  const { matchId, teamId } = useParams(); // Get match ID and team ID from route params
   const navigate = useNavigate();
+  const isEditMode = !!teamId; // Check if we're in edit mode
   
   // State
   const [loading, setLoading] = useState(true);
@@ -164,9 +128,32 @@ export default function CreateTeam() {
   const [filterTeam, setFilterTeam] = useState("all");
   const [sortBy, setSortBy] = useState("points");
   const [viewMode, setViewMode] = useState("pitch");
+  const [saving, setSaving] = useState(false);
+  const [teamName, setTeamName] = useState(""); // Team name for edit mode
 
   // User's wallet balance (you can fetch this from API or context)
-  const [walletBalance] = useState(100); // Example: user has 100pts in wallet
+  const [walletBalance] = useState(90); // Example: user has 100pts in wallet
+
+  // Fetch existing team data if in edit mode
+  useEffect(() => {
+    const loadTeamData = async () => {
+      if (!isEditMode || !teamId) return;
+      
+      try {
+        const response = await fantasyTeamsAPI.getById(teamId);
+        
+        if (response.success && response.data) {
+          const team = response.data;
+          setTeamName(team.teamName || team.name || "");
+        }
+      } catch (err) {
+        console.error('Error loading team data:', err);
+        setError('Failed to load team data');
+      }
+    };
+    
+    loadTeamData();
+  }, [isEditMode, teamId]);
 
   // Fetch match data and players on component mount
   useEffect(() => {
@@ -184,21 +171,74 @@ export default function CreateTeam() {
         
         if (response.success && response.data) {
           setMatchData(response.data.match);
+          
+          // Map API role format to frontend format
+          const mapRole = (apiRole) => {
+            switch (apiRole) {
+              case 'BATSMAN': return 'BAT';
+              case 'WICKET_KEEPER': return 'WK';
+              case 'ALL_ROUNDER': return 'AR';
+              case 'BOWLER': return 'BOWL';
+              default: return 'BAT';
+            }
+          };
+          
           // Transform players to match expected format
           const transformedPlayers = (response.data.players || []).map(player => ({
             id: player._id || player.id,
             playerId: player.playerId,
             name: player.name,
             shortName: player.shortName || player.name,
-            role: player.role,
-            team: player.team?.code || player.team?.shortName || player.team,
-            teamColor: player.team?.colors?.primary || '#000000',
-            price: player.credits || 8.0,
-            points: player.fantasyPoints || 0,
+            role: mapRole(player.role),
+            team: player.team,
+            teamColor: player.teamColor || '#000000',
+            price: player.price || 8.0,
+            points: player.points || 0,
             avatar: player.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&color=fff&size=80`,
             stats: player.stats || {}
           }));
           setPlayers(transformedPlayers);
+          
+          // Load team players if in edit mode
+          if (isEditMode && teamId) {
+            try {
+              const teamResponse = await fantasyTeamsAPI.getById(teamId);
+              
+              if (teamResponse.success && teamResponse.data) {
+                const team = teamResponse.data;
+                
+                // Map team players to selected format
+                if (team.players && Array.isArray(team.players)) {
+                  const selectedPlayers = [];
+                  let captainId = null;
+                  let viceCaptainId = null;
+                  
+                  for (const teamPlayer of team.players) {
+                    const playerId = teamPlayer.player?._id || teamPlayer.player;
+                    const matchingPlayer = transformedPlayers.find(p => p.id === playerId);
+                    
+                    if (matchingPlayer) {
+                      selectedPlayers.push(matchingPlayer);
+                      
+                      // Track captain and vice-captain
+                      if (teamPlayer.role === 'CAPTAIN') {
+                        captainId = matchingPlayer.id;
+                      } else if (teamPlayer.role === 'VICE_CAPTAIN') {
+                        viceCaptainId = matchingPlayer.id;
+                      }
+                    }
+                  }
+                  
+                  setSelected(selectedPlayers);
+                  if (captainId) setCaptain(captainId);
+                  if (viceCaptainId) setViceCaptain(viceCaptainId);
+                }
+              }
+            } catch (err) {
+              console.error('Error loading team players:', err);
+              // Don't set error - just continue with empty selection
+            }
+          }
         } else {
           throw new Error('Failed to fetch match data');
         }
@@ -278,23 +318,19 @@ export default function CreateTeam() {
   };
 
   const autoPickTeam = () => {
+    if (players.length === 0) return;
+
     const autoPicked = [];
     let availableBudget = TEAM_RULES.BUDGET;
     const roleCounts = { WK: 0, BAT: 0, AR: 0, BOWL: 0 };
 
-    // Create a copy of players sorted by value (points per price ratio) and points
-    const playersWithValue = players.map(p => ({
-      ...p,
-      valueRatio: p.points / p.price
-    }));
+    // Create a copy of players sorted by points (simpler approach)
+    const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
 
-    // Phase 1: Fill minimum requirements efficiently
+    // Phase 1: Fill minimum requirements for each role
     const roles = ["WK", "BAT", "AR", "BOWL"];
     for (const role of roles) {
-      const rolePlayers = playersWithValue
-        .filter(p => p.role === role)
-        .sort((a, b) => b.valueRatio - a.valueRatio); // Sort by value ratio first
-
+      const rolePlayers = sortedPlayers.filter(p => p.role === role);
       const minRequired = TEAM_RULES[role].min;
 
       for (const player of rolePlayers) {
@@ -302,18 +338,20 @@ export default function CreateTeam() {
         if (availableBudget >= player.price && !autoPicked.find(p => p.id === player.id)) {
           autoPicked.push(player);
           availableBudget -= player.price;
-          roleCounts[player.role]++;
+          roleCounts[role]++;
         }
       }
     }
 
-    // Phase 2: Smart selection for remaining slots
-    while (autoPicked.length < TEAM_RULES.TOTAL) {
-      let bestPlayer = null;
-      let bestValue = 0;
+    // Phase 2: Fill remaining slots with best available players
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
 
-      // Consider all remaining players that can fit
-      for (const player of playersWithValue) {
+    while (autoPicked.length < TEAM_RULES.TOTAL && attempts < maxAttempts) {
+      attempts++;
+      let bestPlayer = null;
+
+      for (const player of sortedPlayers) {
         // Skip if already selected
         if (autoPicked.find(p => p.id === player.id)) continue;
 
@@ -323,89 +361,18 @@ export default function CreateTeam() {
         // Skip if can't afford
         if (player.price > availableBudget) continue;
 
-        // Calculate value considering remaining slots and budget
-        const remainingSlots = TEAM_RULES.TOTAL - autoPicked.length;
-        const avgBudgetPerSlot = availableBudget / remainingSlots;
-
-        // Prefer players that fit well within remaining budget distribution
-        let playerValue = player.valueRatio;
-
-        // Bonus for affordable players when budget is tight
-        if (player.price <= avgBudgetPerSlot) {
-          playerValue *= 1.2;
-        }
-
-        // Bonus for high points players
-        if (player.points > 120) {
-          playerValue *= 1.1;
-        }
-
-        if (playerValue > bestValue) {
-          bestValue = playerValue;
-          bestPlayer = player;
-        }
+        // Take the first valid player (already sorted by points)
+        bestPlayer = player;
+        break;
       }
 
-      // If we found a suitable player, add them
       if (bestPlayer) {
         autoPicked.push(bestPlayer);
         availableBudget -= bestPlayer.price;
         roleCounts[bestPlayer.role]++;
       } else {
-        // If no suitable player found, try to adjust by replacing expensive players
-        // Find the most expensive player that can be replaced with a cheaper alternative
-        for (let i = autoPicked.length - 1; i >= 0; i--) {
-          const currentPlayer = autoPicked[i];
-          const sameRolePlayers = playersWithValue
-            .filter(p => p.role === currentPlayer.role &&
-              p.price < currentPlayer.price &&
-              !autoPicked.find(ap => ap.id === p.id))
-            .sort((a, b) => b.valueRatio - a.valueRatio);
-
-          if (sameRolePlayers.length > 0) {
-            const replacement = sameRolePlayers[0];
-            // Replace current player with cheaper alternative
-            autoPicked[i] = replacement;
-            availableBudget += currentPlayer.price - replacement.price;
-            break;
-          }
-        }
-
-        // Try again with increased budget
-        continue;
-      }
-    }
-
-    // Final check: if still not 11 players, use cheapest available players
-    while (autoPicked.length < TEAM_RULES.TOTAL) {
-      const cheapestAvailable = playersWithValue
-        .filter(p => !autoPicked.find(ap => ap.id === p.id) &&
-          roleCounts[p.role] < TEAM_RULES[p.role].max &&
-          p.price <= availableBudget)
-        .sort((a, b) => a.price - b.price)[0];
-
-      if (cheapestAvailable) {
-        autoPicked.push(cheapestAvailable);
-        availableBudget -= cheapestAvailable.price;
-        roleCounts[cheapestAvailable.role]++;
-      } else {
-        // If still can't fill, replace most expensive players with cheapest alternatives
-        const mostExpensive = autoPicked
-          .sort((a, b) => b.price - a.price)[0];
-
-        const cheaperAlternative = playersWithValue
-          .filter(p => p.role === mostExpensive.role &&
-            p.price < mostExpensive.price &&
-            !autoPicked.find(ap => ap.id === p.id))
-          .sort((a, b) => a.price - b.price)[0];
-
-        if (cheaperAlternative) {
-          const index = autoPicked.findIndex(p => p.id === mostExpensive.id);
-          autoPicked[index] = cheaperAlternative;
-          availableBudget += mostExpensive.price - cheaperAlternative.price;
-        } else {
-          break; // Can't optimize further
-        }
+        // Can't find more players within budget/role constraints
+        break;
       }
     }
 
@@ -413,10 +380,7 @@ export default function CreateTeam() {
 
     // Auto select Captain and Vice Captain based on highest points
     if (autoPicked.length >= 2) {
-      // Sort selected players by points in descending order
       const sortedByPoints = [...autoPicked].sort((a, b) => b.points - a.points);
-
-      // Select top 2 players as Captain and Vice Captain
       setCaptain(sortedByPoints[0].id);
       setViceCaptain(sortedByPoints[1].id);
     } else {
@@ -429,6 +393,73 @@ export default function CreateTeam() {
     setSelected([]);
     setCaptain(null);
     setViceCaptain(null);
+  };
+
+  const saveTeam = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+
+      // Check if user is authenticated
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Please login to save your team');
+      }
+
+      // Validate we have all required data
+      if (!matchData?.tournament?.id) {
+        throw new Error('Tournament information is missing');
+      }
+
+      // Format players data for API
+      const teamPlayers = selected.map(player => ({
+        player: player.id,
+        role: player.id === captain ? 'CAPTAIN' : player.id === viceCaptain ? 'VICE_CAPTAIN' : 'PLAYER'
+      }));
+
+      // Use provided team name or create default one
+      const finalTeamName = teamName || `${matchData?.shortName || matchData?.name} - ${new Date().toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })}`;
+
+      const teamData = {
+        name: finalTeamName,
+        tournament: matchData.tournament.id,
+        match: matchId,
+        players: teamPlayers
+      };
+
+      console.log(isEditMode ? 'Updating team:' : 'Creating team:', teamData);
+
+      let response;
+      if (isEditMode && teamId) {
+        // Update existing team
+        response = await fantasyTeamsAPI.update(teamId, teamData);
+      } else {
+        // Create new team
+        response = await fantasyTeamsAPI.create(teamData);
+      }
+
+      console.log('Save response:', response);
+
+      if (response.success) {
+        // Navigate back to match details page
+        navigate(`/tournaments/${matchData.tournament.id}/matches/${matchId}`);
+      } else {
+        throw new Error(response.message || `Failed to ${isEditMode ? 'update' : 'save'} team`);
+      }
+    } catch (err) {
+      console.error(`Error ${isEditMode ? 'updating' : 'saving'} team:`, err);
+      const errorMessage = err.response?.data?.message || err.message || `Failed to ${isEditMode ? 'update' : 'save'} team. Please try again.`;
+      setError(errorMessage);
+      // Scroll to top to show error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   // Loading state
@@ -473,6 +504,28 @@ export default function CreateTeam() {
 
 
       <div className="max-w-[1440px] mx-auto px-4 pt-8 pb-0">
+        {/* Error Banner for Save Errors */}
+        {error && !loading && (
+          <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <span className="text-red-500 text-xl">⚠️</span>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-red-800">{error}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <button
+                  onClick={() => setError(null)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-6 mb-8 text-white shadow-lg">
           <button
@@ -697,7 +750,7 @@ export default function CreateTeam() {
                             )}
                           </div>
                           <span className="text-sm font-semibold text-[#273470] w-12 text-center">
-                            {player.price}cr
+                            {player.price} CLG
                           </span>
                           <span className="text-sm text-gray-600 w-8 text-center">
                             {player.points}
@@ -776,11 +829,11 @@ export default function CreateTeam() {
                   <span className="ml-2 font-normal text-xs">Players Selected</span>
                 </div>
                 <div className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg font-bold text-[#273470] text-center">
-                  {(walletBalance - totalCredits).toFixed(1)}pts
+                  {(walletBalance - totalCredits).toFixed(1)} CLG
                   <span className="ml-2 font-normal text-xs">Wallet Balance</span>
                 </div>
                 <div className="px-4 py-2 bg-blue-50 border-2 border-blue-200 rounded-lg font-bold text-blue-700 text-center">
-                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)}pts
+                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG
                   <span className="ml-2 font-normal text-xs">Used</span>
                 </div>
                 {/* Team Composition Display */}
@@ -951,14 +1004,22 @@ export default function CreateTeam() {
                 </button>
               </div>
               <button
-                disabled={!validation.isValid || !captain || !viceCaptain}
-                className="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#273470] font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 shadow-lg hover:shadow-yellow-400/50"
+                onClick={saveTeam}
+                disabled={!validation.isValid || !captain || !viceCaptain || saving}
+                className="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-[#273470] font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-400 shadow-lg hover:shadow-yellow-400/50 flex items-center justify-center gap-2"
               >
-                {!validation.isValid
-                  ? "Complete Team"
-                  : !captain || !viceCaptain
-                    ? "Select C & VC"
-                    : "Save Team"}
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#273470]"></div>
+                    {isEditMode ? "Updating..." : "Saving..."}
+                  </>
+                ) : (
+                  !validation.isValid
+                    ? "Complete Team"
+                    : !captain || !viceCaptain
+                      ? "Select C & VC"
+                      : isEditMode ? "Update Team" : "Save Team"
+                )}
               </button>
             </div>
           </div>

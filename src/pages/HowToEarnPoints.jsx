@@ -228,7 +228,7 @@ export default function HowToEarnPoints() {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center">
+        <div className="text-center mt-10">
           <div className="bg-gradient-primary text-white rounded-xl p-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-black/20" />
             <div className="relative">

@@ -161,7 +161,7 @@ export default function Navbar() {
                 
                  
                  <Link to="/login">
-                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-[#273470] text-white hover:bg-[#1e2859] transition">
+                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-yellow-400 transition cursor-pointer">
                       Log in
                     </button>
                 </Link>

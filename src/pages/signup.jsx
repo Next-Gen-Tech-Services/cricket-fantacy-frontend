@@ -153,10 +153,10 @@ export default function Signup() {
           </div>
 
           {/* Google Signup */}
-          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 hover:bg-gray-50 transition shadow-lg mb-6">
+          {/* <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 hover:bg-gray-50 transition shadow-lg mb-6">
             <FcGoogle size={20} />
             Sign up with Google
-          </button>
+          </button> */}
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">

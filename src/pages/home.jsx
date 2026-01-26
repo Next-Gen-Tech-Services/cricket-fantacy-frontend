@@ -108,13 +108,13 @@ export default function Home() {
               ) : (
                 <div className="mt-6 flex gap-4 flex-wrap">
                   <Link to="/login">
-                    <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-white/10 transition">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-yellow-400 transition cursor-pointer">
                       Log in
                     </button>
                   </Link>
 
                   <Link to="/signup">
-                    <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition cursor-pointer">
                       Sign up
                     </button>
                   </Link>
