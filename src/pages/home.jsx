@@ -1,5 +1,5 @@
 import heroHome from "../assets/hero-home.png";
-import home1 from "../assets/home-1.png";
+import home1 from "../assets/home-1.jpeg";
 import home2 from "../assets/home-2.png";
 import home3 from "../assets/home-3.png";
 import home4 from "../assets/home-4.png";
@@ -149,7 +149,7 @@ export default function Home() {
               >
                 
                 
-                <div className="h-44 overflow-hidden">
+                <div className="h-63 overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.title}
