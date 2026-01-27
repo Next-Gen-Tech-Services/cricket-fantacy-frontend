@@ -1,7 +1,7 @@
 import { useAppSelector } from '../store/hooks';
 import { Navigate, useLocation } from 'react-router-dom';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, redirectMessage }) => {
   const { isAuthenticated, isLoading, isInitialized } = useAppSelector(state => state.auth);
   const location = useLocation();
 
@@ -20,7 +20,10 @@ const ProtectedRoute = ({ children }) => {
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     // Save the attempted location for redirecting after login
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ 
+      from: location, 
+      message: redirectMessage || `Please login to access ${location.pathname.substring(1) || 'this page'}`
+    }} replace />;
   }
 
   return children;

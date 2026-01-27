@@ -26,7 +26,7 @@ export default function BottomNavigation() {
       label: 'Tournaments',
       icon: FaTrophy,
       path: '/tournaments',
-      authRequired: false
+      authRequired: true  // Changed to require authentication
     },
     {
       id: 'leagues',
@@ -40,7 +40,7 @@ export default function BottomNavigation() {
       label: 'Matches',
       icon: FaGamepad,
       path: '/matches',
-      authRequired: false
+      authRequired: true  // Changed to require authentication
     },
     {
       id: 'profile',

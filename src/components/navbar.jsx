@@ -15,10 +15,10 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: "How to play?", href: "/" },
-    { name: "Tournaments", href: "/tournaments" },
-    { name: "My Leagues", href: "/leagues" },
-    { name: "How to earn points", href: "/how-to-earn-points" },
+    { name: "How to play?", href: "/", authRequired: false },
+    { name: "Tournaments", href: "/tournaments", authRequired: true },
+    { name: "My Leagues", href: "/leagues", authRequired: true },
+    { name: "How to earn points", href: "/how-to-earn-points", authRequired: false },
   ];
 
   // Close dropdown when clicking outside
@@ -71,13 +71,14 @@ export default function Navbar() {
                   key={link.name}
                   to={link.href}
                   className={({ isActive }) =>
-                    `text-sm font-medium transition-all duration-200 ${isActive
+                    `text-sm font-medium transition-all duration-200 relative ${isActive
                       ? "text-yellow-400 border-b-2 border-yellow-400"
                       : "text-white hover:text-yellow-400 hover:border-b-2 hover:border-yellow-400 border-b-2 border-transparent"
-                    }`
+                    } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
                   }
                 >
                   {link.name}
+                
                 </NavLink>
               ))}
             </div>
@@ -218,13 +219,18 @@ export default function Navbar() {
                   to={link.href}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-sm font-medium transition-all duration-200 ${isActive 
+                    `block text-sm font-medium transition-all duration-200 relative ${isActive 
                       ? "text-yellow-400 border-l-4 border-yellow-400 pl-4" 
                       : "text-slate-700 hover:text-yellow-400 hover:border-l-4 hover:border-yellow-400 border-l-4 border-transparent pl-4"
-                    }`
+                    } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
                   }
                 >
-                  {link.name}
+                  <span className="flex items-center justify-between">
+                    {link.name}
+                    {link.authRequired && !isAuthenticated && (
+                      <span className="text-xs bg-yellow-400 text-[#273470] px-1 py-0.5 rounded">Login Required</span>
+                    )}
+                  </span>
                 </NavLink>
               ))}
 

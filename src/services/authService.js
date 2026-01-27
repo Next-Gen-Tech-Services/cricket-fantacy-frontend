@@ -1,4 +1,6 @@
 import { authAPI } from './api';
+import { signInWithPopup, signOut } from 'firebase/auth';
+import { auth, googleProvider } from '../config/firebase';
 
 // Auth service with error handling and token management
 export const authService = {
@@ -181,6 +183,52 @@ export const authService = {
   // Verify token with server (legacy support)
   verifyToken: async () => {
     return this.refreshProfile();
+  },
+
+  // Google Sign In
+  signInWithGoogle: async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      // Get the ID token from Firebase
+      const idToken = await user.getIdToken();
+      
+      // Send the ID token to your backend for verification
+      const response = await authAPI.googleAuth({ idToken });
+      
+      if (response.success && response.data.token) {
+        // Store auth data
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        
+        return response.data;
+      } else {
+        throw new Error(response.message || 'Google authentication failed');
+      }
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      
+      // Handle specific Firebase errors
+      if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Sign in cancelled');
+      } else if (error.code === 'auth/popup-blocked') {
+        throw new Error('Popup was blocked by browser');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        throw new Error('Only one popup request is allowed at one time');
+      }
+      
+      throw error.response?.data || error;
+    }
+  },
+
+  // Sign out from Google
+  signOutFromGoogle: async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Google sign-out error:', error);
+    }
   }
 };
 

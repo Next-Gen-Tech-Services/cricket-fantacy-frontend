@@ -77,6 +77,33 @@ export const logoutUser = createAsyncThunk(
     }
 );
 
+// Async thunk for Google Sign In
+export const signInWithGoogle = createAsyncThunk(
+    'auth/signInWithGoogle',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await authService.signInWithGoogle();
+            
+            const { token, ...user } = response;
+            
+            // Store in persistent storage
+            if (token) {
+                storage.setItem('token', token);
+            }
+            if (user) {
+                storage.setItem('user', user);
+            }
+            
+            return {
+                user: user,
+                token: token
+            };
+        } catch (error) {
+            return rejectWithValue(error.message || 'Google sign in failed');
+        }
+    }
+);
+
 // Async thunk for refreshing user profile
 export const refreshProfile = createAsyncThunk(
     'auth/refreshProfile',
@@ -312,6 +339,24 @@ const authSlice = createSlice({
             .addCase(logoutUser.rejected, (state) => {
                 state.isLoading = false;
                 state.error = null;
+            })
+
+            // Google Sign In cases
+            .addCase(signInWithGoogle.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(signInWithGoogle.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.isAuthenticated = true;
+                state.error = null;
+                state.isInitialized = true;
+            })
+            .addCase(signInWithGoogle.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
             })
 
             // Initialize auth cases

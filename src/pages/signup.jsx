@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { signupUser, clearError } from "../store/slices/authSlice";
+import { signupUser, clearError, signInWithGoogle } from "../store/slices/authSlice";
 
 import image1 from "../assets/img1-login.png";
 import image2 from "../assets/img2-login.png";
@@ -120,14 +120,24 @@ export default function Signup() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError("");
+    setSuccess("");
+    dispatch(clearError());
+    
+    try {
+      await dispatch(signInWithGoogle()).unwrap();
+      // Navigation will be handled by the useEffect above
+    } catch (err) {
+      setError(err || "Google sign in failed. Please try again.");
+    }
+  };
+
   return (
-    <main className="min-h-screen w-screen grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-[#273470] to-[#1e2859]">
+    <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
       {/* ================= LEFT : SIGNUP ================= */}
-      <div className="relative flex items-center justify-center px-6 py-8 lg:px-12">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-white/0"></div>
-        
-        <div className="relative w-full max-w-md z-10">
+      <div className="relative flex items-center justify-center px-6 py-8 lg:px-12 bg-white">
+        <div className="relative w-full max-w-md">
           {/* Back */}
          
 
@@ -144,38 +154,43 @@ export default function Signup() {
 
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
               Create Account
             </h1>
-            <p className="text-white/70">
+            <p className="text-gray-600">
               Start building your fantasy cricket team
             </p>
           </div>
 
           {/* Google Signup */}
-          {/* <button className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 hover:bg-gray-50 transition shadow-lg mb-6">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm mb-6"
+          >
             <FcGoogle size={20} />
-            Sign up with Google
-          </button> */}
+            {isLoading ? "Signing up..." : "Sign up with Google"}
+          </button>
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">
-            <div className="h-px flex-1 bg-white/20" />
-            <span className="text-sm text-white/60">OR</span>
-            <div className="h-px flex-1 bg-white/20" />
+            <div className="h-px flex-1 bg-gray-300" />
+            <span className="text-sm text-gray-500">OR</span>
+            <div className="h-px flex-1 bg-gray-300" />
           </div>
 
           {/* Error Message */}
           {(error || reduxError) && (
-            <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 backdrop-blur">
-              <p className="text-sm text-red-300">{error || reduxError}</p>
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600">{error || reduxError}</p>
             </div>
           )}
 
           {/* Success Message */}
           {success && (
-            <div className="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 backdrop-blur">
-              <p className="text-sm text-green-300">{success}</p>
+            <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200">
+              <p className="text-sm text-green-600">{success}</p>
             </div>
           )}
 
@@ -183,7 +198,7 @@ export default function Signup() {
           <form className="space-y-5" onSubmit={handleSubmit}>
             {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
               </label>
               <input
@@ -192,14 +207,14 @@ export default function Signup() {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Your name"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
                 required
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -208,14 +223,14 @@ export default function Signup() {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
                 required
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -225,7 +240,7 @@ export default function Signup() {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
                   required
                   minLength={6}
                 />
@@ -234,7 +249,7 @@ export default function Signup() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
                   >
                     {showPassword ? (
                       <AiOutlineEyeInvisible size={20} />
@@ -248,7 +263,7 @@ export default function Signup() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-white/80 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password
               </label>
               <div className="relative">
@@ -258,7 +273,7 @@ export default function Signup() {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 pr-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
+                  className="w-full px-4 py-3 pr-12 rounded-xl bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition"
                   required
                 />
 
@@ -266,7 +281,7 @@ export default function Signup() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
                   >
                     {showConfirmPassword ? (
                       <AiOutlineEyeInvisible size={20} />
@@ -289,11 +304,11 @@ export default function Signup() {
           </form>
 
           {/* Footer */}
-          <p className="mt-8 text-center text-sm text-white/70">
+          <p className="mt-8 text-center text-sm text-gray-600">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-semibold text-yellow-400 hover:text-[#c4722a] transition"
+              className="font-semibold text-yellow-600 hover:text-yellow-700 transition"
             >
               Login
             </Link>
@@ -302,7 +317,7 @@ export default function Signup() {
       </div>
 
       {/* ================= RIGHT : IMAGE SLIDER ================= */}
-      <div className="hidden lg:block relative h-full w-full overflow-hidden">
+      <div className="hidden lg:block relative h-full w-full overflow-hidden bg-gradient-to-br from-[#273470] to-[#1e2859]">
         <div className="absolute inset-0 bg-gradient-to-br from-[#273470]/80 to-[#1e2859]/80 z-10"></div>
         
         {images.map((img, index) => (

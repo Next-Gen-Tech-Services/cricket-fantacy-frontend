@@ -52,25 +52,103 @@ export default function App() {
 
         {/* ===== MAIN ROUTES ===== */}
         <Route element={<MainLayout />}>
+          {/* Public Routes - Available to everyone */}
           <Route path="/" element={<Home />} />
           <Route path="/how-to-earn-points" element={<HowToEarnPoints />} />
           
-          {/* New Tournament Flow */}
-          <Route path="/tournaments" element={<Tournaments />} />
-          <Route path="/tournaments/:tournamentId" element={<TournamentDetails />} />
-          <Route path="/tournaments/:tournamentId/matches/:matchId" element={<MatchDetails />} />
-          <Route path="/tournaments/:tournamentId/matches/:matchId/create-team" element={<CreateTeam />} />
-          <Route path="/tournaments/:tournamentId/matches/:matchId/edit-team/:teamId" element={<CreateTeam />} />
-          <Route path="/tournaments/:tournamentId/matches/:matchId/leaderboard" element={<Leaderboard />} />
+          {/* Protected Tournament Flow - Require Authentication */}
+          <Route 
+            path="/tournaments" 
+            element={
+              <ProtectedRoute>
+                <Tournaments />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tournaments/:tournamentId" 
+            element={
+              <ProtectedRoute>
+                <TournamentDetails />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tournaments/:tournamentId/matches/:matchId" 
+            element={
+              <ProtectedRoute>
+                <MatchDetails />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tournaments/:tournamentId/matches/:matchId/create-team" 
+            element={
+              <ProtectedRoute>
+                <CreateTeam />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tournaments/:tournamentId/matches/:matchId/edit-team/:teamId" 
+            element={
+              <ProtectedRoute>
+                <CreateTeam />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/tournaments/:tournamentId/matches/:matchId/leaderboard" 
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            } 
+          />
           
-          {/* Legacy Routes (kept for backward compatibility) */}
-          <Route path="/matches" element={<Matches />} />
-          <Route path="/leagues" element={<Leagues />} />
-          <Route path="/teams" element={<Teams />} />
-          <Route path="/create-team" element={<CreateTeam />} />
-          <Route path='/table' element={<Table/>}/>
+          {/* Protected Legacy Routes - Require Authentication */}
+          <Route 
+            path="/matches" 
+            element={
+              <ProtectedRoute>
+                <Matches />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/leagues" 
+            element={
+              <ProtectedRoute>
+                <Leagues />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/teams" 
+            element={
+              <ProtectedRoute>
+                <Teams />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/create-team" 
+            element={
+              <ProtectedRoute>
+                <CreateTeam />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/table' 
+            element={
+              <ProtectedRoute>
+                <Table />
+              </ProtectedRoute>
+            }
+          />
           
-          {/* Protected Routes */}
+          {/* User Profile & Settings - Protected Routes */}
           <Route 
             path="/profile" 
             element={

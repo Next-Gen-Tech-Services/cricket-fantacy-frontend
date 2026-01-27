@@ -1,5 +1,8 @@
 import heroHome from "../assets/hero-home.png";
-import Carousel from "react-multi-carousel";
+import home1 from "../assets/home-1.png";
+import home2 from "../assets/home-2.png";
+import home3 from "../assets/home-3.png";
+import home4 from "../assets/home-4.png";
 import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -7,46 +10,37 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchTournaments } from "../store/slices/tournamentsSlice";
 import { fetchLiveMatches } from "../store/slices/matchesSlice";
 
+
 const features = [
   {
     title: "Create a Login",
     description:
       "Sign up for free and create your fantasy cricket account to get started.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    image: home1,
     link: "/signup",
   },
   {
     title: "Pick Your Tournament",
     description:
       "Browse and select from live and upcoming cricket tournaments worldwide.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    image:home2, 
     link: "/tournaments",
   },
   {
     title: "Build Your Team",
     description:
       "Create your ultimate fantasy XI for each match within your budget.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    image: home3,
     link: "/tournaments",
   },
   {
     title: "Invite Your Friends",
     description:
       "Share leagues with friends and compete against each other for glory.",
-    image:
-      "https://resources.premierleague.pulselive.com/photo-resources/2026/01/11/4c840b12-ad5f-4a70-9abb-fef7dc6859ca/Graphic-showing-Phil-Foden-left-Granot-Xhaka-middle-and-Jurrien-Timber-right-part-of-Shearer-s-Team-of-the-Season-so-far.png?width=2880",
+    image: home4,
     link: "/leagues",
   },
 ];
-
-const responsiveBlogs = {
-  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 4 },
-  tablet: { breakpoint: { max: 1024, min: 640 }, items: 2 },
-  mobile: { breakpoint: { max: 640, min: 0 }, items: 1 },
-};
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -126,7 +120,7 @@ export default function Home() {
               <img
                 src={heroHome}
                 alt="Cricket"
-                className="w-full max-w-md drop-shadow-2xl"
+                className="w-full  max-w-md drop-shadow-2xl"
               />
             </div>
           </div>
@@ -140,37 +134,48 @@ export default function Home() {
         </h2>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((item, index) => (
-            <Link
-              to={item.link}
-              key={index}
-              className="app-card overflow-hidden hover:-translate-y-1 transition"
-            >
-              <div className="h-44 overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
+          {features.map((item, index) => {
+            // Check if the feature requires authentication
+            const requiresAuth = item.link !== "/signup" && item.link !== "/how-to-earn-points" && item.link !== "/";
+            
+            // If user is not authenticated and the feature requires auth, redirect to signup
+            const linkTo = (!isAuthenticated && requiresAuth) ? "/signup" : item.link;
+            
+            return (
+              <Link
+                to={linkTo}
+                key={index}
+                className="app-card overflow-hidden hover:-translate-y-1 transition relative"
+              >
+                
+                
+                <div className="h-44 overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
 
-              <div className="p-6">
-                <h3 className="text-lg font-semibold text-primary">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-secondary">
-                  {item.description}
-                </p>
-              </div>
-            </Link>
-          ))}
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold text-primary">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm text-secondary">
+                    {item.description}
+                  </p>
+                 
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
 
 
       {/* ================= BLOGS ================= */}
-      <section className="max-w-[1440px] mx-auto">
+      {/* <section className="max-w-[1440px] mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8">
           Our Latest Blogs
         </h2>
@@ -210,7 +215,7 @@ export default function Home() {
             </Link>
           ))}
         </Carousel>
-      </section>
+      </section> */}
 
       {/* ================= COUNTDOWN MODAL ================= */}
 

@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,6 +23,15 @@ let analytics = null;
 if (typeof window !== 'undefined') {
   analytics = getAnalytics(app);
 }
+
+// Initialize Firebase Auth
+const auth = getAuth(app);
+
+// Initialize Google Auth Provider
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 // Initialize Firebase Cloud Messaging
 let messaging = null;
@@ -82,4 +92,4 @@ export const onMessageListener = () => {
   });
 };
 
-export { app, analytics, messaging };
+export { app, analytics, messaging, auth, googleProvider };

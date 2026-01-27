@@ -96,6 +96,12 @@ export const authAPI = {
     return response.data;
   },
 
+  // Google authentication
+  googleAuth: async (tokenData) => {
+    const response = await api.post('/auth/google', tokenData);
+    return response.data;
+  },
+
   // Refresh token
   refreshToken: async () => {
     const response = await api.post('/auth/refresh');

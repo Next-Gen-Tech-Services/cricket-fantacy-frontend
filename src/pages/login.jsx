@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { loginUser, clearError } from "../store/slices/authSlice";
+import { loginUser, clearError, signInWithGoogle } from "../store/slices/authSlice";
 import image1 from '../assets/img1-login.png';
 import image2 from '../assets/img2-login.png';
 import image3 from '../assets/img1-login.png';
@@ -85,8 +86,20 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError("");
+    dispatch(clearError());
+    
+    try {
+      await dispatch(signInWithGoogle()).unwrap();
+      // Navigation will be handled by the useEffect above
+    } catch (err) {
+      setError(err || "Google sign in failed. Please try again.");
+    }
+  };
+
   return (
-    <main className="min-h-screen w-screen grid grid-cols-1 lg:grid-cols-2">
+    <main className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
       {/* ================= LEFT : LOGIN ================= */}
       <div className="relative flex items-center justify-center px-6 py-8 lg:px-12 bg-white">
         <div className="relative w-full max-w-md">
@@ -119,6 +132,24 @@ export default function Login() {
               <p className="text-sm text-red-600">{error || authError}</p>
             </div>
           )}
+
+          {/* Google Sign In */}
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition shadow-sm mb-6"
+          >
+            <FcGoogle size={20} />
+            {isLoading ? "Signing in..." : "Continue with Google"}
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="h-px flex-1 bg-gray-300" />
+            <span className="text-sm text-gray-500">OR</span>
+            <div className="h-px flex-1 bg-gray-300" />
+          </div>
 
           {/* Form */}
           <form className="space-y-5" onSubmit={handleSubmit}>
