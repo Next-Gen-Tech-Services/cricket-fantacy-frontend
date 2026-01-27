@@ -26,7 +26,7 @@ export default function BottomNavigation() {
       label: 'Tournaments',
       icon: FaTrophy,
       path: '/tournaments',
-      authRequired: true  // Changed to require authentication
+      authRequired: true
     },
     {
       id: 'leagues',
@@ -36,11 +36,11 @@ export default function BottomNavigation() {
       authRequired: true
     },
     {
-      id: 'matches',
-      label: 'Matches',
+      id: 'earn',
+      label: 'How to Earn',
       icon: FaGamepad,
-      path: '/matches',
-      authRequired: true  // Changed to require authentication
+      path: '/how-to-earn-points',
+      authRequired: false
     },
     {
       id: 'profile',
@@ -71,23 +71,21 @@ export default function BottomNavigation() {
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = isActiveTab(tab.path);
-            
-            // Hide auth-required tabs when not authenticated
-            if (tab.authRequired && !isAuthenticated) {
-              return null;
-            }
+            const needsAuth = tab.authRequired && !isAuthenticated;
 
             return (
               <NavLink
                 key={tab.id}
                 to={tab.path}
-                className={`flex flex-col items-center justify-center flex-1 py-1 transition-colors duration-200 ${
+                className={`flex flex-col items-center justify-center flex-1 py-1 transition-colors duration-200 relative ${
                   active
                     ? 'text-yellow-400'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+                    : needsAuth 
+                      ? 'text-gray-400' 
+                      : 'text-gray-500 hover:text-gray-700'
+                } ${needsAuth ? 'opacity-60' : ''}`}
               >
-                <div className={`p-1 rounded-lg transition-all duration-200 ${
+                <div className={`p-1 rounded-lg transition-all duration-200 relative ${
                   active ? 'bg-yellow-400/10' : ''
                 }`}>
                   {tab.id === 'profile' && isAuthenticated && user ? (
@@ -99,11 +97,16 @@ export default function BottomNavigation() {
                       {getUserInitials(user.name)}
                     </div>
                   ) : (
-                    <Icon size={20} />
+                    <>
+                      <Icon size={20} />
+                      {needsAuth && (
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                      )}
+                    </>
                   )}
                 </div>
                 <span className={`text-xs font-medium mt-1 transition-colors duration-200 ${
-                  active ? 'text-yellow-400' : 'text-gray-500'
+                  active ? 'text-yellow-400' : needsAuth ? 'text-gray-400' : 'text-gray-500'
                 }`}>
                   {tab.label}
                 </span>
@@ -112,23 +115,16 @@ export default function BottomNavigation() {
                 {active && (
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-yellow-400 rounded-b-full"></div>
                 )}
+                
+                {/* Auth required indicator */}
+                {needsAuth && !active && (
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-yellow-400 rounded-full"></div>
+                )}
               </NavLink>
             );
           })}
         </div>
       </div>
-
-      {/* Floating Action Button for Create Team */}
-      {isAuthenticated && (
-        <div className="fixed bottom-20 right-4 md:hidden z-40">
-          <NavLink
-            to="/create-team"
-            className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95"
-          >
-            <FaPlus size={20} />
-          </NavLink>
-        </div>
-      )}
 
       {/* Spacer for bottom navigation on mobile */}
       <div className="h-16 md:hidden"></div>

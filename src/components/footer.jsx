@@ -1,33 +1,71 @@
+import { Link, NavLink } from "react-router-dom";
+import { useAppSelector } from "../store/hooks";
+import logo from "../assets/Logo.webp";
+
 export default function Footer() {
+  const { isAuthenticated } = useAppSelector(state => state.auth);
+
+  const navLinks = [
+    { name: "Home", href: "/", authRequired: false },
+    { name: "How to earn points", href: "/how-to-earn-points", authRequired: false },
+    { name: "Tournaments", href: "/tournaments", authRequired: true },
+    { name: "My Leagues", href: "/leagues", authRequired: true },
+  ];
+
   const footerLinks = [
     {
-      title: "Premier League",
-      links: ["Premier League", "Fantasy", "Matches"],
+      title: "Navigation",
+      links: navLinks.map(link => ({
+        name: link.name,
+        href: link.href,
+        authRequired: link.authRequired
+      }))
     },
     {
-      title: "Explore",
-      links: ["Table", "Statistics", "Latest News"],
+      title: "Account",
+      links: isAuthenticated ? [
+        { name: "Profile", href: "/profile", authRequired: true },
+        { name: "Settings", href: "/settings", authRequired: true },
+        { name: "My Teams", href: "/teams", authRequired: true },
+      ] : [
+        { name: "Sign Up", href: "/signup", authRequired: false },
+        { name: "Log In", href: "/login", authRequired: false },
+      ]
     },
     {
-      title: "More",
-      links: ["Latest Video", "Clubs", "Players"],
+      title: "Support",
+      links: [
+        { name: "Contact Us", href: "#", authRequired: false },
+        { name: "Help Center", href: "#", authRequired: false },
+        { name: "Terms of Use", href: "#", authRequired: false },
+      ]
     },
   ];
 
   const bottomLinks = [
-    "Modern Slavery Statement",
-    "Equality, Diversity and Inclusion Standard",
-    "Terms of Use",
-    "Policies",
+    "Privacy Policy",
+    "Terms of Use", 
     "Cookie Policy",
     "Contact Us",
-    "Appearance",
-    "Back To Top",
   ];
 
   return (
     <footer className="mt-16 bg-[#273470] border-t border-[#1e2859]">
       <div className="max-w-[1440px] mx-auto px-4 py-14">
+        {/* ================= LOGO SECTION ================= */}
+        <div className="mb-12">
+          <Link to="/" className="flex items-center gap-2 mb-4">
+            <img
+              src={logo}
+              alt="CricLeague Logo"
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
+          <p className="text-sm text-gray-300 max-w-md">
+            Cricket Lovers Global - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!
+          </p>
+        </div>
+
         {/* ================= TOP LINKS ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {footerLinks.map((section, index) => (
@@ -37,18 +75,38 @@ export default function Footer() {
               </h3>
 
               <ul className="space-y-3">
-                {section.links.map((link, idx) => (
+                {section.links
+                  .filter(link => !link.authRequired || isAuthenticated)
+                  .map((link, idx) => (
                   <li key={idx}>
-                    <a
-                      href="#"
-                      className="
-                        text-sm text-gray-300
-                        hover:text-yellow-400
-                        transition-colors duration-200
-                      "
-                    >
-                      {link}
-                    </a>
+                    {link.href?.startsWith('/') ? (
+                      <NavLink
+                        to={link.href}
+                        className={({ isActive }) =>
+                          `text-sm transition-colors duration-200 ${
+                            isActive 
+                              ? "text-yellow-400" 
+                              : "text-gray-300 hover:text-yellow-400"
+                          } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
+                        }
+                      >
+                        {link.name}
+                        {link.authRequired && !isAuthenticated && (
+                          <span className="text-xs text-yellow-400 ml-1">*</span>
+                        )}
+                      </NavLink>
+                    ) : (
+                      <a
+                        href={link.href || "#"}
+                        className="
+                          text-sm text-gray-300
+                          hover:text-yellow-400
+                          transition-colors duration-200
+                        "
+                      >
+                        {link.name}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
