@@ -99,6 +99,16 @@ export default defineConfig({
     })
   ],
 
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'firebase': ['firebase/app', 'firebase/auth', 'firebase/analytics', 'firebase/messaging']
+        }
+      }
+    }
+  },
+
   server: {
     host: true,
     port: 5173,
