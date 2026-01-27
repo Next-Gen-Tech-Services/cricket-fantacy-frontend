@@ -171,55 +171,6 @@ export default function Home() {
           })}
         </div>
       </section>
-
-
-
-      {/* ================= BLOGS ================= */}
-      {/* <section className="max-w-[1440px] mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8">
-          Our Latest Blogs
-        </h2>
-
-        <Carousel
-          responsive={responsiveBlogs}
-          infinite
-          autoPlay
-          autoPlaySpeed={3000}
-          arrows={false}
-          showDots
-          containerClass="pb-10"
-          itemClass="px-3"
-        >
-          {features.map((item, index) => (
-            <Link
-              to={item.link}
-              key={index}
-              className="app-card overflow-hidden hover:-translate-y-1 transition"
-            >
-              <div className="h-36 overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-primary">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm text-secondary">
-                  {item.description}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </Carousel>
-      </section> */}
-
-      {/* ================= COUNTDOWN MODAL ================= */}
-
-
     </main>
   );
 }
