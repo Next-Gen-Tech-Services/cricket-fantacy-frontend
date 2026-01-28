@@ -157,14 +157,7 @@ const TournamentDetails = () => {
     return { icon: rank, color: "text-gray-700" };
   };
 
-  const getRankDisplay = (rank) => {
-    if (rank === 1) return { icon: "🥇", color: "text-yellow-600" };
-    if (rank === 2) return { icon: "🥈", color: "text-gray-500" };
-    if (rank === 3) return { icon: "🥉", color: "text-orange-600" };
-    return { icon: rank, color: "text-gray-700" };
-  };
-
-
+  
   // Loading state
   if (isLoading) {
     return (

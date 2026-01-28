@@ -1,6 +1,6 @@
 import heroHome from "../assets/hero-home.png";
 import home1 from "../assets/home-1.jpeg";
-import home2 from "../assets/home-2.png";
+import home2 from "../assets/home-5.png";
 import home3 from "../assets/home-3.png";
 import home4 from "../assets/home-4.png";
 import "react-multi-carousel/lib/styles.css";
@@ -11,20 +11,19 @@ import { fetchTournaments } from "../store/slices/tournamentsSlice";
 import { fetchLiveMatches } from "../store/slices/matchesSlice";
 import DebugMatchStats from "../components/DebugMatchStats";
 
-
 const features = [
   {
     title: "Create a Login",
     description:
       "Sign up for free and create your fantasy cricket account to get started.",
-    image: home1,
+    image: home2,
     link: "/signup",
   },
   {
     title: "Pick Your Tournament",
     description:
       "Browse and select from live and upcoming cricket tournaments worldwide.",
-    image:home1, 
+    image: home1,
     link: "/tournaments",
   },
   {
@@ -138,18 +137,18 @@ export default function Home() {
           {features.map((item, index) => {
             // Check if the feature requires authentication
             const requiresAuth = item.link !== "/signup" && item.link !== "/how-to-earn-points" && item.link !== "/";
-            
+
             // If user is not authenticated and the feature requires auth, redirect to signup
             const linkTo = (!isAuthenticated && requiresAuth) ? "/signup" : item.link;
-            
+
             return (
               <Link
                 to={linkTo}
                 key={index}
                 className="app-card overflow-hidden hover:-translate-y-1 transition relative"
               >
-                
-                
+
+
                 <div className="h-63 overflow-hidden">
                   <img
                     src={item.image}
@@ -165,7 +164,7 @@ export default function Home() {
                   <p className="mt-2 text-sm text-secondary">
                     {item.description}
                   </p>
-                 
+
                 </div>
               </Link>
             );
