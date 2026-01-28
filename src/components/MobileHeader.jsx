@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaBell, FaSearch, FaDownload } from 'react-icons/fa';
 import { useAppSelector } from '../store/hooks';
-import { usePWA } from '../hooks/usePWA';
+import logo from '../assets/logo.svg';
 
 export default function MobileHeader({ title, showBack = false, showSearch = false }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const { user, isAuthenticated } = useAppSelector(state => state.auth);
-  const { isInstallable, showInstallPrompt } = usePWA();
   const navigate = useNavigate();
 
   const getUserInitials = (name) => {
@@ -30,26 +29,17 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
               </svg>
             </button>
           ) : (
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1">
-                <img
-                  src="/cricket-lovers-logo.svg"
-                  alt="Cricket Lovers Logo"
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    // Fallback to text logo if image fails to load
-                    e.target.style.display = 'none';
-                    e.target.nextElementSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="w-full h-full bg-yellow-400 rounded-lg items-center justify-center hidden">
-                  <span className="text-white font-bold text-sm">CL</span>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-bold">Cricket Lovers</span>
-                <span className="text-xs text-white/70">Global</span>
-              </div>
+            <Link to="/" className="flex items-center gap-2 shrink-0">
+              <img
+                src={logo}
+                alt="Cricket Lovers Global"
+                className="h-10 w-auto object-contain min-w-[120px]"
+                onError={(e) => {
+                  // Fallback to text logo if image fails to load
+                  e.target.style.display = 'none';
+                  e.target.nextElementSibling.style.display = 'flex';
+                }}
+              />
             </Link>
           )}
         </div>

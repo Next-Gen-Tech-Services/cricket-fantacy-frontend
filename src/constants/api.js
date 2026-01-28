@@ -1,6 +1,6 @@
 // API Constants and Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:4001/api',
+  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:4001',
   TIMEOUT: 10000,
   DEFAULT_HEADERS: {
     'Content-Type': 'application/json',

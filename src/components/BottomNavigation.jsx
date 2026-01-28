@@ -41,13 +41,6 @@ export default function BottomNavigation() {
       icon: FaGamepad,
       path: '/how-to-earn-points',
       authRequired: false
-    },
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: FaUser,
-      path: isAuthenticated ? '/profile' : '/login',
-      authRequired: false
     }
   ];
 

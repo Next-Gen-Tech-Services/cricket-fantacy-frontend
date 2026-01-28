@@ -54,6 +54,42 @@ export class AuthenticationService {
         });
     }
     /**
+     * Authenticate with Google
+     * @returns any Google authentication successful
+     * @throws ApiError
+     */
+    public static postApiAuthGoogle({
+        requestBody,
+    }: {
+        requestBody: {
+            /**
+             * Google ID token from Firebase Auth
+             */
+            idToken: string;
+        },
+    }): CancelablePromise<{
+        success?: boolean;
+        data?: {
+            _id?: string;
+            name?: string;
+            email?: string;
+            role?: string;
+            token?: string;
+        };
+    }> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/auth/google',
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Invalid Google token`,
+                401: `Authentication failed`,
+                500: `Internal server error`,
+            },
+        });
+    }
+    /**
      * Get current logged in user
      * @returns any Current user information retrieved successfully
      * @throws ApiError

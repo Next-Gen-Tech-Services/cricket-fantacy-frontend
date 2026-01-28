@@ -8,6 +8,8 @@ import fantasyTeamsSlice from './slices/fantasyTeamsSlice';
 import playersSlice from './slices/playersSlice';
 import contestsSlice from './slices/contestsSlice';
 import leaguesSlice from './slices/leaguesSlice';
+import liveMatchSlice from './slices/liveMatchSlice';
+import matchStatsSlice from './slices/matchStatsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +22,8 @@ export const store = configureStore({
     players: playersSlice,
     contests: contestsSlice,
     leagues: leaguesSlice,
+    liveMatch: liveMatchSlice,
+    matchStats: matchStatsSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

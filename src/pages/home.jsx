@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchTournaments } from "../store/slices/tournamentsSlice";
 import { fetchLiveMatches } from "../store/slices/matchesSlice";
+import DebugMatchStats from "../components/DebugMatchStats";
 
 
 const features = [
@@ -23,7 +24,7 @@ const features = [
     title: "Pick Your Tournament",
     description:
       "Browse and select from live and upcoming cricket tournaments worldwide.",
-    image:home2, 
+    image:home1, 
     link: "/tournaments",
   },
   {
@@ -76,7 +77,7 @@ export default function Home() {
 
               {isAuthenticated ? (
                 <p className="mt-4 max-w-xl text-sm md:text-base text-white/90">
-                  Your fantasy teams are waiting. Join live tournaments and climb the leaderboard!
+                  Your matchplay teams are waiting. Join live tournaments and climb the leaderboard!
                 </p>
               ) : (
                 <p className="mt-4 max-w-xl text-sm md:text-base text-white/90">
@@ -89,7 +90,7 @@ export default function Home() {
                 <div className="mt-6 flex gap-4 flex-wrap">
                   <Link to="/tournaments">
                     <button className="px-8 py-3 rounded-full text-sm font-semibold bg-yellow-400 text-[#273470] hover:bg-yellow-500 transition">
-                      View Live Tournaments
+                      View Tournaments
                     </button>
                   </Link>
 
@@ -171,6 +172,7 @@ export default function Home() {
           })}
         </div>
       </section>
+
     </main>
   );
 }

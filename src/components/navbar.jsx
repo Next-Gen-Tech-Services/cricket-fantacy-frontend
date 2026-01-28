@@ -3,7 +3,7 @@ import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaDownload } from "react-ic
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
-import logo from "../assets/Logo.webp"
+import logo from "../assets/logo.svg"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,11 +55,11 @@ export default function Navbar() {
         <div className="max-w-[1440px] mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             {/* LOGO */}
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 shrink-0">
               <img
                 src={logo}
-                alt="CricLeague Logo"
-                className="h-14 w-auto object-contain"
+                alt="Cricket Lovers Global"
+                className="h-12 lg:h-14 w-auto object-contain min-w-[140px] transition-all duration-200"
               />
             </Link>
 

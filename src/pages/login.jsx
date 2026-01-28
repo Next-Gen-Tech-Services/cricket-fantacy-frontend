@@ -7,7 +7,7 @@ import { loginUser, clearError, signInWithGoogle } from "../store/slices/authSli
 import image1 from '../assets/img1-login.png';
 import image2 from '../assets/img2-login.png';
 import image3 from '../assets/img1-login.png';
-import logo from "../assets/Logo.webp"
+import logo from "../assets/logo.svg"
 
 const images = [
   image1,
@@ -110,7 +110,7 @@ export default function Login() {
             <Link to="/">
               <img
                 src={logo}
-                alt="CricLeague Logo"
+                alt="Cricket Lovers Global"
                 className="h-16 w-auto object-contain mb-4"
               />
             </Link>

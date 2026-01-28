@@ -39,8 +39,8 @@ const MatchDetails = () => {
     if (!Array.isArray(userFantasyTeams)) return false;
     return userFantasyTeams.some(team => {
       // Handle match as string ID or populated object with id or _id
-      const teamMatchId = typeof team.match === 'string' 
-        ? team.match 
+      const teamMatchId = typeof team.match === 'string'
+        ? team.match
         : (team.match?.id || team.match?._id);
       return teamMatchId === matchId;
     });
@@ -51,8 +51,8 @@ const MatchDetails = () => {
     if (!Array.isArray(userFantasyTeams)) return null;
     return userFantasyTeams.find(team => {
       // Handle match as string ID or populated object with id or _id
-      const teamMatchId = typeof team.match === 'string' 
-        ? team.match 
+      const teamMatchId = typeof team.match === 'string'
+        ? team.match
         : (team.match?.id || team.match?._id);
       return teamMatchId === matchId;
     });
@@ -143,24 +143,21 @@ const MatchDetails = () => {
         <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-2xl p-5 sm:p-6 mb-4 sm:mb-6 text-white shadow-xl">
           <button
             onClick={() => navigate(`/tournaments/${tournamentId}`)}
-            className="flex items-center text-white/80 hover:text-white transition-colors mb-4 -ml-1"
+            className="flex items-center text-white/80 hover:text-white transition-colors mb-4 text-sm"
           >
-            <FiChevronLeft size={22} className="mr-1" />
-            <span className="text-sm font-medium">Back to Tournament</span>
+            <FiChevronLeft size={18} className="mr-1" />
+            Back to Tournaments
           </button>
 
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
             <div className="flex-1">
               <div className="flex flex-col gap-4 mb-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center mt-1">
-                    <FiAward className="text-white" size={20} />
+                  <div className="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
+                    <FiAward className="text-white" size={14} />
                   </div>
                   <div className="flex-1">
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold leading-tight mb-2">{currentMatch.name}</h1>
-                    <span className={`inline-flex px-3 py-1.5 rounded-full text-xs font-bold text-white ${getStatusColor(currentMatch.status)} shadow-md`}>
-                      {getStatusText(currentMatch.status)}
-                    </span>
+                    <h1 className="text-2xl md:text-3xl font-bold leading-tight">{currentMatch.name}</h1>
                   </div>
                 </div>
               </div>
@@ -169,8 +166,8 @@ const MatchDetails = () => {
                 <div className="flex items-center bg-white/15 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20">
                   <FiClock className="mr-3 text-yellow-400 flex-shrink-0" size={18} />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs text-white/80 font-medium">Match Time</span>
-                    <span className="text-sm font-semibold text-white truncate">
+                    <span className="text-xs text-white/80 font-medium uppercase tracking-wide">Match Time</span>
+                    <span className="text-sm font-bold text-white truncate">
                       {formatDate(currentMatch.startedAt)}
                     </span>
                     <span className="text-xs text-white/90 font-medium">
@@ -182,8 +179,8 @@ const MatchDetails = () => {
                   <div className="flex items-center bg-white/15 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20">
                     <FiMapPin className="mr-3 text-green-400 flex-shrink-0" size={18} />
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs text-white/80 font-medium">Venue</span>
-                      <span className="text-sm font-semibold text-white truncate">
+                      <span className="text-xs text-white/80 font-medium uppercase tracking-wide">Venue</span>
+                      <span className="text-sm font-bold text-white truncate">
                         {currentMatch.venue.name}
                       </span>
                       {currentMatch.venue.city && (
@@ -197,15 +194,15 @@ const MatchDetails = () => {
                 <div className="flex items-center bg-white/15 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20">
                   <FiShield className="mr-3 text-blue-400 flex-shrink-0" size={18} />
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs text-white/80 font-medium">Format</span>
-                    <span className="text-sm font-semibold text-white">{currentMatch.format.toUpperCase() || 'Cricket'}</span>
+                    <span className="text-xs text-white/80 font-medium uppercase tracking-wide">Format</span>
+                    <span className="text-sm font-bold text-white">{currentMatch.format.toUpperCase() || 'Cricket'}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3 lg:flex-row lg:gap-3 lg:flex-shrink-0">
+            <div className="flex flex-col sm:flex-row gap-3 lg:flex-shrink-0">
               {(currentMatch.status === 'scheduled' || currentMatch.status === 'upcoming') && (
                 <>
                   {hasTeamForMatch() ? (
@@ -228,6 +225,12 @@ const MatchDetails = () => {
                       <span className="font-semibold">Create Team</span>
                     </button>
                   )}
+
+                </>
+              )}
+              {
+                (currentMatch.status === 'live' || currentMatch.status === 'scheduled') && (
+
                   <button
                     onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/leaderboard`)}
                     className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border border-white/30 font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base"
@@ -235,8 +238,8 @@ const MatchDetails = () => {
                     <FiAward size={18} className="flex-shrink-0" />
                     <span className="font-semibold">Leaderboard</span>
                   </button>
-                </>
-              )}
+                )
+              }
               {currentMatch.status === 'completed' && (
                 <button
                   onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/leaderboard`)}
@@ -258,7 +261,7 @@ const MatchDetails = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
                 <span className="text-2xl">🏏</span>
               </div>
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-3">
+              <h3 className="text-xl font-bold text-gray-800 mb-3 leading-tight">
                 {currentMatch.teams?.a?.name || currentMatch.teams?.a?.code || 'Team A'}
               </h3>
               {currentMatch.teams?.a?.score && currentMatch.status !== "scheduled" && currentMatch.status !== "upcoming" && (
@@ -303,7 +306,7 @@ const MatchDetails = () => {
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-md">
                 <span className="text-2xl">🏏</span>
               </div>
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-3">
+              <h3 className="text-xl font-bold text-gray-800 mb-3 leading-tight">
                 {currentMatch.teams?.b?.name || currentMatch.teams?.b?.code || 'Team B'}
               </h3>
               {currentMatch.teams?.b?.score && currentMatch.status !== "scheduled" && currentMatch.status !== "upcoming" && (
@@ -324,7 +327,7 @@ const MatchDetails = () => {
               <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mr-3">
                 <FiBarChart2 className="text-yellow-600" size={20} />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-gray-800">
                 Match Facts
               </h3>
             </div>
@@ -379,7 +382,7 @@ const MatchDetails = () => {
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mr-3">
                 <FiTrendingUp className="text-green-600" size={20} />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+              <h3 className="text-xl font-bold text-gray-800">
                 Recent Performances
               </h3>
             </div>
@@ -391,11 +394,10 @@ const MatchDetails = () => {
                     currentMatch.teams.a.recentMatches.slice(0, 3).map((match, index) => (
                       <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3">
                         <span className="text-gray-600 font-medium">vs {match.opponent}</span>
-                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${
-                          match.result === 'W' ? 'text-green-700 bg-green-100' : 
-                          match.result === 'L' ? 'text-red-700 bg-red-100' : 
-                          'text-gray-700 bg-gray-100'
-                        }`}>
+                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${match.result === 'W' ? 'text-green-700 bg-green-100' :
+                          match.result === 'L' ? 'text-red-700 bg-red-100' :
+                            'text-gray-700 bg-gray-100'
+                          }`}>
                           {match.resultText || match.result}
                         </span>
                       </div>
@@ -413,11 +415,10 @@ const MatchDetails = () => {
                     currentMatch.teams.b.recentMatches.slice(0, 3).map((match, index) => (
                       <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3">
                         <span className="text-gray-600 font-medium">vs {match.opponent}</span>
-                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${
-                          match.result === 'W' ? 'text-green-700 bg-green-100' : 
-                          match.result === 'L' ? 'text-red-700 bg-red-100' : 
-                          'text-gray-700 bg-gray-100'
-                        }`}>
+                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${match.result === 'W' ? 'text-green-700 bg-green-100' :
+                          match.result === 'L' ? 'text-red-700 bg-red-100' :
+                            'text-gray-700 bg-gray-100'
+                          }`}>
                           {match.resultText || match.result}
                         </span>
                       </div>

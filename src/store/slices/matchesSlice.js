@@ -68,7 +68,14 @@ export const fetchMatchLeaderboard = createAsyncThunk(
   async ({ matchId, params = {} }, { rejectWithValue }) => {
     try {
       const response = await matchesAPI.getLeaderboard(matchId, params);
-      return response.data || [];
+      const responseData = response.data || {};
+      return { 
+        matchId, 
+        data: responseData.leaderboard || [],
+        userPosition: responseData.userTeam || null,
+        prizePool: responseData.prizePool || null,
+        pagination: responseData.pagination || null
+      };
     } catch (error) {
       return rejectWithValue(error.message || 'Failed to fetch match leaderboard');
     }
@@ -104,6 +111,7 @@ const initialState = {
   matches: [],
   liveMatches: [],
   currentMatch: null,
+  leaderboards: {}, // matchId -> leaderboard data
   isLoading: false,
   error: null,
   filters: {
@@ -227,9 +235,17 @@ const matchesSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchMatchLeaderboard.fulfilled, (state) => {
+      .addCase(fetchMatchLeaderboard.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
+        const { matchId, data, userPosition, prizePool, pagination } = action.payload;
+        state.leaderboards[matchId] = {
+          data,
+          userPosition,
+          prizePool,
+          pagination,
+          lastUpdated: Date.now()
+        };
       })
       .addCase(fetchMatchLeaderboard.rejected, (state, action) => {
         state.isLoading = false;

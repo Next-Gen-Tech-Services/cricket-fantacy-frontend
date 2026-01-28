@@ -74,12 +74,46 @@ export const fetchContestLeaderboard = createAsyncThunk(
   }
 );
 
+export const fetchMatchFantasyTeams = createAsyncThunk(
+  'contests/fetchMatchFantasyTeams',
+  async ({ matchId, params = {} }, { rejectWithValue }) => {
+    try {
+      const { fantasyTeamsAPI } = await import('../../services/api');
+      console.log('🚀 fetchMatchFantasyTeams: Starting fetch for matchId:', matchId);
+      console.log('🚀 fetchMatchFantasyTeams: API params:', { match: matchId, ...params });
+      
+      const response = await fantasyTeamsAPI.getAll({ match: matchId, ...params });
+      console.log('✅ fetchMatchFantasyTeams: Success! Response:', response);
+      
+      // Handle both response formats:
+      // 1. Direct array: response = [teams...]
+      // 2. Object format: response = { teams: [...], pagination: {...} }
+      const teams = Array.isArray(response) ? response : (response.data?.teams || response.teams || []);
+      console.log('✅ fetchMatchFantasyTeams: Teams extracted:', teams);
+      console.log('✅ fetchMatchFantasyTeams: Teams count:', teams.length);
+      
+      return { matchId, teams };
+    } catch (error) {
+      console.error('❌ fetchMatchFantasyTeams: Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        matchId: matchId
+      });
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch fantasy teams for match';
+      return rejectWithValue(`${errorMessage} (Match: ${matchId})`);
+    }
+  }
+);
+
 const initialState = {
   contests: [],
   myContests: [],
   selectedContest: null,
   contestsByMatch: {},
   leaderboards: {},
+  matchFantasyTeams: {},
   loading: false,
   error: null,
   pagination: {
@@ -199,6 +233,22 @@ const contestsSlice = createSlice({
         state.leaderboards[action.payload.contestId] = action.payload.leaderboard;
       })
       .addCase(fetchContestLeaderboard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Fetch match fantasy teams
+      .addCase(fetchMatchFantasyTeams.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMatchFantasyTeams.fulfilled, (state, action) => {
+        state.loading = false;
+        const { matchId, teams } = action.payload;
+        // Teams are already extracted in the thunk
+        state.matchFantasyTeams[matchId] = teams || [];
+      })
+      .addCase(fetchMatchFantasyTeams.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

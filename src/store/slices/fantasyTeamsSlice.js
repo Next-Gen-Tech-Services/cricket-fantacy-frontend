@@ -8,9 +8,30 @@ export const fetchMyFantasyTeams = createAsyncThunk(
     const queryParams = params || {};
     try {
       const response = await fantasyTeamsAPI.getMyTeams(queryParams);
-      // Backend returns { teams, pagination } inside data
-      return response.data?.teams || [];
+      console.log('🚀 fetchMyFantasyTeams: API Response:', response);
+      
+      // Handle different response formats:
+      // 1. Direct array: response = [teams...]
+      // 2. Object with teams: response = { teams: [...], pagination: {...} }
+      // 3. Nested data: response = { data: { teams: [...], pagination: {...} } }
+      let teams = [];
+      
+      if (Array.isArray(response)) {
+        teams = response;
+      } else if (response.data?.teams) {
+        teams = response.data.teams;
+      } else if (response.teams) {
+        teams = response.teams;
+      } else if (response.data && Array.isArray(response.data)) {
+        teams = response.data;
+      }
+      
+      console.log('✅ fetchMyFantasyTeams: Extracted teams:', teams);
+      console.log('✅ fetchMyFantasyTeams: Teams count:', teams.length);
+      
+      return teams;
     } catch (error) {
+      console.error('❌ fetchMyFantasyTeams: Error:', error);
       return rejectWithValue(error.message || 'Failed to fetch fantasy teams');
     }
   }

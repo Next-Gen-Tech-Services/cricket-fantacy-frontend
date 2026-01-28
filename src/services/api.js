@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4001',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -220,7 +220,7 @@ export const matchesAPI = {
 
   // Get match leaderboard
   getLeaderboard: async (matchId, params = {}) => {
-    const response = await api.get(`/matches/${matchId}/leaderboard`, { params });
+    const response = await api.get(`/leaderboard/match/${matchId}`, { params });
     return response.data;
   },
 
@@ -258,6 +258,12 @@ export const teamsAPI = {
 
 // ================= FANTASY TEAMS API =================
 export const fantasyTeamsAPI = {
+  // Get all fantasy teams (for leaderboard/match viewing)
+  getAll: async (params = {}) => {
+    const response = await api.get('/fantasy-teams', { params });
+    return response.data;
+  },
+
   // Get user's fantasy teams
   getMyTeams: async (params = {}) => {
     const response = await api.get('/fantasy-teams', { params });
@@ -469,19 +475,19 @@ export const contestsAPI = {
 export const leaderboardAPI = {
   // Get global leaderboard
   getGlobal: async (params = {}) => {
-    const response = await api.get('/leaderboard', { params });
+    const response = await api.get('/leaderboard/global', { params });
     return response.data;
   },
 
   // Get match leaderboard
   getMatch: async (matchId, params = {}) => {
-    const response = await api.get(`/matches/${matchId}/leaderboard`, { params });
+    const response = await api.get(`/leaderboard/match/${matchId}`, { params });
     return response.data;
   },
 
   // Get tournament leaderboard
   getTournament: async (tournamentId, params = {}) => {
-    const response = await api.get(`/tournaments/${tournamentId}/leaderboard`, { params });
+    const response = await api.get(`/leaderboard/tournament/${tournamentId}`, { params });
     return response.data;
   },
 

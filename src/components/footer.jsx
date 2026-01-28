@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAppSelector } from "../store/hooks";
-import logo from "../assets/Logo.webp";
+import logo from "../assets/logo.svg";
+import logo1 from "../assets/logo.webp";
 
 export default function Footer() {
   const { isAuthenticated } = useAppSelector(state => state.auth);
@@ -51,15 +52,18 @@ export default function Footer() {
 
   return (
     <footer className="mt-16 bg-[#273470] border-t border-[#1e2859]">
-      <div className="max-w-[1440px] mx-auto px-4 py-14">
+      <div className="max-w-[1440px] mx-auto px-4 py-4">
         {/* ================= LOGO SECTION ================= */}
         <div className="mb-12">
           <Link to="/" className="flex items-center gap-2 mb-4">
+
+
             <img
               src={logo}
-              alt="CricLeague Logo"
-              className="h-12 w-auto object-contain"
+              alt="Cricket Lovers Global"
+              className="h-12 mt-5 w-auto object-contain"
             />
+            
           </Link>
           <p className="text-sm text-gray-300 max-w-md">
             Cricket Lovers Global - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!
@@ -115,13 +119,18 @@ export default function Footer() {
         </div>
 
         {/* ================= DIVIDER ================= */}
-        <div className="my-12 border-t border-[#1e2859]" />
+        <div className="mt-10 border-t border-[#1e2859]" />
 
         {/* ================= BOTTOM BAR ================= */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-xs text-gray-400">
-            © 2026 CricLeague. All rights reserved.
+            © 2026 Cricket Lovers Global. All rights reserved.
           </p>
+                      <img
+              src={logo1}
+              alt="Cricket Lovers Global"
+              className="h-20 w-auto object-contain ml-2"
+            />
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             {bottomLinks.map((item, index) => (

@@ -29,6 +29,7 @@ export type { User } from './models/User';
 
 export { AdminDashboardService } from './services/AdminDashboardService';
 export { AdminMatchesService } from './services/AdminMatchesService';
+export { AdminScoresService } from './services/AdminScoresService';
 export { AdminTeamsService } from './services/AdminTeamsService';
 export { AdminTournamentsService } from './services/AdminTournamentsService';
 export { AdminUsersService } from './services/AdminUsersService';
