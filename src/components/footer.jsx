@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAppSelector } from "../store/hooks";
 import logo from "../assets/logo.svg";
-import logo1 from "../assets/logo.webp";
+import logo1 from "../assets/Logo.webp";
 
 export default function Footer() {
   const { isAuthenticated } = useAppSelector(state => state.auth);

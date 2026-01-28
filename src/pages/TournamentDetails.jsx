@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FiCalendar, FiMapPin, FiClock, FiChevronLeft, FiAward, FiUsers, FiArrowRight, FiLoader, FiAlertCircle, FiTrophy, FiStar, FiTrendingUp } from "react-icons/fi";
+import { FiCalendar, FiMapPin, FiClock, FiChevronLeft, FiAward, FiUsers, FiArrowRight, FiLoader, FiAlertCircle, FiStar, FiTrendingUp } from "react-icons/fi";
 import { fetchTournamentById } from "../store/slices/tournamentsSlice";
 import { fetchLeaderboard } from "../store/slices/leaderboardSlice";
 
@@ -282,7 +282,7 @@ const TournamentDetails = () => {
             }`}
           >
             <div className="flex items-center justify-center gap-2">
-              <FiTrophy size={16} />
+              <FiAward size={16} />
               <span>Leaderboard</span>
             </div>
           </button>
@@ -466,7 +466,7 @@ const TournamentDetails = () => {
             {/* Leaderboard Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                <FiTrophy className="text-[#273470]" size={28} />
+                <FiAward className="text-[#273470]" size={28} />
                 Tournament Leaderboard
               </h2>
             </div>
@@ -592,7 +592,7 @@ const TournamentDetails = () => {
                 ) : (
                   <div className="text-center py-20 bg-white rounded-2xl border border-gray-200 shadow-sm">
                     <div className="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                      <FiTrophy className="text-gray-400" size={40} />
+                      <FiAward className="text-gray-400" size={40} />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-800 mb-2">No Rankings Yet</h3>
                     <p className="text-gray-600">
