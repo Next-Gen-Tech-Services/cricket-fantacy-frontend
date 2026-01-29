@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FiUsers, FiArrowLeft, FiCheck, FiX, FiAward, FiStar, FiLock } from 'react-icons/fi';
 import { leaguesAPI } from '../services/api';
 import { toast } from 'react-hot-toast';
+import { useAppSelector } from '../store/hooks';
 
 const JoinLeagueByCode = () => {
   const { shareCode } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAppSelector(state => state.auth);
   const [league, setLeague] = useState(null);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
@@ -212,9 +214,26 @@ const JoinLeagueByCode = () => {
 
             {/* Join Button */}
             <div className="space-y-3">
-              {isLeagueFull() ? (
+              {league.isUserMember ? (
+                <div className={`w-full px-4 py-3 rounded-md text-center flex items-center justify-center space-x-2 ${
+                  league.userRole === 'OWNER' ? 'bg-purple-50 border border-purple-200 text-purple-700' :
+                  league.userRole === 'ADMIN' ? 'bg-orange-50 border border-orange-200 text-orange-700' :
+                  'bg-green-50 border border-green-200 text-green-700'
+                }`}>
+                  <FiCheck size={20} />
+                  <span className="font-medium">
+                    {league.userRole === 'OWNER' ? 'You are the Owner' :
+                     league.userRole === 'ADMIN' ? 'You are an Admin' :
+                     'Already Joined'}
+                  </span>
+                </div>
+              ) : isLeagueFull() ? (
                 <div className="w-full bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-center">
                   League is full - No more spots available
+                </div>
+              ) : !isAuthenticated ? (
+                <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-md text-center">
+                  Please login to join this league
                 </div>
               ) : (
                 <button

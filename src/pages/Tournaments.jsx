@@ -220,7 +220,7 @@ const Tournaments = () => {
           {filteredTournaments.map((tournament) => (
             <div
               key={tournament.id}
-              onClick={() => navigate(`/tournaments/${tournament.id}`)}
+              onClick={() => navigate(`/tournaments/${tournament._id}`)}
               className="group bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               {/* Tournament Image */}
@@ -269,10 +269,10 @@ const Tournaments = () => {
                       {formatDateRange(tournament.dates?.startDate, tournament.dates?.endDate)}
                     </span>
                   </div>
-                  <div className="flex items-center text-slate-600">
+                  {/* <div className="flex items-center text-slate-600">
                     <FiUsers className="mr-2 text-slate-500" size={16} />
                     <span className="text-sm">{tournament.totalMatches || 0} Matches</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* View Button */}

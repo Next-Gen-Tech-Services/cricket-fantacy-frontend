@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { FiPlus, FiX, FiShield, FiStar, FiSearch, FiInfo, FiRefreshCw, FiChevronLeft, FiAward, FiClock, FiMapPin, FiUsers, FiEdit3 } from "react-icons/fi";
 import { matchesAPI, fantasyTeamsAPI } from "../services/api";
 
@@ -66,7 +66,7 @@ const formatTime = (dateString) => {
 
 const roleLabel = {
   WK: "Wicket Keeper",
-  BAT: "Batsman",
+  BAT: "Batter",
   AR: "All-Rounder",
   BOWL: "Bowler",
 };
@@ -1124,7 +1124,7 @@ export default function CreateTeam() {
                     max={TEAM_RULES.WK.max}
                   />
                   <PitchRow
-                    title="BATSMEN"
+                    title="BATTER"
                     players={selected.filter((p) => p.role === "BAT")}
                     captain={captain}
                     viceCaptain={viceCaptain}

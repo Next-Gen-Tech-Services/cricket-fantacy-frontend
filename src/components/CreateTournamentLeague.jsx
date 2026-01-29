@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUsers, FiShare2, FiX, FiCheck, FiLock, FiGlobe } from 'react-icons/fi';
 import { leaguesAPI } from '../services/api';
@@ -45,29 +45,47 @@ const CreateTournamentLeague = ({ tournament, isOpen, onClose, onSuccess }) => {
     }));
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-gray-200 bg-opacity-60 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-2xl max-w-lg w-lg max-h-[90vh] overflow-y-auto p-8 relative shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+          <FiX size={16} className="text-gray-600" />
+        </button>
+        
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Create League</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              For {tournament?.name}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1"
-          >
-            <FiX size={20} />
-          </button>
+        <div className="mb-8 pr-12">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Create League</h2>
+          <p className="text-sm text-gray-600">
+            For {tournament?.name}
+          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* League Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,7 +168,7 @@ const CreateTournamentLeague = ({ tournament, isOpen, onClose, onSuccess }) => {
           </div>
 
           {/* Entry Fee */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Entry Fee (₹)
             </label>
@@ -167,7 +185,7 @@ const CreateTournamentLeague = ({ tournament, isOpen, onClose, onSuccess }) => {
               <option value={250}>₹250</option>
               <option value={500}>₹500</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Public Visibility */}
           <div className="flex items-center space-x-3">
