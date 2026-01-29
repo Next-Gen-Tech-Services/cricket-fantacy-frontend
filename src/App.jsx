@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import SplashScreen from "./components/SplashScreen";
 
 import Home from "./pages/home";
 import Matches from "./pages/Matches";
@@ -25,6 +27,16 @@ import Signup from "./pages/signup";
 import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} duration={7000} />;
+  }
+
   return (
     <>
       <ScrollToTop />
