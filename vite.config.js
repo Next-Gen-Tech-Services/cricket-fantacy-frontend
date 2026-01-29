@@ -56,7 +56,7 @@ export default defineConfig({
         navigateFallback: null,
         skipWaiting: true,
         clientsClaim: true,
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./i,
