@@ -157,6 +157,31 @@ export default function CreateTeam() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Prevent background scrolling when modal is open
+  useEffect(() => {
+    if (showTeamNameModal) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      
+      // Prevent scrolling on body and html
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.documentElement.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scrolling and position
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.documentElement.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [showTeamNameModal]);
+
   // Auto-show team name modal when creating new team
   useEffect(() => {
     // Only show modal if:

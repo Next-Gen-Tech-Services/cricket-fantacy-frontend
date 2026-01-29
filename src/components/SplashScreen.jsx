@@ -36,10 +36,7 @@ const SplashScreen = ({ onComplete, duration = 5000 }) => {
     if (!isVisible) return null;
 
     return (
-        <div
-            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'
-                }`}
-        >
+        <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
             {/* Background with subtle animation */}
             <div className="absolute inset-0 bg-black">
                 {/* Animated particles */}
@@ -53,7 +50,6 @@ const SplashScreen = ({ onComplete, duration = 5000 }) => {
                     ))}
                 </div>
             </div>
-
             {/* Main content */}
             <div className="relative z-10 text-center">
                 {/* Logo container */}
@@ -62,15 +58,9 @@ const SplashScreen = ({ onComplete, duration = 5000 }) => {
                         src={splashGif}
                         alt="Cricket Lovers Global"
                         className="w-80 h-80 mx-auto object-contain"
-                        
                     />
                 </div>
-
-                
-
-               
             </div>
-
             {/* Bottom gradient */}
             <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-orange-900/20 to-transparent"></div>
         </div>

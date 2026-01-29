@@ -66,7 +66,7 @@ export default function Footer() {
             
           </Link>
           <p className="text-sm text-gray-300 max-w-md">
-            Cricket Lovers Global - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!
+            Cricket Lovers Global - Create your matchplay cricket team and compete with friends. Passion Beyond Boundaries!
           </p>
         </div>
 

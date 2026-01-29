@@ -367,7 +367,7 @@ const MatchDetails = () => {
               )}
               {currentMatch.fantasyEnabled !== undefined && (
                 <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
-                  <span className="text-gray-600 font-medium text-sm">Fantasy</span>
+                  <span className="text-gray-600 font-medium text-sm">MatchPlay</span>
                   <span className={`font-bold text-sm ${currentMatch.fantasyEnabled ? 'text-green-600' : 'text-red-600'}`}>
                     {currentMatch.fantasyEnabled ? '✅ Enabled' : '❌ Disabled'}
                   </span>

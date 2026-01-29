@@ -15,7 +15,7 @@ const features = [
   {
     title: "Create a Login",
     description:
-      "Sign up for free and create your fantasy cricket account to get started.",
+      "Sign up for free and create your matchplay cricket account to get started.",
     image: home2,
     link: "/signup",
   },
@@ -29,7 +29,7 @@ const features = [
   {
     title: "Build Your Team",
     description:
-      "Create your ultimate fantasy XI for each match within your budget.",
+      "Create your ultimate matchplay XI for each match within your budget.",
     image: home3,
     link: "/tournaments",
   },
@@ -70,7 +70,7 @@ export default function Home() {
               ) : (
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   Register to Play <br />
-                  Fantasy Cricket League
+                  MatchPlay Cricket League
                 </h1>
               )}
 

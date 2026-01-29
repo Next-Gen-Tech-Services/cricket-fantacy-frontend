@@ -37,7 +37,7 @@ export default function Leagues() {
               </h1>
             </div>
             <p className="text-lg text-slate-600 max-w-2xl">
-              Join the ultimate fantasy cricket experience. Pick your tournament, select your team, and compete for glory!
+              Join the ultimate matchplay cricket experience. Pick your tournament, select your team, and compete for glory!
             </p>
           </div>
 

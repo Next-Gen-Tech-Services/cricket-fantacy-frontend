@@ -86,9 +86,9 @@ const useMatchStats = (matchId, options = {}) => {
       
       if (breakdownResponse.status === 'fulfilled') {
         setFantasyBreakdown(breakdownResponse.value.data);
-        console.log('✅ Fantasy breakdown loaded');
+        console.log('✅ Matchplay breakdown loaded');
       } else {
-        console.error('❌ Fantasy breakdown failed:', breakdownResponse.reason);
+        console.error('❌ Matchplay breakdown failed:', breakdownResponse.reason);
       }
       
       if (scorecardResponse.status === 'fulfilled') {

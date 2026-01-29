@@ -42,7 +42,7 @@ export default function Matches() {
           Matches
         </h1>
         <p className="text-sm text-secondary mt-1">
-          Choose a match and join fantasy contests
+          Choose a match and join matchplay contests
         </p>
       </section>
 

@@ -74,7 +74,7 @@ export default function Teams() {
         <div>
           <h1 className="text-3xl font-bold text-primary">My Teams</h1>
           <p className="text-sm text-secondary mt-1">
-            Manage your fantasy teams for upcoming matches
+            Manage your matchplay teams for upcoming matches
           </p>
         </div>
         <div className="flex gap-3">

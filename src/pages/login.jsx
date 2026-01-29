@@ -122,7 +122,7 @@ export default function Login() {
               Welcome Back
             </h1>
             <p className="text-gray-600">
-              Login to manage your fantasy teams
+              Login to manage your matchplay teams
             </p>
           </div>
 
@@ -241,7 +241,7 @@ export default function Login() {
               Build. Play. Win.
             </h3>
             <p className="text-white/80 text-lg leading-relaxed">
-              Create fantasy teams and compete with players worldwide.
+              Create matchplay teams and compete with players worldwide.
             </p>
 
             {/* Dots indicator */}

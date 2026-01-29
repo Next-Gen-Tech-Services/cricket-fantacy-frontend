@@ -158,7 +158,7 @@ export default function Signup() {
               Create Account
             </h1>
             <p className="text-gray-600">
-              Start building your fantasy cricket team
+              Start building your matchplay cricket team
             </p>
           </div>
 
@@ -337,7 +337,7 @@ export default function Signup() {
               Join the League
             </h3>
             <p className="text-white/80 text-lg leading-relaxed">
-              Experience the thrill of fantasy cricket with millions of players.
+              Experience the thrill of matchplay cricket with millions of players.
             </p>
             
             {/* Dots indicator */}
