@@ -572,7 +572,7 @@ const TournamentDetails = () => {
                                       {entry.user?.name || `Player ${index + 1}`}
                                     </h4>
                                     <p className="text-sm text-gray-600">
-                                      {entry.teamsCount || 0} teams • Avg: {entry.averagePoints?.toFixed(1) || '0.0'}
+                                      Avg: {entry.averagePoints?.toFixed(1) || '0.0'}
                                     </p>
                                   </div>
                                 </div>

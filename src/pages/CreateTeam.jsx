@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { FiPlus, FiX, FiShield, FiStar, FiSearch, FiInfo, FiRefreshCw, FiChevronLeft, FiAward, FiClock, FiMapPin, FiUsers } from "react-icons/fi";
+import { FiPlus, FiX, FiShield, FiStar, FiSearch, FiInfo, FiRefreshCw, FiChevronLeft, FiAward, FiClock, FiMapPin, FiUsers, FiEdit3 } from "react-icons/fi";
 import { matchesAPI, fantasyTeamsAPI } from "../services/api";
 
 /* ------------------ CONFIG ------------------ */
@@ -11,6 +11,7 @@ const TEAM_RULES = {
   BOWL: { min: 3, max: 4 },
   TOTAL: 11,
   BUDGET: 100,
+  MAX_PLAYERS_PER_TEAM: 7, // Maximum players from any one team
 };
 
 /* ------------------ DUMMY DATA ------------------ */
@@ -79,11 +80,13 @@ function validateTeam(players, walletBalance = 100) {
   }
 
   const roleCount = { WK: 0, BAT: 0, AR: 0, BOWL: 0 };
+  const teamCount = {};
   let totalCredits = 0;
 
   for (const player of players) {
     roleCount[player.role]++;
     totalCredits += player.price;
+    teamCount[player.team] = (teamCount[player.team] || 0) + 1;
   }
 
   for (const role of ["WK", "BAT", "AR", "BOWL"]) {
@@ -93,6 +96,13 @@ function validateTeam(players, walletBalance = 100) {
     }
     if (roleCount[role] > max) {
       errors.push(`Cannot have more than ${max} ${roleLabel[role]}${max > 1 ? 's' : ''} (currently ${roleCount[role]}).`);
+    }
+  }
+
+  // Check team limits
+  for (const [team, count] of Object.entries(teamCount)) {
+    if (count > TEAM_RULES.MAX_PLAYERS_PER_TEAM) {
+      errors.push(`Cannot have more than ${TEAM_RULES.MAX_PLAYERS_PER_TEAM} players from ${team} (currently ${count}).`);
     }
   }
 
@@ -114,7 +124,7 @@ export default function CreateTeam() {
   const { matchId, teamId } = useParams(); // Get match ID and team ID from route params
   const navigate = useNavigate();
   const isEditMode = !!teamId; // Check if we're in edit mode
-  
+
   // State
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -130,18 +140,47 @@ export default function CreateTeam() {
   const [viewMode, setViewMode] = useState("pitch");
   const [saving, setSaving] = useState(false);
   const [teamName, setTeamName] = useState(""); // Team name for edit mode
+  const [showTeamNameModal, setShowTeamNameModal] = useState(false);
+  const [tempTeamName, setTempTeamName] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   // User's wallet balance (you can fetch this from API or context)
   const [walletBalance] = useState(90); // Example: user has 100pts in wallet
+
+  // Handle window resize for mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-show team name modal when creating new team
+  useEffect(() => {
+    // Only show modal if:
+    // 1. Not in edit mode (creating new team)
+    // 2. Not loading
+    // 3. No existing team name
+    // 4. No error state
+    if (!isEditMode && !loading && !teamName.trim() && !error) {
+      const timer = setTimeout(() => {
+        setShowTeamNameModal(true);
+      }, 500); // Small delay to let page load smoothly
+
+      return () => clearTimeout(timer);
+    }
+  }, [isEditMode, loading, teamName, error]);
 
   // Fetch existing team data if in edit mode
   useEffect(() => {
     const loadTeamData = async () => {
       if (!isEditMode || !teamId) return;
-      
+
       try {
         const response = await fantasyTeamsAPI.getById(teamId);
-        
+
         if (response.success && response.data) {
           const team = response.data;
           setTeamName(team.teamName || team.name || "");
@@ -151,7 +190,7 @@ export default function CreateTeam() {
         setError('Failed to load team data');
       }
     };
-    
+
     loadTeamData();
   }, [isEditMode, teamId]);
 
@@ -161,17 +200,17 @@ export default function CreateTeam() {
       try {
         setLoading(true);
         setError(null);
-        
+
         if (!matchId) {
           throw new Error('Match ID is required');
         }
 
         // Fetch match details with players from database
         const response = await matchesAPI.getPlayersById(matchId);
-        
+
         if (response.success && response.data) {
           setMatchData(response.data.match);
-          
+
           // Map API role format to frontend format
           const mapRole = (apiRole) => {
             switch (apiRole) {
@@ -182,7 +221,7 @@ export default function CreateTeam() {
               default: return 'BAT';
             }
           };
-          
+
           // Transform players to match expected format
           const transformedPlayers = (response.data.players || []).map(player => ({
             id: player._id || player.id,
@@ -198,28 +237,28 @@ export default function CreateTeam() {
             stats: player.stats || {}
           }));
           setPlayers(transformedPlayers);
-          
+
           // Load team players if in edit mode
           if (isEditMode && teamId) {
             try {
               const teamResponse = await fantasyTeamsAPI.getById(teamId);
-              
+
               if (teamResponse.success && teamResponse.data) {
                 const team = teamResponse.data;
-                
+
                 // Map team players to selected format
                 if (team.players && Array.isArray(team.players)) {
                   const selectedPlayers = [];
                   let captainId = null;
                   let viceCaptainId = null;
-                  
+
                   for (const teamPlayer of team.players) {
                     const playerId = teamPlayer.player?._id || teamPlayer.player;
                     const matchingPlayer = transformedPlayers.find(p => p.id === playerId);
-                    
+
                     if (matchingPlayer) {
                       selectedPlayers.push(matchingPlayer);
-                      
+
                       // Track captain and vice-captain
                       if (teamPlayer.role === 'CAPTAIN') {
                         captainId = matchingPlayer.id;
@@ -228,7 +267,7 @@ export default function CreateTeam() {
                       }
                     }
                   }
-                  
+
                   setSelected(selectedPlayers);
                   if (captainId) setCaptain(captainId);
                   if (viceCaptainId) setViceCaptain(viceCaptainId);
@@ -259,6 +298,9 @@ export default function CreateTeam() {
   const countByRole = (role) =>
     selected.filter((p) => p.role === role).length;
 
+  const countByTeam = (team) =>
+    selected.filter((p) => p.team === team).length;
+
   // Filter and sort players
   const filteredPlayers = players
     .filter((p) => {
@@ -285,6 +327,9 @@ export default function CreateTeam() {
 
     // Check role constraint
     if (countByRole(player.role) >= TEAM_RULES[player.role].max) return false;
+
+    // Check team constraint
+    if (countByTeam(player.team) >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) return false;
 
     // Check if player is already selected
     if (selected.find(p => p.id === player.id)) return false;
@@ -323,6 +368,7 @@ export default function CreateTeam() {
     const autoPicked = [];
     let availableBudget = TEAM_RULES.BUDGET;
     const roleCounts = { WK: 0, BAT: 0, AR: 0, BOWL: 0 };
+    const teamCounts = {}; // Track players per team
 
     // Create a copy of players sorted by points (simpler approach)
     const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
@@ -335,10 +381,16 @@ export default function CreateTeam() {
 
       for (const player of rolePlayers) {
         if (roleCounts[role] >= minRequired) break;
+        
+        // Check team limit before adding
+        const currentTeamCount = teamCounts[player.team] || 0;
+        if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
+        
         if (availableBudget >= player.price && !autoPicked.find(p => p.id === player.id)) {
           autoPicked.push(player);
           availableBudget -= player.price;
           roleCounts[role]++;
+          teamCounts[player.team] = currentTeamCount + 1;
         }
       }
     }
@@ -361,6 +413,10 @@ export default function CreateTeam() {
         // Skip if can't afford
         if (player.price > availableBudget) continue;
 
+        // Skip if team limit reached
+        const currentTeamCount = teamCounts[player.team] || 0;
+        if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
+
         // Take the first valid player (already sorted by points)
         bestPlayer = player;
         break;
@@ -370,8 +426,9 @@ export default function CreateTeam() {
         autoPicked.push(bestPlayer);
         availableBudget -= bestPlayer.price;
         roleCounts[bestPlayer.role]++;
+        teamCounts[bestPlayer.team] = (teamCounts[bestPlayer.team] || 0) + 1;
       } else {
-        // Can't find more players within budget/role constraints
+        // Can't find more players within budget/role/team constraints
         break;
       }
     }
@@ -393,6 +450,35 @@ export default function CreateTeam() {
     setSelected([]);
     setCaptain(null);
     setViceCaptain(null);
+  };
+
+  const openTeamNameModal = () => {
+    setTempTeamName(teamName);
+    setShowTeamNameModal(true);
+  };
+
+  const closeTeamNameModal = () => {
+    setShowTeamNameModal(false);
+    setTempTeamName("");
+  };
+
+  const saveTeamName = () => {
+    setTeamName(tempTeamName.trim());
+    closeTeamNameModal();
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && tempTeamName.trim()) {
+      saveTeamName();
+    } else if (e.key === 'Escape') {
+      closeTeamNameModal();
+    }
+  };
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeTeamNameModal();
+    }
   };
 
   const saveTeam = async () => {
@@ -418,11 +504,11 @@ export default function CreateTeam() {
       }));
 
       // Use provided team name or create default one
-      const finalTeamName = teamName || `${matchData?.shortName || matchData?.name} - ${new Date().toLocaleString('en-US', { 
-        month: 'short', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      const finalTeamName = teamName || `${matchData?.shortName || matchData?.name} - ${new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       })}`;
 
       const teamData = {
@@ -495,12 +581,132 @@ export default function CreateTeam() {
 
   // Get unique teams from players
   const teams = [...new Set(players.map(p => p.team))];
-  
+
   // Use matchData if available, fallback to currentMatch for structure
   const displayMatch = matchData || currentMatch;
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Team Name Modal for Desktop */}
+      {showTeamNameModal && !isMobile && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
+          onClick={handleBackdropClick}
+        >
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-[#273470]">Team Name</h3>
+                <button
+                  onClick={closeTeamNameModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter your team name
+                  </label>
+                  <input
+                    type="text"
+                    value={tempTeamName}
+                    onChange={(e) => setTempTeamName(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="My Dream Team"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#273470] focus:border-transparent"
+                    maxLength={50}
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {tempTeamName.length}/50 characters
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={closeTeamNameModal}
+                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveTeamName}
+                  disabled={!tempTeamName.trim()}
+                  className="flex-1 px-4 py-3 bg-[#273470] text-white font-semibold rounded-lg hover:bg-[#1e2859] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Team Name Bottom Sheet for Mobile */}
+      {showTeamNameModal && isMobile && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-end justify-center z-[9999]"
+          onClick={handleBackdropClick}
+        >
+          <div className="bg-white rounded-t-xl shadow-xl w-full max-h-[80vh] overflow-hidden transform transition-transform duration-300 ease-out">
+            <div className="p-4">
+              {/* Handle */}
+              <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-[#273470]">Team Name</h3>
+                <button
+                  onClick={closeTeamNameModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FiX size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter your team name
+                  </label>
+                  <input
+                    type="text"
+                    value={tempTeamName}
+                    onChange={(e) => setTempTeamName(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="My Dream Team"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#273470] focus:border-transparent text-base"
+                    maxLength={50}
+                    autoFocus
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {tempTeamName.length}/50 characters
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6 pb-4">
+                <button
+                  onClick={closeTeamNameModal}
+                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveTeamName}
+                  disabled={!tempTeamName.trim()}
+                  className="flex-1 px-4 py-3 bg-[#273470] text-white font-semibold rounded-lg hover:bg-[#1e2859] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
 
       <div className="max-w-[1440px] mx-auto px-4 pt-8 pb-0">
@@ -529,7 +735,7 @@ export default function CreateTeam() {
         {/* Header */}
         <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-6 mb-8 text-white shadow-lg">
           <button
-            onClick={() => navigate(`/tournaments/${tournamentId || -1}`)}
+            onClick={() => navigate(matchData?.tournament?.id ? `/tournaments/${matchData.tournament.id}` : -1)}
             className="flex items-center text-white/80 hover:text-white transition-colors mb-4"
           >
             <FiChevronLeft size={20} className="mr-1" />
@@ -589,7 +795,7 @@ export default function CreateTeam() {
             <h2 className="text-lg font-bold text-[#273470] mb-1">
               Player Selection
             </h2>
-           
+
           </div>
 
           {/* Search and Filters */}
@@ -647,17 +853,15 @@ export default function CreateTeam() {
                       <span className="w-8 text-center flex-shrink-0">VC</span>
                       <button
                         onClick={() => setSortBy('price')}
-                        className={`w-12 text-center flex-shrink-0 transition-colors ${
-                          sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
-                        }`}
+                        className={`w-12 text-center flex-shrink-0 transition-colors ${sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                          }`}
                       >
-                        PRICE 
+                        PRICE
                       </button>
                       <button
                         onClick={() => setSortBy('points')}
-                        className={`w-8 text-center flex-shrink-0 transition-colors ${
-                          sortBy === 'points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
-                        }`}
+                        className={`w-8 text-center flex-shrink-0 transition-colors ${sortBy === 'points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                          }`}
                       >
                         TP
                       </button>
@@ -693,7 +897,7 @@ export default function CreateTeam() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <p className="text-sm font-semibold text-[#273470] truncate max-w-[120px]">
-                                {player.name.split(" ").length > 1 
+                                {player.name.split(" ").length > 1
                                   ? `${player.name.split(" ")[0]} ${player.name.split(" ").slice(-1)[0].charAt(0)}.`
                                   : player.name
                                 }
@@ -821,6 +1025,19 @@ export default function CreateTeam() {
             {/* Stats Bar */}
             <div className="bg-[#273470]/10 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm gap-3 border-b border-gray-200">
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                {/* Team Name Display */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={openTeamNameModal}
+                    className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-[#273470] transition-colors group"
+                  >
+                    <FiEdit3 size={14} className="text-gray-400 group-hover:text-[#273470]" />
+                    <span className="text-sm font-medium text-[#273470] max-w-[150px] truncate">
+                      {teamName || "Set Team Name"}
+                    </span>
+                  </button>
+                </div>
+
                 <div className={`px-4 py-2 rounded-lg font-bold text-center ${selected.length === TEAM_RULES.TOTAL
                   ? "bg-green-500 text-white"
                   : "bg-white border-2 border-yellow-400 text-[#273470]"
@@ -836,13 +1053,7 @@ export default function CreateTeam() {
                   {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG
                   <span className="ml-2 font-normal text-xs">Used</span>
                 </div>
-                {/* Team Composition Display */}
-                <div className="flex gap-2 text-xs">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">WK: {countByRole("WK")}/1</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-800 rounded">BAT: {countByRole("BAT")}/4</span>
-                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">AR: {countByRole("AR")}/2</span>
-                  <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">BOWL: {countByRole("BOWL")}/4</span>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -943,7 +1154,7 @@ export default function CreateTeam() {
                               </div>
                               <div>
                                 <p className="text-sm font-semibold text-[#273470] max-w-[120px] truncate">
-                                  {player.name.split(" ").length > 1 
+                                  {player.name.split(" ").length > 1
                                     ? `${player.name.split(" ")[0]} ${player.name.split(" ").slice(-1)[0].charAt(0)}.`
                                     : player.name
                                   }
