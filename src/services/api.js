@@ -396,6 +396,36 @@ export const leaguesAPI = {
     return response.data;
   },
 
+  // Create tournament league
+  createTournamentLeague: async (tournamentId, leagueData) => {
+    const response = await api.post(`/leagues/tournament/${tournamentId}`, leagueData);
+    return response.data;
+  },
+
+  // Get tournament leagues
+  getTournamentLeagues: async (tournamentId, params = {}) => {
+    const response = await api.get(`/leagues/tournament/${tournamentId}`, { params });
+    return response.data;
+  },
+
+  // Generate share link
+  generateShareLink: async (leagueId, baseUrl) => {
+    const response = await api.post(`/leagues/${leagueId}/share`, { baseUrl });
+    return response.data;
+  },
+
+  // Join by share code
+  joinByShareCode: async (shareCode) => {
+    const response = await api.post(`/leagues/join/${shareCode}`);
+    return response.data;
+  },
+
+  // Get league preview by share code
+  getLeaguePreview: async (shareCode) => {
+    const response = await api.get(`/leagues/preview/${shareCode}`);
+    return response.data;
+  },
+
   // Join league
   join: async (leagueId, joinData = {}) => {
     const response = await api.post(`/leagues/${leagueId}/join`, joinData);

@@ -18,7 +18,8 @@ export default function Navbar() {
     { name: "How to play?", href: "/", authRequired: false },
     { name: "Tournaments", href: "/tournaments", authRequired: true },
     { name: "My Leagues", href: "/leagues", authRequired: true },
-    { name: "How to earn points", href: "/how-to-earn-points", authRequired: false },
+    { name: "My Matches", href: "/matches", authRequired: true },
+    { name: "How to score", href: "/how-to-earn-points", authRequired: false },
   ];
 
   // Close dropdown when clicking outside

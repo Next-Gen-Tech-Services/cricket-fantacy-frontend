@@ -1,5 +1,5 @@
 import heroHome from "../assets/hero-home.png";
-import home1 from "../assets/home-1.jpeg";
+import home1 from "../assets/home-1.png";
 import home2 from "../assets/home-5.png";
 import home3 from "../assets/home-3.png";
 import home4 from "../assets/home-4.png";

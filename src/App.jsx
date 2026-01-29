@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -21,6 +22,8 @@ import Tournaments from "./pages/Tournaments";
 import TournamentDetails from "./pages/TournamentDetails";
 import MatchDetails from "./pages/MatchDetails";
 import Leaderboard from "./pages/Leaderboard";
+import LeagueDetails from "./pages/LeagueDetails";
+import JoinLeagueByCode from "./pages/JoinLeagueByCode";
 
 import Login from "./pages/login";
 import Signup from "./pages/signup";
@@ -40,6 +43,28 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            style: {
+              background: '#10B981',
+            },
+          },
+          error: {
+            duration: 5000,
+            style: {
+              background: '#EF4444',
+            },
+          },
+        }}
+      />
 
       <Routes>
         {/* ===== AUTH ROUTES ===== */}
@@ -114,6 +139,24 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Leaderboard />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* League Routes */}
+          <Route 
+            path="/leagues/:leagueId" 
+            element={
+              <ProtectedRoute>
+                <LeagueDetails />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/leagues/join/:shareCode" 
+            element={
+              <ProtectedRoute>
+                <JoinLeagueByCode />
               </ProtectedRoute>
             } 
           />

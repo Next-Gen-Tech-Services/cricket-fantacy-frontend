@@ -37,7 +37,7 @@ export default function BottomNavigation() {
     },
     {
       id: 'earn',
-      label: 'How to Earn',
+      label: 'How to Score',
       icon: FaGamepad,
       path: '/how-to-earn-points',
       authRequired: false

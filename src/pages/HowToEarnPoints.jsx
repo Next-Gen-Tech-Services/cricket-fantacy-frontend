@@ -100,7 +100,7 @@ export default function HowToEarnPoints() {
             <div className="absolute inset-0 bg-black/20" />
             <div className="relative">
               <FaChartLine className="text-4xl mx-auto mb-4 text-yellow-400" />
-              <h1 className="text-4xl font-bold mb-4">How to Earn Points</h1>
+              <h1 className="text-4xl font-bold mb-4">How to Score</h1>
               <p className="text-lg text-white/90 max-w-3xl mx-auto">
                 Master the art of matchplay cricket by understanding our comprehensive point system. 
                 Every run, wicket, and catch counts towards your victory!

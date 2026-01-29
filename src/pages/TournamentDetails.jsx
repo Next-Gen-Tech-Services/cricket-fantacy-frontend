@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { FiCalendar, FiMapPin, FiClock, FiChevronLeft, FiAward, FiUsers, FiArrowRight, FiLoader, FiAlertCircle, FiStar, FiTrendingUp } from "react-icons/fi";
+import { FiCalendar, FiMapPin, FiClock, FiChevronLeft, FiAward, FiUsers, FiArrowRight, FiLoader, FiAlertCircle, FiStar, FiTrendingUp, FiPlus } from "react-icons/fi";
 import { fetchTournamentById } from "../store/slices/tournamentsSlice";
 import { fetchLeaderboard } from "../store/slices/leaderboardSlice";
+import CreateTournamentLeague from "../components/CreateTournamentLeague";
+import TournamentLeagues from "../components/TournamentLeagues";
 
 const TournamentDetails = () => {
   const { tournamentId } = useParams();
@@ -11,6 +13,7 @@ const TournamentDetails = () => {
   const dispatch = useDispatch();
   const [filterStatus, setFilterStatus] = useState("all");
   const [activeTab, setActiveTab] = useState("matches"); // New tab state
+  const [showCreateLeague, setShowCreateLeague] = useState(false);
 
   // Redux state
   const {
@@ -271,6 +274,19 @@ const TournamentDetails = () => {
             <div className="flex items-center justify-center gap-2">
               <FiCalendar size={16} />
               <span>Matches</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab("leagues")}
+            className={`flex-1 px-4 py-3 rounded-md font-semibold text-sm transition-all ${
+              activeTab === "leagues"
+                ? "bg-[#273470] text-white shadow-md"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <FiUsers size={16} />
+              <span>Leagues</span>
             </div>
           </button>
           <button
@@ -604,7 +620,41 @@ const TournamentDetails = () => {
             )}
           </div>
         )}
+
+        {/* Leagues Tab Content */}
+        {activeTab === "leagues" && (
+          <div className="space-y-6">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">Tournament Leagues</h2>
+                <p className="text-gray-600">Create or join private leagues within this tournament</p>
+              </div>
+              <button
+                onClick={() => setShowCreateLeague(true)}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <FiPlus size={20} />
+                <span>Create League</span>
+              </button>
+            </div>
+
+            {/* Tournament Leagues Component */}
+            <TournamentLeagues tournament={currentTournament} />
+          </div>
+        )}
       </section>
+
+      {/* Create League Modal */}
+      <CreateTournamentLeague
+        tournament={currentTournament}
+        isOpen={showCreateLeague}
+        onClose={() => setShowCreateLeague(false)}
+        onSuccess={(league) => {
+          console.log('League created:', league);
+          // Optionally navigate to the new league or refresh the list
+        }}
+      />
     </main>
   );
 };

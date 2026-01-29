@@ -65,10 +65,53 @@ const Tournaments = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString, format = 'short') => {
     if (!dateString) return "TBD";
+    
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    
+    if (format === 'short') {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+    
+    if (format === 'long') {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    return date.toLocaleDateString();
+  };
+
+  const formatDateRange = (startDate, endDate) => {
+    if (!startDate || !endDate) {
+      return "Dates TBD";
+    }
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    const startStr = start.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    
+    const endStr = end.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    });
+    
+    return `${startStr} - ${endStr}`;
   };
 
   const getImageUrl = (tournament) => {
@@ -219,22 +262,16 @@ const Tournaments = () => {
                 </p>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 gap-3 mb-4">
                   <div className="flex items-center text-slate-600">
                     <FiCalendar className="mr-2 text-slate-500" size={16} />
-                    <span className="text-sm">{formatDate(tournament.createdAt)}</span>
+                    <span className="text-sm">
+                      {formatDateRange(tournament.dates?.startDate, tournament.dates?.endDate)}
+                    </span>
                   </div>
                   <div className="flex items-center text-slate-600">
                     <FiUsers className="mr-2 text-slate-500" size={16} />
-                    <span className="text-sm">{tournament.participatingTeams?.length || "TBD"} Teams</span>
-                  </div>
-                  <div className="flex items-center text-slate-600">
-                    <FiTrendingUp className="mr-2 text-slate-500" size={16} />
-                    <span className="text-sm">{tournament.totalMatches || "TBD"} Matches</span>
-                  </div>
-                  <div className="flex items-center text-slate-600">
-                    <FiAward className="mr-2 text-slate-500" size={16} />
-                    <span className="text-sm">₹{tournament.contestSettings?.featuredContest?.prizePool || tournament.prizeStructure?.totalPrizePool || "TBD"}</span>
+                    <span className="text-sm">{tournament.totalMatches || 0} Matches</span>
                   </div>
                 </div>
 
