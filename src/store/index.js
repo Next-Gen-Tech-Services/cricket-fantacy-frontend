@@ -10,6 +10,7 @@ import contestsSlice from './slices/contestsSlice';
 import leaguesSlice from './slices/leaguesSlice';
 import liveMatchSlice from './slices/liveMatchSlice';
 import matchStatsSlice from './slices/matchStatsSlice';
+import { userApi } from '../api/userApi';
 
 export const store = configureStore({
   reducer: {
@@ -24,13 +25,14 @@ export const store = configureStore({
     leagues: leaguesSlice,
     liveMatch: liveMatchSlice,
     matchStats: matchStatsSlice,
+    [userApi.reducerPath]: userApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST'],
       },
-    }),
+    }).concat(userApi.middleware),
 });
 
 // Export store for use in components

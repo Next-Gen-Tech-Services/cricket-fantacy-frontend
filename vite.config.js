@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['cricket-lovers-logo.svg', 'icons/icon-192x192.svg', 'icons/icon-512x512.svg'],
       manifest: {
-        name: 'Cricket Lovers Global - Fantasy Cricket',
+        name: 'Match Play - Fantasy Cricket',
         short_name: 'Cricket Lovers',
-        description: 'Cricket Lovers Global - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!',
+        description: 'Match Play - Create your fantasy cricket team and compete with friends. Passion Beyond Boundaries!',
         theme_color: '#fdc700',
         background_color: '#ffffff',
         display: 'standalone',

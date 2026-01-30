@@ -17,8 +17,8 @@ export default function Navbar() {
   const navLinks = [
     { name: "How to play?", href: "/", authRequired: false },
     { name: "Tournaments", href: "/tournaments", authRequired: true },
-    { name: "My Leagues", href: "/leagues", authRequired: true },
-    { name: "My Matches", href: "/matches", authRequired: true },
+    { name: "My Leagues", href: "/my-leagues", authRequired: true },
+    { name: "My Matches", href: "/my-matches", authRequired: true },
     { name: "How to score", href: "/how-to-earn-points", authRequired: false },
   ];
 
@@ -59,7 +59,7 @@ export default function Navbar() {
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <img
                 src={logo}
-                alt="Cricket Lovers Global"
+                alt="Match Play"
                 className="h-12 lg:h-14 w-auto object-contain min-w-[140px] transition-all duration-200"
               />
             </Link>

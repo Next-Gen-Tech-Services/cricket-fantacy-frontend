@@ -3,6 +3,7 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import BottomNavigation from "../components/BottomNavigation";
 import MobileHeader from "../components/MobileHeader";
+import { FooterAreaAd, MobileBottomBanner } from "../components/ads/index.jsx";
 
 export default function MainLayout() {
   const location = useLocation();
@@ -25,10 +26,21 @@ export default function MainLayout() {
         <Outlet />
       </div>
       
+      {/* Footer Area Advertisement - Simple banner with image */}
+      <FooterAreaAd 
+        redirectUrl="https://example.com"
+        className="hidden md:block"
+      />
+      
       {/* Footer - Hidden on mobile when bottom nav is present */}
       <div className="hidden md:block">
         <Footer />
       </div>
+      
+      {/* Mobile Bottom Banner - Simple mobile ad */}
+      <MobileBottomBanner 
+        redirectUrl="https://example.com"
+      />
       
       {/* Mobile Bottom Navigation */}
       <BottomNavigation />

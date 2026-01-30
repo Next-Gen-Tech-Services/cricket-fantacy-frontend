@@ -1,4 +1,4 @@
-import heroHome from "../assets/hero-home.png";
+import heroHome from "../assets/hero-home.svg";
 import home1 from "../assets/home-1.png";
 import home2 from "../assets/home-5.png";
 import home3 from "../assets/home-3.png";
@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchTournaments } from "../store/slices/tournamentsSlice";
 import { fetchLiveMatches } from "../store/slices/matchesSlice";
 import DebugMatchStats from "../components/DebugMatchStats";
+import { ContentSeparatorAd, SidebarAd, FooterAreaAd } from "../components/ads/index.jsx";
 
 const features = [
   {
@@ -93,7 +94,7 @@ export default function Home() {
                     </button>
                   </Link>
 
-                  <Link to="/leagues">
+                  <Link to="/my-leagues">
                     <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition">
                       My Leagues
                     </button>

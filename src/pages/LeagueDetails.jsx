@@ -233,7 +233,7 @@ const LeagueDetails = () => {
                           🥈
                         </div>
                         <h4 className="font-semibold text-sm mb-1">{leaderboard[1]?.user?.name}</h4>
-                        <p className="text-white/80 text-xs mb-2">{leaderboard[1]?.totalPoints || 0} pts</p>
+                        <p className="text-white/80 text-xs mb-2">{leaderboard[1]?.totalPoints || 0} CLG points</p>
                         <div className="bg-white/20 px-3 py-1 rounded-full">
                           <span className="text-xs font-bold">#2</span>
                         </div>
@@ -245,7 +245,7 @@ const LeagueDetails = () => {
                           🥇
                         </div>
                         <h4 className="font-bold text-lg mb-1">{leaderboard[0]?.user?.name}</h4>
-                        <p className="text-yellow-400 text-sm mb-2 font-semibold">{leaderboard[0]?.totalPoints || 0} pts</p>
+                        <p className="text-yellow-400 text-sm mb-2 font-semibold">{leaderboard[0]?.totalPoints || 0} CLG points</p>
                         <div className="bg-yellow-400 text-blue-600 px-4 py-2 rounded-full">
                           <span className="text-sm font-bold">👑 LEADER</span>
                         </div>
@@ -257,7 +257,7 @@ const LeagueDetails = () => {
                           🥉
                         </div>
                         <h4 className="font-semibold text-sm mb-1">{leaderboard[2]?.user?.name}</h4>
-                        <p className="text-white/80 text-xs mb-2">{leaderboard[2]?.totalPoints || 0} pts</p>
+                        <p className="text-white/80 text-xs mb-2">{leaderboard[2]?.totalPoints || 0} CLG points</p>
                         <div className="bg-white/20 px-3 py-1 rounded-full">
                           <span className="text-xs font-bold">#3</span>
                         </div>
@@ -299,7 +299,7 @@ const LeagueDetails = () => {
                               </h4>
                               <p className="text-sm text-gray-600">
                                 {entry.totalMatches || 0} matches played
-                                {entry.averagePoints && ` • Avg: ${entry.averagePoints} pts`}
+                                {entry.averagePoints && ` • Avg: ${entry.averagePoints} CLG points`}
                               </p>
                             </div>
                           </div>
@@ -307,7 +307,7 @@ const LeagueDetails = () => {
                             <p className="font-bold text-lg text-gray-900">
                               {entry.totalPoints?.toLocaleString() || '0'}
                             </p>
-                            <p className="text-sm text-gray-500">points</p>
+                            <p className="text-sm text-gray-500">CLG points</p>
                           </div>
                         </div>
                       );

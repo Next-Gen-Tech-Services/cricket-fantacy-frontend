@@ -58,7 +58,7 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <img
                 src={logo}
-                alt="Cricket Lovers Global"
+                alt="Match Play"
                 className="h-10 w-auto object-contain min-w-[120px]"
                 onError={(e) => {
                   // Fallback to text logo if image fails to load

@@ -146,7 +146,7 @@ export default function Signup() {
             <Link to="/">
             <img
               src={logo}
-              alt="Cricket Lovers Global"
+              alt="Match Play"
               className="h-16 w-auto object-contain mb-4"
             />
             </Link>

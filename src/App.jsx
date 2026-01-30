@@ -21,6 +21,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOfUse";
 import Cookies from "./pages/Cookies";
 import MobileLogout from "./pages/MobileLogout";
+import MyMatches from "./pages/MyMatches";
+import MyLeagues from "./pages/MyLeagues";
 
 // New Tournament Flow Pages
 import Tournaments from "./pages/Tournaments";
@@ -192,6 +194,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Leagues />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/my-matches" 
+            element={
+              <ProtectedRoute>
+                <MyMatches />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/my-leagues" 
+            element={
+              <ProtectedRoute>
+                <MyLeagues />
               </ProtectedRoute>
             } 
           />

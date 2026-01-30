@@ -56,7 +56,7 @@ const SplashScreen = ({ onComplete, duration = 5000 }) => {
                 <div className="mb-8 animate-pulse">
                     <img
                         src={splashGif}
-                        alt="Cricket Lovers Global"
+                        alt="Match Play"
                         className="w-80 h-80 mx-auto object-contain"
                     />
                 </div>
