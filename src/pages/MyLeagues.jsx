@@ -48,7 +48,7 @@ const MyLeagues = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Leagues</h1>
-                            <p className="text-gray-600">Manage and track your fantasy cricket leagues</p>
+                            <p className="text-gray-600">Manage and track your matchplay cricket leagues</p>
                         </div>
                        
                     </div>
@@ -88,21 +88,14 @@ const MyLeagues = () => {
                                 : `No ${filter} leagues found.`
                             }
                         </p>
-                        <div className="flex gap-4 justify-center">
+                        <div className="flex justify-center">
                             <Link
-                                to="/leagues"
-                                className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                            >
-                                <FaUsers className="mr-2" size={14} />
-                                Browse Leagues
-                            </Link>
-                            <Link
-                                to="/leagues/create"
-                                className="inline-flex items-center px-4 py-2 text-white rounded-lg hover:opacity-90 transition-colors"
+                                to="/tournaments"
+                                className="inline-flex items-center px-6 py-3 text-white rounded-lg hover:opacity-90 transition-colors"
                                 style={{ backgroundColor: '#273470' }}
                             >
-                                <FaPlus className="mr-2" size={14} />
-                                Create League
+                                <FaTrophy className="mr-2" size={16} />
+                                Browse Tournament
                             </Link>
                         </div>
                     </div>

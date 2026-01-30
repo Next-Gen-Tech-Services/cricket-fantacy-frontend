@@ -111,7 +111,7 @@ export default function HowToEarnPoints() {
 
         {/* Format Points Section */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-primary mb-6 text-center">Points by Match Format</h2>
+          <h2 className="text-2xl font-bold text-primary mb-6 text-center">CLG Points by Match Format</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 text-center">
               <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">

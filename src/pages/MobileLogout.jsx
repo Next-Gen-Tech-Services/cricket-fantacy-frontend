@@ -94,7 +94,7 @@ const MobileLogout = () => {
 
         {/* App Info */}
         <div className="p-6 text-center">
-          <p className="text-sm text-slate-500 mb-2">Cricket Lover Fantasy</p>
+          <p className="text-sm text-slate-500 mb-2">MatchPlay</p>
           <p className="text-xs text-slate-400">Version 1.0.0</p>
           <div className="flex justify-center space-x-4 mt-4 text-xs text-slate-400">
             <button onClick={() => navigate('/privacy-policy')}>Privacy Policy</button>

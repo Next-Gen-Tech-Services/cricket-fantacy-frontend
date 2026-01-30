@@ -49,7 +49,7 @@ const Cookies = () => {
 
             <h2 className="text-2xl font-bold text-slate-800 mb-4">How We Use Cookies</h2>
             <p className="text-slate-600 mb-6">
-              Cricket Lover Fantasy uses cookies for various purposes:
+              MatchPlay uses cookies for various purposes:
             </p>
             <ul className="list-disc pl-6 mb-6 text-slate-600">
               <li>To keep you logged in during your session</li>
@@ -195,11 +195,8 @@ const Cookies = () => {
               If you have any questions about our use of cookies, please contact us:
             </p>
             <ul className="list-none mb-6 text-slate-600">
-              <li>Email: privacy@cricketloverfantasy.com</li>
-              <li>Phone: +91 98765 43210</li>
-              <li>
-                Address: Cricket Lover Fantasy Pvt. Ltd., 123 Sports Complex, Mumbai, Maharashtra 400001, India
-              </li>
+              <li>Email: info@cricketloversglobal.com</li>
+             
             </ul>
           </div>
 

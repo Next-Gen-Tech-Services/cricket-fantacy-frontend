@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FiArrowRight, FiMessageCircle } from "react-icons/fi";
+import { FiArrowRight } from "react-icons/fi";
 import { contactAPI } from "../services/api";
+// import { VerticalBannerMedium } from '../components/ads';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -49,7 +50,9 @@ const ContactUs = () => {
   };
 
   return (
+    
     <main className="bg-main">
+      {/* <VerticalBannerMedium/> */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left Side - Contact Info */}

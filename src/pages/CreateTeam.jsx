@@ -979,7 +979,7 @@ export default function CreateTeam() {
                             )}
                           </div>
                           <span className="text-sm font-semibold text-[#273470] w-12 text-center">
-                            {player.price} CLG Point
+                            {player.price} CLG Pts
                           </span>
                           <span className="text-sm text-gray-600 w-8 text-center">
                             {player.CLGpoints}
@@ -1071,11 +1071,11 @@ export default function CreateTeam() {
                   <span className="ml-2 font-normal text-xs">Players Selected</span>
                 </div>
                 <div className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg font-bold text-[#273470] text-center">
-                  {(walletBalance - totalCredits).toFixed(1)} CLG Point
+                  {(walletBalance - totalCredits).toFixed(1)} CLG Pts
                   <span className="ml-2 font-normal text-xs">Wallet Balance</span>
                 </div>
                 <div className="px-4 py-2 bg-blue-50 border-2 border-blue-200 rounded-lg font-bold text-blue-700 text-center">
-                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG Point
+                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG Pts
                   <span className="ml-2 font-normal text-xs">Used</span>
                 </div>
                 

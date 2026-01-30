@@ -71,7 +71,7 @@ const MyMatches = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">My Matches</h1>
-          <p className="text-slate-600">Track your fantasy cricket match participation and performance</p>
+          <p className="text-slate-600">Track your matchplay cricket match participation and performance</p>
         </div>
 
         {/* Ad Banner */}

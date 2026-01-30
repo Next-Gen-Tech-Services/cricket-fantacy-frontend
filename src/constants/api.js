@@ -101,6 +101,13 @@ export const ENDPOINTS = {
     PREFERENCES: '/push-notifications/preferences'
   },
 
+  // Wallet
+  WALLET: {
+    SUMMARY: '/wallet/summary',
+    TRANSACTIONS: '/wallet/transactions',
+    BALANCE: '/wallet/balance'
+  },
+
   // Admin
   ADMIN: {
     DASHBOARD: '/admin/dashboard/stats',

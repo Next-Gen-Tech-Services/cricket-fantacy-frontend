@@ -5,7 +5,8 @@ import {
   FaUsers, 
   FaUser,
   FaPlus,
-  FaGamepad
+  FaGamepad,
+  FaBaseballBall
 } from 'react-icons/fa';
 import { useAppSelector } from '../store/hooks';
 
@@ -29,10 +30,17 @@ export default function BottomNavigation() {
       authRequired: true
     },
     {
+      id: 'matches',
+      label: 'My Matches',
+      icon: FaBaseballBall,
+      path: '/my-matches',
+      authRequired: true
+    },
+    {
       id: 'leagues',
       label: 'My Leagues',
       icon: FaUsers,
-      path: '/leagues',
+      path: '/my-leagues',
       authRequired: true
     },
     {

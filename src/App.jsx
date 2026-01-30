@@ -15,6 +15,7 @@ import CreateTeam from "./pages/CreateTeam";
 import Table from "./pages/table";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Vault from "./components/Vault";
 import HowToEarnPoints from "./pages/HowToEarnPoints";
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -244,6 +245,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/vault" 
+            element={
+              <ProtectedRoute>
+                <Vault />
               </ProtectedRoute>
             } 
           />

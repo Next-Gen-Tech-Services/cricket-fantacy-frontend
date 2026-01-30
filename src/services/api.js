@@ -746,6 +746,25 @@ export const contactAPI = {
   }
 };
 
+// ================= WALLET API =================
+export const walletAPI = {
+  // Get wallet summary
+  getSummary: async () => {
+    const response = await api.get('/wallet/summary');
+    return response.data;
+  },
+  // Get wallet transactions
+  getTransactions: async (params = {}) => {
+    const response = await api.get('/wallet/transactions', { params });
+    return response.data;
+  },
+  // Get wallet balance
+  getBalance: async () => {
+    const response = await api.get('/wallet/balance');
+    return response.data;
+  }
+};
+
 // Legacy API exports for backward compatibility
 export const subscribeToNotifications = notificationsAPI.subscribe;
 export const unsubscribeFromNotifications = notificationsAPI.unsubscribe;

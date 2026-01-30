@@ -1,5 +1,5 @@
 import SimpleBanner from './SimpleBanner';
-import Ads1 from "../../assets/ads/1.png";
+import Ads1 from "../../assets/ground-bg.jpeg";
 // ============= HORIZONTAL AD PLACEMENTS =============
 
 // Large horizontal banner (like newspaper style)

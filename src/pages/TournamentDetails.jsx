@@ -558,7 +558,7 @@ const TournamentDetails = () => {
                               🥈
                             </div>
                             <h4 className="font-semibold text-sm mb-1">{leaderboard[1]?.user?.name || 'Player 2'}</h4>
-                            <p className="text-white/80 text-xs mb-2">{leaderboard[1]?.totalPoints || 0} pts</p>
+                            <p className="text-white/80 text-xs mb-2">{leaderboard[1]?.totalPoints || 0} CLG Pts</p>
                             <div className="bg-white/20 px-3 py-1 rounded-full">
                               <span className="text-xs font-bold">#2</span>
                             </div>
@@ -570,7 +570,7 @@ const TournamentDetails = () => {
                               🥇
                             </div>
                             <h4 className="font-bold text-lg mb-1">{leaderboard[0]?.user?.name || 'Player 1'}</h4>
-                            <p className="text-yellow-400 text-sm mb-2 font-semibold">{leaderboard[0]?.totalPoints || 0} pts</p>
+                            <p className="text-yellow-400 text-sm mb-2 font-semibold">{leaderboard[0]?.totalPoints || 0} CLG Pts</p>
                             <div className="bg-yellow-400 text-[#273470] px-4 py-2 rounded-full">
                               <span className="text-sm font-bold">👑 CHAMPION</span>
                             </div>
@@ -582,7 +582,7 @@ const TournamentDetails = () => {
                               🥉
                             </div>
                             <h4 className="font-semibold text-sm mb-1">{leaderboard[2]?.user?.name || 'Player 3'}</h4>
-                            <p className="text-white/80 text-xs mb-2">{leaderboard[2]?.totalPoints || 0} pts</p>
+                            <p className="text-white/80 text-xs mb-2">{leaderboard[2]?.totalPoints || 0} CLG Pts</p>
                             <div className="bg-white/20 px-3 py-1 rounded-full">
                               <span className="text-xs font-bold">#3</span>
                             </div>
@@ -626,7 +626,7 @@ const TournamentDetails = () => {
                                   <p className="font-bold text-lg text-[#273470]">
                                     {entry.totalPoints?.toLocaleString() || '0'}
                                   </p>
-                                  <p className="text-sm text-gray-500">points</p>
+                                  <p className="text-sm text-gray-500">CLG Pts</p>
                                 </div>
                               </div>
                             );

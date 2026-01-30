@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaDownload } from "react-icons/fa";
+import { FiDollarSign } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
@@ -136,6 +137,17 @@ export default function Navbar() {
                         <button
                           onClick={() => {
                             setUserDropdownOpen(false);
+                            navigate('/vault');
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                        >
+                          <FiDollarSign className="text-slate-400" />
+                          My Vault
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setUserDropdownOpen(false);
                             navigate('/settings');
                           }}
                           className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
@@ -263,6 +275,17 @@ export default function Navbar() {
                   >
                     <FaUser className="text-slate-400" />
                     My Profile
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate('/vault');
+                    }}
+                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                  >
+                    <FiDollarSign className="text-slate-400" />
+                    My Vault
                   </button>
                   
                   <button

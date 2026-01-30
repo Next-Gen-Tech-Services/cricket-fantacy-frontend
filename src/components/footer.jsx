@@ -1,7 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAppSelector } from "../store/hooks";
 import logo from "../assets/logo.svg";
-import logo1 from "../assets/Logo.webp";
+import logo1 from "../assets/logo-clg.png";
 
 export default function Footer() {
   const { isAuthenticated } = useAppSelector(state => state.auth);
@@ -28,24 +28,20 @@ export default function Footer() {
         { name: "Profile", href: "/profile", authRequired: true },
         { name: "Settings", href: "/settings", authRequired: true },
         { name: "My Teams", href: "/teams", authRequired: true },
+        { name: "Contact Us", href: "/contact", authRequired: false },
+
       ] : [
         { name: "Sign Up", href: "/signup", authRequired: false },
         { name: "Log In", href: "/login", authRequired: false },
-      ]
-    },
-    {
-      title: "Support",
-      links: [
         { name: "Contact Us", href: "/contact", authRequired: false },
-        { name: "Help Center", href: "#", authRequired: false },
-        { name: "Terms of Use", href: "/terms-of-use", authRequired: false },
       ]
     },
+
   ];
 
   const bottomLinks = [
     { name: "Privacy Policy", href: "/privacy-policy" },
-    { name: "Terms of Use", href: "/terms-of-use" }, 
+    { name: "Terms of Use", href: "/terms-of-use" },
     { name: "Cookie Policy", href: "/cookies" },
     { name: "Contact Us", href: "/contact" },
   ];
@@ -63,7 +59,7 @@ export default function Footer() {
               alt="Cricket Lovers Global"
               className="h-12 mt-5 w-auto object-contain"
             />
-            
+
           </Link>
           <p className="text-sm text-gray-300 max-w-md">
             Cricket Lovers Global - Create your matchplay cricket team and compete with friends. Passion Beyond Boundaries!
@@ -82,55 +78,58 @@ export default function Footer() {
                 {section.links
                   .filter(link => !link.authRequired || isAuthenticated)
                   .map((link, idx) => (
-                  <li key={idx}>
-                    {link.href?.startsWith('/') ? (
-                      <NavLink
-                        to={link.href}
-                        className={({ isActive }) =>
-                          `text-sm transition-colors duration-200 ${
-                            isActive 
-                              ? "text-yellow-400" 
+                    <li key={idx}>
+                      {link.href?.startsWith('/') ? (
+                        <NavLink
+                          to={link.href}
+                          className={({ isActive }) =>
+                            `text-sm transition-colors duration-200 ${isActive
+                              ? "text-yellow-400"
                               : "text-gray-300 hover:text-yellow-400"
-                          } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
-                        }
-                      >
-                        {link.name}
-                        {link.authRequired && !isAuthenticated && (
-                          <span className="text-xs text-yellow-400 ml-1">*</span>
-                        )}
-                      </NavLink>
-                    ) : (
-                      <a
-                        href={link.href || "#"}
-                        className="
+                            } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
+                          }
+                        >
+                          {link.name}
+                          {link.authRequired && !isAuthenticated && (
+                            <span className="text-xs text-yellow-400 ml-1">*</span>
+                          )}
+                        </NavLink>
+                      ) : (
+                        <a
+                          href={link.href || "#"}
+                          className="
                           text-sm text-gray-300
                           hover:text-yellow-400
                           transition-colors duration-200
                         "
-                      >
-                        {link.name}
-                      </a>
-                    )}
-                  </li>
-                ))}
+                        >
+                          {link.name}
+                        </a>
+                      )}
+                    </li>
+                  ))}
               </ul>
             </div>
           ))}
+          <div className="flex justify-center items-center">
+ <img
+            src={logo1}
+            alt="Cricket Lovers Global"
+            className="h-[200px] w-auto object-contain ml-2 "
+          />
+          </div>
+          
         </div>
 
         {/* ================= DIVIDER ================= */}
-        <div className="mt-10 border-t border-[#1e2859]" />
+        <div className="m-5 border-t border-[#1e2859]" />
 
         {/* ================= BOTTOM BAR ================= */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <p className="text-xs text-gray-400">
             © 2026 Cricket Lovers Global. All rights reserved.
           </p>
-                      <img
-              src={logo1}
-              alt="Cricket Lovers Global"
-              className="h-20 w-auto object-contain ml-2"
-            />
+         
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             {bottomLinks.map((item, index) => (

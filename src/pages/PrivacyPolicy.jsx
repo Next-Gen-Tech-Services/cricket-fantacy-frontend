@@ -3,28 +3,28 @@ import { Link } from "react-router-dom";
 const PrivacyPolicy = () => {
   const policyData = [
     {
-      title: "Cricket Lover Fantasy Privacy Policy",
-      description: "This policy explains how Cricket Lover Fantasy uses personal data when people access our website, use our official app, play fantasy cricket games, contact customer support, engage with us on social media platforms, and when they otherwise interact or communicate with us."
+      title: "MatchPlay Privacy Policy",
+      description: "This policy explains how MatchPlay uses personal data when people access our website, use our official app, play cricket games, contact customer support, engage with us on social media platforms, and when they otherwise interact or communicate with us."
     },
     {
       title: "User Data and Personal Information Privacy Policy",
-      description: "This policy explains how Cricket Lover Fantasy uses personal data provided by, or received in respect of, users including account information, gameplay statistics, payment details, and communications with customer support staff."
+      description: "This policy explains how MatchPlay uses personal data provided by, or received in respect of, users including account information, gameplay statistics, payment details, and communications with customer support staff."
     },
     {
-      title: "Cricket Lover Fantasy Safeguarding Privacy Policy",
-      description: "This policy explains how Cricket Lover Fantasy uses personal data in relation to the safeguarding of children and adults at risk when using our fantasy sports platform."
+      title: "MatchPlay Safeguarding Privacy Policy",
+      description: "This policy explains how MatchPlay uses personal data in relation to the safeguarding of children and adults at risk when using our sports platform."
     },
     {
-      title: "Cricket Lover Fantasy Data Protection Privacy Policy",
-      description: "This policy explains how Cricket Lover Fantasy collects and uses personal data as part of its efforts to protect and secure user information and maintain platform integrity."
+      title: "MatchPlay Data Protection Privacy Policy",
+      description: "This policy explains how MatchPlay collects and uses personal data as part of its efforts to protect and secure user information and maintain platform integrity."
     },
     {
-      title: "Cricket Lover Fantasy - Child Friendly Privacy Policy - Under-18s Questions and Answers",
-      description: "This policy explains, in the form of child-friendly Q&As, how Cricket Lover Fantasy protects your privacy and uses your personal data especially when you use our website, app, or play our fantasy games."
+      title: "MatchPlay - Child Friendly Privacy Policy - Under-18s Questions and Answers",
+      description: "This policy explains, in the form of child-friendly Q&As, how MatchPlay protects your privacy and uses your personal data especially when you use our website, app, or play our cricket games."
     },
     {
-      title: "Cricket Lover Fantasy Data Processing Notice",
-      description: "This Privacy Notice explains how we collect and use your personal data when you use Cricket Lover Fantasy platform, including our website, mobile app, and fantasy cricket services."
+      title: "MatchPlay Data Processing Notice",
+      description: "This Privacy Notice explains how we collect and use your personal data when you use MatchPlay platform, including our website, mobile app, and cricket services."
     }
   ];
 
@@ -34,12 +34,12 @@ const PrivacyPolicy = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-            Cricket Lover Fantasy Policies
+            MatchPlay Policies
           </h1>
           
           <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-8">
             <p>
-              Cricket Lover Fantasy respects and protects the data and privacy of the fans, players, suppliers, contractors and other individuals who we come into contact with in order to carry out our work. Cricket Lover Fantasy is committed to being open with individuals about how we use their information and who we give it to and will comply with all applicable data protection regulations.
+              MatchPlay respects and protects the data and privacy of the fans, players, suppliers, contractors and other individuals who we come into contact with in order to carry out our work. MatchPlay is committed to being open with individuals about how we use their information and who we give it to and will comply with all applicable data protection regulations.
             </p>
             <p className="mt-4">
               Further information on what data we collect, why we collect it and what we do with it can be found in our privacy policies below:
@@ -80,8 +80,7 @@ const PrivacyPolicy = () => {
                 <ul className="list-disc list-inside ml-4 space-y-1">
                   <li>Personal information (name, email address, phone number)</li>
                   <li>Account credentials and preferences</li>
-                  <li>Fantasy team data and gameplay statistics</li>
-                  <li>Payment information (processed securely)</li>
+                  <li>Cricket team data and gameplay statistics</li>
                   <li>Communications with customer support</li>
                 </ul>
               </div>
@@ -95,8 +94,7 @@ const PrivacyPolicy = () => {
               <div className="text-gray-700 leading-relaxed space-y-3">
                 <p>We use collected information to:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>Provide and improve our fantasy cricket services</li>
-                  <li>Process transactions and manage accounts</li>
+                  <li>Provide and improve our cricket services</li>
                   <li>Send updates about matches and promotions</li>
                   <li>Provide customer support</li>
                   <li>Ensure fair play and prevent fraud</li>
@@ -140,9 +138,7 @@ const PrivacyPolicy = () => {
                   If you have any questions about this Privacy Policy, please contact us:
                 </p>
                 <div className="space-y-2 text-gray-600">
-                  <div><span className="font-medium">Email:</span> privacy@cricketloverfantasy.com</div>
-                  <div><span className="font-medium">Phone:</span> +91 98765 43210</div>
-                  <div><span className="font-medium">Address:</span> Cricket Lover Fantasy Pvt. Ltd., 123 Sports Complex, Mumbai, Maharashtra 400001, India</div>
+                  <div><span className="font-medium">Email:</span> info@cricketloversglobal.com</div>
                 </div>
               </div>
             </section>

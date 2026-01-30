@@ -12,7 +12,7 @@ const TermsOfUse = () => {
           
           <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-8">
             <p>
-              By accessing and using Cricket Lover Fantasy ("the Platform"), you accept and agree to be bound by the terms and provisions of this agreement. Please read these terms carefully before using our fantasy cricket services.
+              By accessing and using MatchPlay ("the Platform"), you accept and agree to be bound by the terms and provisions of this agreement. Please read these terms carefully before using our fantasy cricket services.
             </p>
           </div>
         </div>
@@ -34,10 +34,9 @@ const TermsOfUse = () => {
               <div className="text-gray-700 leading-relaxed space-y-3">
                 <p>To use our services, you must:</p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>Be at least 18 years of age</li>
                   <li>Have the legal capacity to enter into agreements</li>
                   <li>Not be prohibited from using our services under applicable law</li>
-                  <li>Reside in a jurisdiction where fantasy sports are legal</li>
+                  <li>Reside in a jurisdiction where cricket sports are legal</li>
                   <li>Provide accurate and complete registration information</li>
                 </ul>
               </div>
@@ -63,7 +62,7 @@ const TermsOfUse = () => {
             {/* Fantasy Sports Rules */}
             <section>
               <h3 className="text-lg font-semibold text-blue-600 mb-3">
-                3. Fantasy Sports Rules
+                3. MatchPlay Sports Rules
               </h3>
               <div className="text-gray-700 leading-relaxed space-y-3">
                 <p>When participating in fantasy cricket contests:</p>
@@ -120,7 +119,7 @@ const TermsOfUse = () => {
                 6. Intellectual Property
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                All content, trademarks, and intellectual property on the platform are owned by Cricket Lover Fantasy or our licensors. You may not use, reproduce, or distribute any content without explicit permission.
+                All content, trademarks, and intellectual property on the platform are owned by MatchPlay or our licensors. You may not use, reproduce, or distribute any content without explicit permission.
               </p>
             </section>
 
@@ -140,7 +139,7 @@ const TermsOfUse = () => {
                 8. Limitation of Liability
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                Cricket Lover Fantasy shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the platform.
+                MatchPlay shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of your use of the platform.
               </p>
             </section>
 
@@ -164,9 +163,7 @@ const TermsOfUse = () => {
                   For questions about these Terms of Use, contact us:
                 </p>
                 <div className="space-y-2 text-gray-600">
-                  <div><span className="font-medium">Email:</span> legal@cricketloverfantasy.com</div>
-                  <div><span className="font-medium">Phone:</span> +91 98765 43210</div>
-                  <div><span className="font-medium">Address:</span> Cricket Lover Fantasy Pvt. Ltd., 123 Sports Complex, Mumbai, Maharashtra 400001, India</div>
+                  <div><span className="font-medium">Email:</span> info@cricketloversglobal.com</div>
                 </div>
               </div>
             </section>
