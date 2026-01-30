@@ -292,7 +292,7 @@ const Leaderboard = () => {
                       {/* Team Stats */}
                       <div className="space-y-1 mb-3">
                         <p className="text-sm text-gray-600">
-                          Points: <span className="font-bold">{team.totalFantasyPoints || team.performance?.points || 0}</span>
+                          CLG Points: <span className="font-bold">{team.totalFantasyPoints || team.performance?.points || 0}</span>
                         </p>
                         <p className="text-sm text-gray-600">
                           Credits: <span className="font-bold">{team.totalCreditsUsed || 0}/100</span>

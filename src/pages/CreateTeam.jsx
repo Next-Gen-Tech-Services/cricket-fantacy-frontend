@@ -136,7 +136,7 @@ export default function CreateTeam() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [filterTeam, setFilterTeam] = useState("all");
-  const [sortBy, setSortBy] = useState("points");
+  const [sortBy, setSortBy] = useState("CLG points");
   const [viewMode, setViewMode] = useState("pitch");
   const [saving, setSaving] = useState(false);
   const [teamName, setTeamName] = useState(""); // Team name for edit mode
@@ -257,7 +257,7 @@ export default function CreateTeam() {
             team: player.team,
             teamColor: player.teamColor || '#000000',
             price: player.price || 8.0,
-            points: player.points || 0,
+            CLGpoints: player.points || 0,
             avatar: player.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&color=fff&size=80`,
             stats: player.stats || {}
           }));
@@ -335,7 +335,7 @@ export default function CreateTeam() {
       return matchesSearch && matchesRole && matchesTeam;
     })
     .sort((a, b) => {
-      if (sortBy === "points") return b.points - a.points;
+      if (sortBy === "CLG points") return b.CLGpoints - a.CLGpoints;
       if (sortBy === "price") return b.price - a.price;
       return 0;
     });
@@ -395,8 +395,8 @@ export default function CreateTeam() {
     const roleCounts = { WK: 0, BAT: 0, AR: 0, BOWL: 0 };
     const teamCounts = {}; // Track players per team
 
-    // Create a copy of players sorted by points (simpler approach)
-    const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
+    // Create a copy of players sorted by CLG points (simpler approach)
+    const sortedPlayers = [...players].sort((a, b) => b.CLGpoints - a.CLGpoints);
 
     // Phase 1: Fill minimum requirements for each role
     const roles = ["WK", "BAT", "AR", "BOWL"];
@@ -442,7 +442,7 @@ export default function CreateTeam() {
         const currentTeamCount = teamCounts[player.team] || 0;
         if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
 
-        // Take the first valid player (already sorted by points)
+        // Take the first valid player (already sorted by CLG points)
         bestPlayer = player;
         break;
       }
@@ -460,11 +460,11 @@ export default function CreateTeam() {
 
     setSelected(autoPicked);
 
-    // Auto select Captain and Vice Captain based on highest points
+    // Auto select Captain and Vice Captain based on highest CLG points
     if (autoPicked.length >= 2) {
-      const sortedByPoints = [...autoPicked].sort((a, b) => b.points - a.points);
-      setCaptain(sortedByPoints[0].id);
-      setViceCaptain(sortedByPoints[1].id);
+      const sortedByCLGPoints = [...autoPicked].sort((a, b) => b.CLGpoints - a.CLGpoints);
+      setCaptain(sortedByCLGPoints[0].id);
+      setViceCaptain(sortedByCLGPoints[1].id);
     } else {
       setCaptain(null);
       setViceCaptain(null);
@@ -884,8 +884,8 @@ export default function CreateTeam() {
                         PRICE
                       </button>
                       <button
-                        onClick={() => setSortBy('points')}
-                        className={`w-8 text-center flex-shrink-0 transition-colors ${sortBy === 'points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                        onClick={() => setSortBy('CLG points')}
+                        className={`w-8 text-center flex-shrink-0 transition-colors ${sortBy === 'CLG points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
                           }`}
                       >
                         TP
@@ -979,10 +979,10 @@ export default function CreateTeam() {
                             )}
                           </div>
                           <span className="text-sm font-semibold text-[#273470] w-12 text-center">
-                            {player.price} CLG
+                            {player.price} CLG Point
                           </span>
                           <span className="text-sm text-gray-600 w-8 text-center">
-                            {player.points}
+                            {player.CLGpoints}
                           </span>
 
 
@@ -1071,11 +1071,11 @@ export default function CreateTeam() {
                   <span className="ml-2 font-normal text-xs">Players Selected</span>
                 </div>
                 <div className="px-4 py-2 bg-white border-2 border-gray-300 rounded-lg font-bold text-[#273470] text-center">
-                  {(walletBalance - totalCredits).toFixed(1)} CLG
+                  {(walletBalance - totalCredits).toFixed(1)} CLG Point
                   <span className="ml-2 font-normal text-xs">Wallet Balance</span>
                 </div>
                 <div className="px-4 py-2 bg-blue-50 border-2 border-blue-200 rounded-lg font-bold text-blue-700 text-center">
-                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG
+                  {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG Point
                   <span className="ml-2 font-normal text-xs">Used</span>
                 </div>
                 
@@ -1185,7 +1185,7 @@ export default function CreateTeam() {
                                   }
                                 </p>
                                 <p className="text-xs text-gray-600">
-                                  {player.team} • {player.price}pts
+                                  {player.team} • {player.price} CLG Pt
                                 </p>
                               </div>
                             </div>
@@ -1318,7 +1318,7 @@ function PitchRow({ title, players, captain, viceCaptain, onSelectCaptain, onSel
                     <span className="text-sm lg:text-lg">{p.team}</span>
                     {/* Price Tag */}
                     <div className="absolute top-1 right-1 bg-black/70 text-white text-[8px] lg:text-[10px] font-bold px-1 lg:px-2 py-0.5 rounded">
-                      {p.price}pts
+                      {p.price} CLG Pt
                     </div>
                   </div>
 

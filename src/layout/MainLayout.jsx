@@ -1,10 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import BottomNavigation from "../components/BottomNavigation";
 import MobileHeader from "../components/MobileHeader";
 
 export default function MainLayout() {
+  const location = useLocation();
+  const isContactPage = location.pathname === '/contact';
+
   return (
     <>
       {/* Desktop Navigation */}
@@ -18,7 +21,7 @@ export default function MainLayout() {
       </div>
       
       {/* Main Content */}
-      <div className="min-h-screen">
+      <div className={isContactPage ? "" : "min-h-screen"}>
         <Outlet />
       </div>
       

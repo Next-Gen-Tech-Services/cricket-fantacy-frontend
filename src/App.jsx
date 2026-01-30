@@ -16,6 +16,11 @@ import Table from "./pages/table";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import HowToEarnPoints from "./pages/HowToEarnPoints";
+import ContactUs from "./pages/ContactUs";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
+import Cookies from "./pages/Cookies";
+import MobileLogout from "./pages/MobileLogout";
 
 // New Tournament Flow Pages
 import Tournaments from "./pages/Tournaments";
@@ -92,6 +97,18 @@ export default function App() {
           {/* Public Routes - Available to everyone */}
           <Route path="/" element={<Home />} />
           <Route path="/how-to-earn-points" element={<HowToEarnPoints />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-use" element={<TermsOfUse />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route 
+            path="/mobile-logout" 
+            element={
+              <ProtectedRoute>
+                <MobileLogout />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* Protected Tournament Flow - Require Authentication */}
           <Route 

@@ -240,16 +240,16 @@ export default function Navbar() {
              
 
               {/* MOBILE USER SECTION */}
-              {isAuthenticated && user ? (
+              {isAuthenticated ? (
                 <>
                   {/* User Info */}
                   <div className="flex items-center gap-3 py-2">
                     <div className="w-10 h-10 bg-[#273470] text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                      {getUserInitials(user.name)}
+                      {getUserInitials(user?.name)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
-                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                      <p className="text-sm font-semibold text-slate-900 truncate">{user?.name || 'User'}</p>
+                      <p className="text-xs text-slate-500 truncate">{user?.email || ''}</p>
                     </div>
                   </div>
                   

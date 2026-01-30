@@ -140,6 +140,33 @@ const TournamentDetails = () => {
     });
   };
 
+  // Calculate actual tournament dates from matches
+  const getActualTournamentDates = (matches) => {
+    if (!matches || matches.length === 0) {
+      return {
+        startDate: currentTournament?.startDate,
+        endDate: currentTournament?.endDate
+      };
+    }
+
+    const timestamps = matches
+      .map(match => match.startedAt)
+      .filter(timestamp => timestamp) // Remove null/undefined values
+      .sort((a, b) => a - b); // Sort timestamps in ascending order
+
+    if (timestamps.length === 0) {
+      return {
+        startDate: currentTournament?.startDate,
+        endDate: currentTournament?.endDate
+      };
+    }
+
+    return {
+      startDate: timestamps[0], // Earliest match timestamp
+      endDate: timestamps[timestamps.length - 1] // Latest match timestamp
+    };
+  };
+
   const formatTime = (timestamp) => {
     if (!timestamp) return "TBD";
 
@@ -246,7 +273,10 @@ const TournamentDetails = () => {
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">
                   <FiCalendar className="mr-2 text-white" size={12} />
                   <span className="text-xs font-medium">
-                    {formatDate(currentTournament.startDate)} - {formatDate(currentTournament.endDate)}
+                    {(() => {
+                      const { startDate, endDate } = getActualTournamentDates(tournamentMatches);
+                      return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+                    })()}
                   </span>
                 </div>
                 <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg">

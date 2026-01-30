@@ -65,33 +65,6 @@ const Tournaments = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const formatDate = (dateString, format = 'short') => {
-    if (!dateString) return "TBD";
-    
-    const date = new Date(dateString);
-    
-    if (format === 'short') {
-      return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    }
-    
-    if (format === 'long') {
-      return date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-    
-    return date.toLocaleDateString();
-  };
-
   const formatDateRange = (startDate, endDate) => {
     if (!startDate || !endDate) {
       return "Dates TBD";

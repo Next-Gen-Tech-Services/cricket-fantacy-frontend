@@ -217,7 +217,7 @@ const FantasyTeamDetail = ({ team, showActions = false, onEdit, onView }) => {
                                 <p className="text-sm font-bold text-[#273470]">
                                   {playerEntry.credits || 0}
                                 </p>
-                                <p className="text-xs text-gray-500">pts</p>
+                                <p className="text-xs text-gray-500">CLG Pts</p>
                               </div>
                             </div>
                           </div>

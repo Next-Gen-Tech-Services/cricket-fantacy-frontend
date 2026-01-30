@@ -60,7 +60,7 @@ const LeagueDetails = () => {
       await navigator.clipboard.writeText(shareLink);
       toast.success('Share link copied to clipboard!');
     } catch (error) {
-      toast.error('Failed to copy link');
+      toast.error('Failed to copy link', error);
     }
   };
 
@@ -340,7 +340,7 @@ const LeagueDetails = () => {
               </h3>
             </div>
             <div className="divide-y divide-gray-100">
-              {league.members?.filter(m => m.isActive).map((member, index) => (
+              {league.members?.filter(m => m.isActive).map((member) => (
                 <div key={member.user._id} className="p-4 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">

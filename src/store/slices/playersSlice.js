@@ -75,7 +75,7 @@ const initialState = {
     team: null,
     role: null,
     search: '',
-    sortBy: 'name', // name, points, price, form
+    sortBy: 'name', // name, CLG points, price, form
     sortOrder: 'asc', // asc, desc
   },
 };

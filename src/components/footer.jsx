@@ -36,18 +36,18 @@ export default function Footer() {
     {
       title: "Support",
       links: [
-        { name: "Contact Us", href: "#", authRequired: false },
+        { name: "Contact Us", href: "/contact", authRequired: false },
         { name: "Help Center", href: "#", authRequired: false },
-        { name: "Terms of Use", href: "#", authRequired: false },
+        { name: "Terms of Use", href: "/terms-of-use", authRequired: false },
       ]
     },
   ];
 
   const bottomLinks = [
-    "Privacy Policy",
-    "Terms of Use", 
-    "Cookie Policy",
-    "Contact Us",
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Use", href: "/terms-of-use" }, 
+    { name: "Cookie Policy", href: "/cookies" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   return (
@@ -134,17 +134,17 @@ export default function Footer() {
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
             {bottomLinks.map((item, index) => (
-              <a
+              <Link
                 key={index}
-                href="#"
+                to={item.href}
                 className="
                   text-gray-400
                   hover:text-white
                   transition-colors duration-200
                 "
               >
-                {item}
-              </a>
+                {item.name}
+              </Link>
             ))}
           </div>
         </div>

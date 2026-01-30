@@ -737,6 +737,15 @@ export const adminAPI = {
   }
 };
 
+// ================= CONTACT API =================
+export const contactAPI = {
+  // Send contact message
+  sendMessage: async (messageData) => {
+    const response = await api.post('/contact', messageData);
+    return response.data;
+  }
+};
+
 // Legacy API exports for backward compatibility
 export const subscribeToNotifications = notificationsAPI.subscribe;
 export const unsubscribeFromNotifications = notificationsAPI.unsubscribe;
