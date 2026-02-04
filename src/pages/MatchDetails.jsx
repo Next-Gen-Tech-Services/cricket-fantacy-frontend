@@ -80,30 +80,46 @@ const MatchDetails = () => {
     });
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'live': return 'bg-red-500';
-      case 'completed': return 'bg-green-500';
-      case 'scheduled':
-      case 'upcoming': return 'bg-blue-500';
-      case 'cancelled':
-      case 'postponed': return 'bg-gray-500';
-      default: return 'bg-blue-500';
-    }
+  // Helper function to check if team creation is allowed (within 24 hours)
+  const canCreateTeam = () => {
+    if (!currentMatch?.startedAt) return false;
+    const matchTime = new Date(currentMatch.startedAt * 1000);
+    const now = new Date();
+    const timeDiff = matchTime.getTime() - now.getTime();
+    const hoursUntilMatch = timeDiff / (1000 * 60 * 60);
+    return hoursUntilMatch <= 24 && hoursUntilMatch > 0;
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'live': return 'LIVE';
-      case 'completed': return 'COMPLETED';
-      case 'scheduled':
-      case 'upcoming': return 'UPCOMING';
-      case 'cancelled': return 'CANCELLED';
-      case 'postponed': return 'POSTPONED';
-      default: return status?.toUpperCase() || 'UPCOMING';
-    }
+  // Helper function to get time remaining until team creation opens
+  const getTimeUntilTeamCreation = () => {
+    if (!currentMatch?.startedAt) return null;
+    const matchTime = new Date(currentMatch.startedAt * 1000);
+    const teamCreationTime = new Date(matchTime.getTime() - (24 * 60 * 60 * 1000)); // 24 hours before match
+    const now = new Date();
+    const timeDiff = teamCreationTime.getTime() - now.getTime();
+    
+    if (timeDiff <= 0) return null; // Team creation is already open
+    
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return { days, hours, minutes };
   };
 
+  // Helper function to format countdown text
+  const getCountdownText = () => {
+    const timeLeft = getTimeUntilTeamCreation();
+    if (!timeLeft) return null;
+    
+    if (timeLeft.days > 0) {
+      return `${timeLeft.days}d ${timeLeft.hours}h`;
+    } else if (timeLeft.hours > 0) {
+      return `${timeLeft.hours}h ${timeLeft.minutes}m`;
+    } else {
+      return `${timeLeft.minutes}m`;
+    }
+  };
   // Loading state
   if (isLoading) {
     return (
@@ -205,27 +221,40 @@ const MatchDetails = () => {
             <div className="flex flex-col sm:flex-row gap-3 lg:flex-shrink-0">
               {(currentMatch.status === 'scheduled' || currentMatch.status === 'upcoming') && (
                 <>
-                  {hasTeamForMatch() ? (
-                    <button
-                      onClick={() => {
-                        const team = getTeamForMatch();
-                        navigate(`/tournaments/${tournamentId}/matches/${matchId}/edit-team/${team._id}`);
-                      }}
-                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-[#273470] font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base border border-yellow-300"
-                    >
-                      <FiEdit size={18} className="flex-shrink-0" />
-                      <span className="font-semibold">Edit Team</span>
-                    </button>
+                  {canCreateTeam() ? (
+                    // Within 24 hours - show create/edit team buttons
+                    hasTeamForMatch() ? (
+                      <button
+                        onClick={() => {
+                          const team = getTeamForMatch();
+                          navigate(`/tournaments/${tournamentId}/matches/${matchId}/edit-team/${team._id}`);
+                        }}
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-[#273470] font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base border border-yellow-300"
+                      >
+                        <FiEdit size={18} className="flex-shrink-0" />
+                        <span className="font-semibold">Edit Team</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/create-team`)}
+                        className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-[#273470] font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base border border-yellow-300"
+                      >
+                        <FiUsers size={18} className="flex-shrink-0" />
+                        <span className="font-semibold">Create Team</span>
+                      </button>
+                    )
                   ) : (
-                    <button
-                      onClick={() => navigate(`/tournaments/${tournamentId}/matches/${matchId}/create-team`)}
-                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-[#273470] font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base border border-yellow-300"
-                    >
-                      <FiUsers size={18} className="flex-shrink-0" />
-                      <span className="font-semibold">Create Team</span>
-                    </button>
+                    // More than 24 hours away - show countdown
+                    <div className="bg-gradient-to-r from-red-500 to-red-500 text-white-400 font-bold py-3.5 px-6 rounded-xl border border-red-800 flex items-center justify-center gap-3 text-sm lg:text-base">
+                      <FiClock size={18} className="flex-shrink-0" />
+                      <div className="text-center">
+                        <div className="font-semibold">Team Creation Opens In</div>
+                        <div className="text-xs font-medium text-white-500">
+                          {getCountdownText() || 'Calculating...'}
+                        </div>
+                      </div>
+                    </div>
                   )}
-
                 </>
               )}
               {

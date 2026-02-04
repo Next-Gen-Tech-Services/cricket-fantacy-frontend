@@ -5,13 +5,13 @@ import { matchesAPI, fantasyTeamsAPI } from "../services/api";
 
 /* ------------------ CONFIG ------------------ */
 const TEAM_RULES = {
-  WK: { min: 1, max: 1 },
-  BAT: { min: 3, max: 4 },
-  AR: { min: 1, max: 2 },
-  BOWL: { min: 3, max: 4 },
+  WK: { min: 1, max: 4 },    // Wicket Keeper: minimum 1, max 4 for flexibility
+  BAT: { min: 2, max: 8 },   // Batsman: minimum 2, max 8 for strategy
+  AR: { min: 1, max: 8 },    // All Rounder: minimum 1, max 8 for balance  
+  BOWL: { min: 2, max: 8 },  // Bowler: minimum 2, max 8 for bowling options
   TOTAL: 11,
   BUDGET: 100,
-  MAX_PLAYERS_PER_TEAM: 7, // Maximum players from any one team
+  MAX_PLAYERS_PER_TEAM: 6, // Maximum players from any one team
 };
 
 /* ------------------ DUMMY DATA ------------------ */
@@ -29,6 +29,7 @@ const currentMatch = {
 /* ------------------ UTILITY FUNCTIONS ------------------ */
 const getStatusColor = (status) => {
   switch (status) {
+    case "scheduled": return "bg-blue-500";
     case "upcoming": return "bg-blue-500";
     case "live": return "bg-green-500";
     case "completed": return "bg-gray-500";
@@ -38,6 +39,7 @@ const getStatusColor = (status) => {
 
 const getStatusText = (status) => {
   switch (status) {
+    case "scheduled": return "UPCOMING";
     case "upcoming": return "UPCOMING";
     case "live": return "LIVE";
     case "completed": return "COMPLETED";
@@ -145,7 +147,7 @@ export default function CreateTeam() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   // User's wallet balance (you can fetch this from API or context)
-  const [walletBalance] = useState(90); // Example: user has 100pts in wallet
+  const [walletBalance] = useState(100); // Example: user has 100pts in wallet
 
   // Handle window resize for mobile detection
   useEffect(() => {
@@ -252,7 +254,7 @@ export default function CreateTeam() {
             id: player._id || player.id,
             playerId: player.playerId,
             name: player.name,
-            shortName: player.shortName || player.name,
+            shortName: player.name|| player.shortName ,
             role: mapRole(player.role),
             team: player.team,
             teamColor: player.teamColor || '#000000',
@@ -812,7 +814,7 @@ export default function CreateTeam() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1440px] mx-auto px-4  lg:pb-8 flex flex-col lg:grid lg:grid-cols-[420px_1fr] gap-6">
+      <div className="max-w-[1440px] mx-auto px-4  lg:pb-8 flex flex-col lg:grid lg:grid-cols-[35%_65%] gap-6">
         {/* ================= LEFT : PLAYER LIST ================= */}
         <section className="bg-white border border-gray-200 rounded-xl shadow-sm order-2 lg:order-1 lg:h-fit lg:sticky lg:top-6">
           {/* Header */}
@@ -820,6 +822,24 @@ export default function CreateTeam() {
             <h2 className="text-lg font-bold text-[#273470] mb-1">
               Player Selection
             </h2>
+            
+            {/* Fantasy Cricket Rules Info */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <div className="flex items-start gap-2">
+                <FiInfo className="text-blue-600 flex-shrink-0 mt-0.5" size={16} />
+                <div className="text-xs text-blue-700">
+                  <p className="font-semibold mb-1">MatchPlay Cricket Rules:</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                    <span>• Min 1 Wicket Keeper</span>
+                    <span>• Min 2 Batter</span>
+                    <span>• Min 1 All-Rounder</span>
+                    <span>• Min 2 Bowlers</span>
+                    <span>• Max 6 players from one team</span>
+                  </div>
+                  <p className="mt-2 text-[10px] text-blue-600">Select remaining players as per your strategy!</p>
+                </div>
+              </div>
+            </div>
 
           </div>
 
@@ -878,10 +898,10 @@ export default function CreateTeam() {
                       <span className="w-8 text-center flex-shrink-0">VC</span>
                       <button
                         onClick={() => setSortBy('price')}
-                        className={`w-12 text-center flex-shrink-0 transition-colors ${sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                        className={`w-15 text-center flex-shrink-0 transition-colors ${sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
                           }`}
                       >
-                        PRICE
+                        VALUE
                       </button>
                       <button
                         onClick={() => setSortBy('CLG points')}
@@ -922,10 +942,7 @@ export default function CreateTeam() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <p className="text-sm font-semibold text-[#273470] truncate max-w-[120px]">
-                                {player.name.split(" ").length > 1
-                                  ? `${player.name.split(" ")[0]} ${player.name.split(" ").slice(-1)[0].charAt(0)}.`
-                                  : player.name
-                                }
+                                {player.name}
                               </p>
                               {/* {isCaptain && (
                                 <span className="px-1.5 py-0.5 text-[10px] font-bold bg-yellow-400 text-black rounded">
@@ -978,7 +995,7 @@ export default function CreateTeam() {
                               </button>
                             )}
                           </div>
-                          <span className="text-sm font-semibold text-[#273470] w-12 text-center">
+                          <span className="text-xs font-medium text-[#273470] w-18 text-center">
                             {player.price} CLG Pts
                           </span>
                           <span className="text-sm text-gray-600 w-8 text-center">
@@ -1044,7 +1061,7 @@ export default function CreateTeam() {
 
             {/* Match Info Banner */}
             <div className="bg-[#273470] px-6 py-3 text-white text-center text-sm font-semibold">
-              IND vs AUS • Select 11 from 30 Players
+              {displayMatch.name} • Select 11 from {players.length} Players
             </div>
 
             {/* Stats Bar */}
@@ -1109,47 +1126,104 @@ export default function CreateTeam() {
                     <div className="absolute bottom-16 left-0 right-0 h-0.5 bg-white/50"></div>
                   </div>
 
-                  <div className="absolute inset-0 border-2 border-white/10 rounded-full m-4"></div>
+                  <div className="absolute inset-0 border-2 border-white/50 m-4" style={{ borderRadius: '50% / 40%' }}></div>
                 </div>
 
-                {/* PITCH FORMATION */}
+                {/* PITCH FORMATION - Smart 11-Slot Distribution */}
                 <div className="relative z-10 grid grid-rows-4 gap-6 lg:gap-8 text-center">
-                  <PitchRow
-                    title="WICKET KEEPER"
-                    players={selected.filter((p) => p.role === "WK")}
-                    captain={captain}
-                    viceCaptain={viceCaptain}
-                    onSelectCaptain={selectCaptain}
-                    onSelectViceCaptain={selectViceCaptain}
-                    max={TEAM_RULES.WK.max}
-                  />
-                  <PitchRow
-                    title="BATTER"
-                    players={selected.filter((p) => p.role === "BAT")}
-                    captain={captain}
-                    viceCaptain={viceCaptain}
-                    onSelectCaptain={selectCaptain}
-                    onSelectViceCaptain={selectViceCaptain}
-                    max={TEAM_RULES.BAT.max}
-                  />
-                  <PitchRow
-                    title="ALL-ROUNDERS"
-                    players={selected.filter((p) => p.role === "AR")}
-                    captain={captain}
-                    viceCaptain={viceCaptain}
-                    onSelectCaptain={selectCaptain}
-                    onSelectViceCaptain={selectViceCaptain}
-                    max={TEAM_RULES.AR.max}
-                  />
-                  <PitchRow
-                    title="BOWLERS"
-                    players={selected.filter((p) => p.role === "BOWL")}
-                    captain={captain}
-                    viceCaptain={viceCaptain}
-                    onSelectCaptain={selectCaptain}
-                    onSelectViceCaptain={selectViceCaptain}
-                    max={TEAM_RULES.BOWL.max}
-                  />
+                  {(() => {
+                    // Count selected players by role
+                    const selectedCounts = {
+                      WK: selected.filter(p => p.role === "WK").length,
+                      BAT: selected.filter(p => p.role === "BAT").length,
+                      AR: selected.filter(p => p.role === "AR").length,
+                      BOWL: selected.filter(p => p.role === "BOWL").length
+                    };
+
+                    // Calculate smart slot allocation (always totaling 11)
+                    const totalSelected = selectedCounts.WK + selectedCounts.BAT + selectedCounts.AR + selectedCounts.BOWL;
+                    const remainingSlots = 11 - totalSelected;
+
+                    // When team is complete (11 players), just show selected players
+                    let allocatedSlots;
+                    if (totalSelected === 11) {
+                      allocatedSlots = { ...selectedCounts };
+                    } else {
+                      // Minimum slots to show for empty positions
+                      const minSlots = {
+                        WK: Math.max(1, selectedCounts.WK),
+                        BAT: Math.max(2, selectedCounts.BAT),  
+                        AR: Math.max(1, selectedCounts.AR),
+                        BOWL: Math.max(2, selectedCounts.BOWL)
+                      };
+
+                      // Distribute remaining slots proportionally, maintaining minimums
+                      const idealDistribution = { WK: 1, BAT: 4, AR: 2, BOWL: 4 };
+                      allocatedSlots = { ...minSlots };
+                      
+                      if (remainingSlots > 0) {
+                        // Add remaining slots to roles that have space, preferring original distribution
+                        const priorities = [
+                          { role: 'BAT', current: allocatedSlots.BAT, ideal: idealDistribution.BAT },
+                          { role: 'BOWL', current: allocatedSlots.BOWL, ideal: idealDistribution.BOWL },
+                          { role: 'AR', current: allocatedSlots.AR, ideal: idealDistribution.AR },
+                          { role: 'WK', current: allocatedSlots.WK, ideal: idealDistribution.WK }
+                        ];
+
+                        let slotsToDistribute = remainingSlots;
+                        for (const { role } of priorities) {
+                          if (slotsToDistribute <= 0) break;
+                          const maxToAdd = idealDistribution[role] - allocatedSlots[role];
+                          const toAdd = Math.min(maxToAdd, slotsToDistribute);
+                          if (toAdd > 0) {
+                            allocatedSlots[role] += toAdd;
+                            slotsToDistribute -= toAdd;
+                          }
+                        }
+                      }
+                    }
+
+                    return (
+                      <>
+                        <PitchRow
+                          title="WICKET KEEPER"
+                          players={selected.filter((p) => p.role === "WK")}
+                          captain={captain}
+                          viceCaptain={viceCaptain}
+                          onSelectCaptain={selectCaptain}
+                          onSelectViceCaptain={selectViceCaptain}
+                          max={allocatedSlots.WK}
+                        />
+                        <PitchRow
+                          title="BATSMEN"
+                          players={selected.filter((p) => p.role === "BAT")}
+                          captain={captain}
+                          viceCaptain={viceCaptain}
+                          onSelectCaptain={selectCaptain}
+                          onSelectViceCaptain={selectViceCaptain}
+                          max={allocatedSlots.BAT}
+                        />
+                        <PitchRow
+                          title="ALL-ROUNDERS"
+                          players={selected.filter((p) => p.role === "AR")}
+                          captain={captain}
+                          viceCaptain={viceCaptain}
+                          onSelectCaptain={selectCaptain}
+                          onSelectViceCaptain={selectViceCaptain}
+                          max={allocatedSlots.AR}
+                        />
+                        <PitchRow
+                          title="BOWLERS"
+                          players={selected.filter((p) => p.role === "BOWL")}
+                          captain={captain}
+                          viceCaptain={viceCaptain}
+                          onSelectCaptain={selectCaptain}
+                          onSelectViceCaptain={selectViceCaptain}
+                          max={allocatedSlots.BOWL}
+                        />
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             ) : (
@@ -1179,10 +1253,7 @@ export default function CreateTeam() {
                               </div>
                               <div>
                                 <p className="text-sm font-semibold text-[#273470] max-w-[120px] truncate">
-                                  {player.name.split(" ").length > 1
-                                    ? `${player.name.split(" ")[0]} ${player.name.split(" ").slice(-1)[0].charAt(0)}.`
-                                    : player.name
-                                  }
+                                  { player.name}
                                 </p>
                                 <p className="text-xs text-gray-600">
                                   {player.team} • {player.price} CLG Pt
@@ -1325,7 +1396,7 @@ function PitchRow({ title, players, captain, viceCaptain, onSelectCaptain, onSel
                   {/* Player Info */}
                   <div className="p-1.5 lg:p-2 bg-white text-center">
                     <p className="text-[10px] lg:text-xs font-bold text-gray-900 leading-tight truncate">
-                      {p.name.split(" ").slice(-1)[0]}
+                      {p.name}
                     </p>
                     <p className="text-[8px] lg:text-[10px] text-gray-500">
                       {p.team} ({p.role})
@@ -1335,11 +1406,11 @@ function PitchRow({ title, players, captain, viceCaptain, onSelectCaptain, onSel
               </div>
 
               {/* Captain/VC Selection Dropdown - Hidden on mobile, visible on hover on desktop */}
-              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 hidden lg:group-hover:flex flex-col gap-1 bg-white rounded-lg shadow-xl p-2 z-30 min-w-[120px]">
+              <div className="absolute top-full left-1/2 -translate-x-1/2 hidden lg:group-hover:flex flex-col gap-1 bg-white rounded-lg shadow-xl p-2 z-30 min-w-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none group-hover:pointer-events-auto">
                 <button
                   onClick={() => onSelectCaptain(p.id)}
                   disabled={isCaptain}
-                  className="px-3 py-1.5 text-xs font-semibold rounded bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
+                  className="px-3 py-1.5 text-xs font-semibold rounded bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition-colors"
                 >
                   <span className="bg-black text-white px-1 py-0.5 rounded text-xs font-bold">C</span>
                   {isCaptain ? "Captain" : "Make Captain"}
@@ -1347,7 +1418,7 @@ function PitchRow({ title, players, captain, viceCaptain, onSelectCaptain, onSel
                 <button
                   onClick={() => onSelectViceCaptain(p.id)}
                   disabled={isViceCaptain}
-                  className="px-3 py-1.5 text-xs font-semibold rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center"
+                  className="px-3 py-1.5 text-xs font-semibold rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 justify-center transition-colors"
                 >
                   <span className="bg-white text-blue-500 px-1 py-0.5 rounded text-xs font-bold">VC</span>
                   {isViceCaptain ? "Vice Captain" : "Make V.Captain"}
@@ -1357,24 +1428,30 @@ function PitchRow({ title, players, captain, viceCaptain, onSelectCaptain, onSel
           );
         })}
 
-        {/* Empty Slots */}
+        {/* Empty Slots - Enhanced UI */}
         {Array.from({ length: emptySlots }).map((_, i) => (
           <div
             key={`empty-${i}`}
-            className="w-16 lg:w-24 rounded-xl overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-dashed border-white/50 shadow-lg"
+            className="w-16 lg:w-24 rounded-xl overflow-hidden bg-gradient-to-b from-white/30 to-white/10 backdrop-blur-sm border-2 border-dashed border-white/40 shadow-lg hover:border-white/60 hover:bg-gradient-to-b hover:from-white/40 hover:to-white/20 transition-all duration-200 cursor-pointer group"
+            title={`Add ${title.toLowerCase()}`}
           >
             {/* Empty Jersey/Team Area */}
-            <div className="w-full aspect-square flex items-center justify-center text-white/70 font-bold text-2xl lg:text-3xl bg-white/10">
-              +
+            <div className="w-full aspect-square flex items-center justify-center text-white/60 font-bold text-lg lg:text-xl bg-white/5 group-hover:bg-white/10 group-hover:text-white/80 transition-all duration-200 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-t-xl"></div>
+              <div className="relative">
+                <div className="w-6 lg:w-8 h-6 lg:h-8 border-2 border-white/50 rounded-full flex items-center justify-center group-hover:border-white/70 transition-colors">
+                  <span className="text-sm lg:text-base">+</span>
+                </div>
+              </div>
             </div>
 
             {/* Empty Player Info Area */}
-            <div className="p-1.5 lg:p-2 bg-white/10 text-center">
-              <p className="text-[10px] lg:text-xs font-bold text-white/60 leading-tight">
-                Empty
+            <div className="p-1 lg:p-1.5 bg-white/5 group-hover:bg-white/10 text-center transition-all duration-200">
+              <p className="text-[9px] lg:text-[10px] font-semibold text-white/50 group-hover:text-white/70 leading-tight transition-colors">
+                Add Player
               </p>
-              <p className="text-[8px] lg:text-[10px] text-white/50">
-                Select Player
+              <p className="text-[7px] lg:text-[8px] text-white/40 group-hover:text-white/60 transition-colors">
+                {title.split(' ')[0]}
               </p>
             </div>
           </div>

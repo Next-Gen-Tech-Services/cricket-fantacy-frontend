@@ -38,8 +38,9 @@ let messaging = null;
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   try {
     messaging = getMessaging(app);
+    console.log('✅ Firebase Messaging initialized successfully');
   } catch (error) {
-    console.warn('Firebase Messaging not supported:', error);
+    console.warn('⚠️ Firebase Messaging initialization failed:', error);
   }
 }
 
@@ -55,16 +56,22 @@ export const requestNotificationPermission = async () => {
     if (permission === 'granted') {
       console.log('Notification permission granted');
       
-      // Get FCM token
-      const token = await getToken(messaging, {
-        vapidKey: 'BNwX0ZqCGJ0_XQz6fYz0jQnPjw8wYTJ3KxLZ-JYXGWiYcDj7X_1xYQGZQvL8tB5dHxTQYzQwXvL0jB9vXQz6fYz0' // TODO: Replace with actual VAPID key from Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
-      });
-      
-      if (token) {
-        console.log('FCM Token:', token);
-        return token;
-      } else {
-        console.log('No registration token available');
+      // Get FCM token without VAPID key first (will use default from Firebase)
+      try {
+        const token = await getToken(messaging);
+        
+        if (token) {
+          console.log('FCM Token:', token);
+          return token;
+        } else {
+          console.log('No registration token available');
+          return null;
+        }
+      } catch (tokenError) {
+        console.error('Error getting FCM token:', tokenError);
+        
+        // If token generation fails, try alternative approach
+        console.log('Attempting to get token without service worker...');
         return null;
       }
     } else {
@@ -78,18 +85,28 @@ export const requestNotificationPermission = async () => {
 };
 
 // Listen for foreground messages
-export const onMessageListener = () => {
-  return new Promise((resolve) => {
-    if (!messaging) {
-      console.warn('Messaging not initialized');
-      return;
-    }
-    
-    onMessage(messaging, (payload) => {
-      console.log('Message received in foreground:', payload);
-      resolve(payload);
+export const onMessageListener = (callback) => {
+  if (!messaging) {
+    console.warn('Messaging not initialized');
+    return () => {};
+  }
+  
+  console.log('✅ Setting up FCM message listener...');
+  
+  const unsubscribe = onMessage(messaging, (payload) => {
+    console.log('🔥 FCM Message received in foreground:', payload);
+    console.log('📱 Notification details:', {
+      title: payload.notification?.title,
+      body: payload.notification?.body,
+      data: payload.data
     });
+    
+    if (callback) {
+      callback(payload);
+    }
   });
+  
+  return unsubscribe;
 };
 
 export { app, analytics, messaging, auth, googleProvider };

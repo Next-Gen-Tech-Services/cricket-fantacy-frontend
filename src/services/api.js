@@ -390,6 +390,12 @@ export const leaguesAPI = {
     return response.data;
   },
 
+  // Get enhanced league with fantasy teams data
+  getEnhanced: async (leagueId) => {
+    const response = await api.get(`/leagues/${leagueId}/enhanced`);
+    return response.data;
+  },
+
   // Create league
   create: async (leagueData) => {
     const response = await api.post('/leagues', leagueData);
@@ -769,5 +775,9 @@ export const walletAPI = {
 export const subscribeToNotifications = notificationsAPI.subscribe;
 export const unsubscribeFromNotifications = notificationsAPI.unsubscribe;
 export const updateNotificationPreferences = notificationsAPI.updatePreferences;
+
+// Wallet API exports for backward compatibility
+export const getWalletSummary = walletAPI.getSummary;
+export const getWalletTransactions = walletAPI.getTransactions;
 
 export default api;

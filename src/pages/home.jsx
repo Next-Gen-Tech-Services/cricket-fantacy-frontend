@@ -35,12 +35,20 @@ const features = [
     link: "/tournaments",
   },
   {
+    title: "Win Rewards",
+    description:
+      "Signed CLG merchandise by top cricketers & International cricket match tickets",
+    image: home4,
+    link: "/leagues",
+  },
+  {
     title: "Invite Your Friends",
     description:
       "Share leagues with friends and compete against each other for glory.",
     image: home4,
     link: "/leagues",
   },
+
 ];
 
 export default function Home() {
@@ -61,8 +69,8 @@ export default function Home() {
         <div className="relative overflow-hidden rounded-3xl bg-gradient-primary">
           <div className="absolute inset-0 bg-black/20" />
 
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 p-8 lg:p-14 items-center">
-            <div className="text-white">
+          <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div className="text-white p-8 lg:p-14">
               {isAuthenticated ? (
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
                   Welcome back, {user?.name?.split(' ')[0]}! <br />
@@ -117,11 +125,11 @@ export default function Home() {
               )}
             </div>
 
-            <div className="hidden lg:flex justify-end">
+            <div className="hidden lg:flex justify-end items-end h-full">
               <img
                 src={heroHome}
                 alt="Cricket"
-                className="w-full  max-w-md drop-shadow-2xl"
+                className="w-full max-w-md drop-shadow-2xl object-bottom"
               />
             </div>
           </div>
@@ -131,10 +139,10 @@ export default function Home() {
       {/* ================= FEATURES ================= */}
       <section className="max-w-[1440px] mx-auto">
         <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8">
-          How It Works
+          How It Works ?
         </h2>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {features.map((item, index) => {
             // Check if the feature requires authentication
             const requiresAuth = item.link !== "/signup" && item.link !== "/how-to-earn-points" && item.link !== "/";

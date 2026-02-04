@@ -14,19 +14,32 @@ const TournamentLeagues = ({ tournament }) => {
   const [shareModal, setShareModal] = useState({ isOpen: false, league: null, shareLink: null });
 
   useEffect(() => {
-    loadTournamentLeagues();
+    if (tournament?._id) {
+      loadTournamentLeagues();
+    } else {
+      console.warn('No tournament ID available for loading leagues');
+    }
   }, [tournament?._id]);
 
   const loadTournamentLeagues = async () => {
+    if (!tournament?._id) {
+      console.error('Cannot load leagues: Tournament ID is missing');
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
+      console.log('Loading leagues for tournament:', tournament?._id); // Debug log
       const response = await leaguesAPI.getTournamentLeagues(tournament._id, {
         includePrivate: true,
         limit: 20
       });
 
+      console.log('Leagues API response:', response); // Debug log
       if (response.success) {
         setLeagues(response.data.leagues);
+        console.log('Loaded leagues:', response.data.leagues.length); // Debug log
       }
     } catch (error) {
       console.error('Load leagues error:', error);
@@ -105,14 +118,14 @@ const TournamentLeagues = ({ tournament }) => {
           document.execCommand('copy');
           toast.success('Link copied to clipboard!');
         } catch (fallbackError) {
-          toast.error('Unable to copy to clipboard');
+          toast.error('Unable to copy to clipboard',fallbackError);
         } finally {
           textArea.remove();
         }
       }
       setShareModal({ isOpen: false, league: null, shareLink: null });
     } catch (error) {
-      toast.error('Failed to copy link');
+      toast.error('Failed to copy link',error);
     }
   };
 

@@ -8,7 +8,7 @@ export default function Footer() {
 
   const navLinks = [
     { name: "Home", href: "/", authRequired: false },
-    { name: "How to score", href: "/how-to-earn-points", authRequired: false },
+    { name: "How to score?", href: "/how-to-earn-points", authRequired: false },
     { name: "Tournaments", href: "/tournaments", authRequired: true },
     { name: "My Leagues", href: "/my-leagues", authRequired: true },
   ];

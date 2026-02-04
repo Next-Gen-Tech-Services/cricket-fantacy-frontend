@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiUsers, FiShare2, FiStar, FiUserPlus, FiSettings, FiCopy, FiAward, FiCalendar } from 'react-icons/fi';
-import { leaguesAPI } from '../services/api';
+import { leaguesAPI, fantasyTeamsAPI, matchesAPI } from '../services/api';
 import { toast } from 'react-hot-toast';
 
 const LeagueDetails = () => {
@@ -13,6 +13,7 @@ const LeagueDetails = () => {
   const [activeTab, setActiveTab] = useState('leaderboard');
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareLink, setShareLink] = useState('');
+  const [enhancedLeaderboard, setEnhancedLeaderboard] = useState([]);
 
   useEffect(() => {
     loadLeagueDetails();
@@ -21,17 +22,24 @@ const LeagueDetails = () => {
   const loadLeagueDetails = async () => {
     try {
       setLoading(true);
-      const [leagueResponse, leaderboardResponse] = await Promise.all([
-        leaguesAPI.getById(leagueId),
-        leaguesAPI.getLeaderboard(leagueId)
-      ]);
+      
+      // Use the new enhanced API endpoint that includes fantasy teams data
+      console.log('Fetching enhanced league data...');
+      const leagueResponse = await leaguesAPI.getEnhanced(leagueId);
+      console.log('Enhanced league response:', JSON.stringify(leagueResponse, null, 2));
 
-      if (leagueResponse.success) {
-        setLeague(leagueResponse.data.league);
-      }
-
-      if (leaderboardResponse.success) {
-        setLeaderboard(leaderboardResponse.data.leaderboard || []);
+      if (leagueResponse.success || leagueResponse.league || leagueResponse.data) {
+        // Handle different response structures
+        const leagueData = leagueResponse.league || leagueResponse.data?.league || leagueResponse.data;
+        setLeague(leagueData);
+        
+        // Use the enhanced leaderboard from the API response
+        const enhancedData = leagueData.enhancedLeaderboard || leagueData.leaderboard || [];
+        console.log('Enhanced leaderboard from API:', enhancedData);
+        
+        // Set the enhanced leaderboard directly without additional processing
+        setEnhancedLeaderboard(enhancedData);
+        setLeaderboard(enhancedData);
       }
     } catch (error) {
       console.error('Load league details error:', error);
@@ -39,6 +47,16 @@ const LeagueDetails = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const enhanceLeaderboardWithFantasyData = async (baseLeaderboard, leagueData) => {
+    // This function is now simplified since we get enhanced data from the API
+    console.log('Using enhanced leaderboard from API response');
+    console.log('Base leaderboard:', baseLeaderboard);
+    console.log('League data:', leagueData);
+    
+    // The data is already enhanced from the API, so just use it directly
+    setEnhancedLeaderboard(baseLeaderboard);
   };
 
   const handleGenerateShareLink = async () => {
@@ -95,7 +113,7 @@ const LeagueDetails = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-2">League not found</h2>
           <button
             onClick={() => navigate('/tournaments')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-[#273470] text-white px-6 py-2 rounded-lg hover:bg-[#1e2859]"
           >
             Back to Tournaments
           </button>
@@ -106,19 +124,19 @@ const LeagueDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-[1440px] mx-auto px-4 py-6">
         {/* Header section */}
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 mb-6 transition-colors duration-200"
+            className="flex items-center space-x-2 text-gray-600 hover:text-[#273470] mb-6 transition-colors duration-200"
           >
             <FiArrowLeft size={20} />
             <span className="font-medium">Back</span>
           </button>
           
           {/* League Header Card */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white shadow-lg">
+          <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-8 text-white shadow-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-4 mb-3">
@@ -127,15 +145,15 @@ const LeagueDetails = () => {
                   </div>
                   <div>
                     <h1 className="text-3xl font-bold mb-1">{league.name}</h1>
-                    <div className="flex items-center space-x-3 text-blue-100">
+                    <div className="flex items-center space-x-3 text-white/80">
                       <span className="text-sm">Created by {league.createdBy?.name}</span>
-                      <span className="w-1 h-1 bg-blue-300 rounded-full"></span>
+                      <span className="w-1 h-1 bg-white/50 rounded-full"></span>
                       <span className="text-sm font-medium">{league.type.toUpperCase()} League</span>
                     </div>
                   </div>
                 </div>
                 {league.description && (
-                  <p className="text-blue-100 mt-3 text-lg">{league.description}</p>
+                  <p className="text-white/80 mt-3 text-lg">{league.description}</p>
                 )}
               </div>
 
@@ -154,29 +172,29 @@ const LeagueDetails = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <div className="text-center">
                 <div className="text-2xl font-bold">{league.currentMembers}</div>
-                <div className="text-blue-100 text-sm">Members</div>
+                <div className="text-white/80 text-sm">Members</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold">{league.maxMembers}</div>
-                <div className="text-blue-100 text-sm">Max Size</div>
+                <div className="text-white/80 text-sm">Max Size</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold">
                   {league.rules?.entryFee > 0 ? `₹${league.rules.entryFee}` : 'Free'}
                 </div>
-                <div className="text-blue-100 text-sm">Entry Fee</div>
+                <div className="text-white/80 text-sm">Entry Fee</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold">{getFillPercentage()}%</div>
-                <div className="text-blue-100 text-sm">Filled</div>
+                <div className="text-white/80 text-sm">Filled</div>
               </div>
             </div>
 
             {/* Progress Bar */}
             <div className="mt-4">
-              <div className="w-full bg-blue-500 bg-opacity-30 rounded-full h-2">
+              <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
                 <div
-                  className="bg-white h-2 rounded-full transition-all duration-300"
+                  className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${getFillPercentage()}%` }}
                 ></div>
               </div>
@@ -190,8 +208,8 @@ const LeagueDetails = () => {
             onClick={() => setActiveTab('leaderboard')}
             className={`flex-1 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
               activeTab === 'leaderboard'
-                ? 'bg-blue-600 text-white shadow-md transform scale-[0.98]'
-                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                ? 'bg-[#273470] text-white shadow-md transform scale-[0.98]'
+                : 'text-gray-600 hover:text-[#273470] hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -203,8 +221,8 @@ const LeagueDetails = () => {
             onClick={() => setActiveTab('members')}
             className={`flex-1 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${
               activeTab === 'members'
-                ? 'bg-blue-600 text-white shadow-md transform scale-[0.98]'
-                : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                ? 'bg-[#273470] text-white shadow-md transform scale-[0.98]'
+                : 'text-gray-600 hover:text-[#273470] hover:bg-gray-50'
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -217,11 +235,11 @@ const LeagueDetails = () => {
         {/* Tab Content */}
         {activeTab === 'leaderboard' && (
           <div className="space-y-6">
-            {leaderboard && leaderboard.length > 0 ? (
+            {enhancedLeaderboard && enhancedLeaderboard.length > 0 ? (
               <>
                 {/* Top 3 Podium */}
-                {leaderboard.length >= 3 && (
-                  <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 mb-8 text-white shadow-lg">
+                {enhancedLeaderboard.length >= 3 && (
+                  <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-8 mb-8 text-white shadow-lg">
                     <h3 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
                       <span className="text-3xl">🏆</span>
                       <span>Top Performers</span>
@@ -232,8 +250,8 @@ const LeagueDetails = () => {
                         <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center text-2xl mb-3 mx-auto">
                           🥈
                         </div>
-                        <h4 className="font-semibold text-sm mb-1">{leaderboard[1]?.user?.name}</h4>
-                        <p className="text-white/80 text-xs mb-2">{leaderboard[1]?.totalPoints || 0} CLG points</p>
+                        <h4 className="font-semibold text-sm mb-1">{enhancedLeaderboard[1]?.user?.name}</h4>
+                        <p className="text-white/80 text-xs mb-2">{enhancedLeaderboard[1]?.totalPoints || enhancedLeaderboard[1]?.points || 0} CLG points</p>
                         <div className="bg-white/20 px-3 py-1 rounded-full">
                           <span className="text-xs font-bold">#2</span>
                         </div>
@@ -244,9 +262,9 @@ const LeagueDetails = () => {
                         <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center text-3xl mb-3 mx-auto shadow-lg">
                           🥇
                         </div>
-                        <h4 className="font-bold text-lg mb-1">{leaderboard[0]?.user?.name}</h4>
-                        <p className="text-yellow-400 text-sm mb-2 font-semibold">{leaderboard[0]?.totalPoints || 0} CLG points</p>
-                        <div className="bg-yellow-400 text-blue-600 px-4 py-2 rounded-full">
+                        <h4 className="font-bold text-lg mb-1">{enhancedLeaderboard[0]?.user?.name}</h4>
+                        <p className="text-yellow-400 text-sm mb-2 font-semibold">{enhancedLeaderboard[0]?.totalPoints || enhancedLeaderboard[0]?.points || 0} CLG points</p>
+                        <div className="bg-yellow-400 text-[#273470] px-4 py-2 rounded-full">
                           <span className="text-sm font-bold">👑 LEADER</span>
                         </div>
                       </div>
@@ -256,8 +274,8 @@ const LeagueDetails = () => {
                         <div className="w-16 h-16 bg-orange-400 rounded-full flex items-center justify-center text-2xl mb-3 mx-auto">
                           🥉
                         </div>
-                        <h4 className="font-semibold text-sm mb-1">{leaderboard[2]?.user?.name}</h4>
-                        <p className="text-white/80 text-xs mb-2">{leaderboard[2]?.totalPoints || 0} CLG points</p>
+                        <h4 className="font-semibold text-sm mb-1">{enhancedLeaderboard[2]?.user?.name}</h4>
+                        <p className="text-white/80 text-xs mb-2">{enhancedLeaderboard[2]?.totalPoints || enhancedLeaderboard[2]?.points || 0} CLG points</p>
                         <div className="bg-white/20 px-3 py-1 rounded-full">
                           <span className="text-xs font-bold">#3</span>
                         </div>
@@ -270,18 +288,18 @@ const LeagueDetails = () => {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100">
                   <div className="p-6 border-b border-gray-100">
                     <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                      <FiAward className="text-blue-600" size={20} />
+                      <FiAward className="text-[#273470]" size={20} />
                       <span>Full Rankings</span>
                     </h3>
                   </div>
                   <div className="divide-y divide-gray-100">
-                    {leaderboard.map((entry, index) => {
+                    {enhancedLeaderboard.map((entry, index) => {
                       const rankDisplay = getRankDisplay(entry.rank || index + 1);
                       return (
                         <div
                           key={entry.user?._id || index}
                           className={`p-4 flex items-center justify-between hover:bg-gray-50 transition-colors ${
-                            index < 3 ? 'bg-gradient-to-r from-blue-50 to-transparent' : ''
+                            index < 3 ? 'bg-gradient-to-r from-[#273470]/5 to-transparent' : ''
                           }`}
                         >
                           <div className="flex items-center space-x-4">
@@ -298,14 +316,15 @@ const LeagueDetails = () => {
                                 )}
                               </h4>
                               <p className="text-sm text-gray-600">
-                                {entry.totalMatches || 0} matches played
-                                {entry.averagePoints && ` • Avg: ${entry.averagePoints} CLG points`}
+                                {entry.totalMatches || entry.matches || 0} fantasy teams
+                                {entry.totalMatches > 0 && entry.averagePoints > 0 && ` • Avg: ${Math.round(entry.averagePoints)} points per team`}
+                                {(entry.totalMatches || 0) === 0 && ' • No teams created yet'}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="font-bold text-lg text-gray-900">
-                              {entry.totalPoints?.toLocaleString() || '0'}
+                              {(entry.totalPoints || entry.points || 0)?.toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-500">CLG points</p>
                           </div>
@@ -334,7 +353,7 @@ const LeagueDetails = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                <FiUsers className="text-blue-600" size={20} />
+                <FiUsers className="text-[#273470]" size={20} />
                 <span>League Members</span>
                 <span className="text-sm font-normal text-gray-500">({league.currentMembers})</span>
               </h3>
@@ -343,8 +362,8 @@ const LeagueDetails = () => {
               {league.members?.filter(m => m.isActive).map((member) => (
                 <div key={member.user._id} className="p-4 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-medium text-sm">
+                    <div className="w-10 h-10 bg-[#273470]/10 rounded-full flex items-center justify-center">
+                      <span className="text-[#273470] font-medium text-sm">
                         {member.user.name?.charAt(0) || 'U'}
                       </span>
                     </div>
@@ -365,7 +384,7 @@ const LeagueDetails = () => {
                       member.role === 'OWNER' 
                         ? 'bg-yellow-100 text-yellow-800'
                         : member.role === 'ADMIN'
-                        ? 'bg-blue-100 text-blue-800'
+                        ? 'bg-[#273470]/10 text-[#273470]'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
                       {member.role}
@@ -383,7 +402,7 @@ const LeagueDetails = () => {
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl max-w-lg w-full p-8 shadow-2xl">
             <h3 className="text-2xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-              <FiShare2 className="text-blue-600" size={24} />
+              <FiShare2 className="text-[#273470]" size={24} />
               <span>Share League</span>
             </h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
@@ -394,11 +413,11 @@ const LeagueDetails = () => {
                 type="text"
                 value={shareLink}
                 readOnly
-                className="flex-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#273470]"
               />
               <button
                 onClick={copyShareLink}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2 transition-colors duration-200 shadow-sm"
+                className="px-6 py-3 bg-[#273470] text-white rounded-lg hover:bg-[#1e2859] flex items-center space-x-2 transition-colors duration-200 shadow-sm"
               >
                 <FiCopy size={16} />
                 <span>Copy</span>

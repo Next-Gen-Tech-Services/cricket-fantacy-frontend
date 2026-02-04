@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaDownload } from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaCog, FaChevronDown, FaGift } from "react-icons/fa";
 import { FiDollarSign } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
+import notificationService from "../services/notificationService";
 import logo from "../assets/logo.svg"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [notificationPermissionChecked, setNotificationPermissionChecked] = useState(false);
   const dropdownRef = useRef(null);
-  
+
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector(state => state.auth);
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function Navbar() {
     { name: "Tournaments", href: "/tournaments", authRequired: true },
     { name: "My Leagues", href: "/my-leagues", authRequired: true },
     { name: "My Matches", href: "/my-matches", authRequired: true },
-    { name: "How to score", href: "/how-to-earn-points", authRequired: false },
+    { name: "How to score?", href: "/how-to-earn-points", authRequired: false },
   ];
 
   // Close dropdown when clicking outside
@@ -35,8 +37,60 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Check notification permissions for logged-in users
+  useEffect(() => {
+    const checkNotificationPermission = async () => {
+      console.log('🔍 Checking notification permission. Authenticated:', isAuthenticated, 'Already checked:', notificationPermissionChecked);
+
+      // Only check if user is authenticated and we haven't checked before
+      if (isAuthenticated && !notificationPermissionChecked) {
+        try {
+          console.log('📱 Initializing notification service for authenticated user...');
+
+          // Initialize notification service for authenticated user
+          const initResult = await notificationService.initialize();
+          console.log('🔧 Notification service initialization result:', initResult);
+
+          // Check current permission status
+          const permissionStatus = notificationService.getPermissionStatus();
+          console.log('🔐 Current permission status:', permissionStatus);
+
+          // If permission is default (not asked), request it
+          if (permissionStatus === 'default') {
+            console.log('🔔 Requesting notification permission for logged-in user...');
+            const permResult = await notificationService.requestPermission();
+            console.log('📋 Permission request result:', permResult);
+          } else if (permissionStatus === 'granted') {
+            // If already granted, just get and save token
+            console.log('✅ Notification permission already granted');
+            const tokenResult = await notificationService.getAndSaveToken();
+            console.log('🎫 Token save result:', tokenResult);
+          }
+
+          setNotificationPermissionChecked(true);
+        } catch (error) {
+          console.error('❌ Error checking notification permission:', error);
+          setNotificationPermissionChecked(true);
+        }
+      }
+
+      // Reset check flag when user logs out
+      if (!isAuthenticated && notificationPermissionChecked) {
+        console.log('🔄 User logged out, resetting notification check flag');
+        setNotificationPermissionChecked(false);
+        notificationService.resetOnLogout();
+      }
+    };
+
+    checkNotificationPermission();
+  }, [isAuthenticated, notificationPermissionChecked]);
+
   const handleLogout = async () => {
     try {
+      // Reset notification service on logout
+      notificationService.resetOnLogout();
+      setNotificationPermissionChecked(false);
+
       await dispatch(logoutUser()).unwrap();
       setUserDropdownOpen(false);
       navigate('/');
@@ -80,113 +134,115 @@ export default function Navbar() {
                   }
                 >
                   {link.name}
-                
+
                 </NavLink>
               ))}
             </div>
 
             {/* RIGHT ACTIONS (IMPROVED) */}
             <div className="hidden md:flex items-center gap-5">
-             
-              
-              {isAuthenticated && user ? (
-                /* User Profile Dropdown */
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition"
-                  >
-                    {/* Profile Avatar */}
-                    <div className="w-8 h-8 bg-[#273470] text-white rounded-full flex items-center justify-center text-xs font-bold">
-                      {getUserInitials(user.name)}
-                    </div>
-                    
-                    {/* User Name */}
-                    <span className="max-w-[120px] truncate">
-                      {user.name || user.email}
-                    </span>
-                    
-                    {/* Dropdown Arrow */}
-                    <FaChevronDown 
-                      className={`text-xs transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`} 
-                    />
-                  </button>
 
-                  {/* Dropdown Menu */}
-                  {userDropdownOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
-                      {/* User Info Header */}
-                      <div className="px-4 py-3 border-b border-slate-100">
-                        <p className="text-sm font-semibold text-slate-900">{user.name}</p>
-                        <p className="text-xs text-slate-500 truncate">{user.email}</p>
+
+              {isAuthenticated && user ? (
+                <>
+                  {/* User Profile Dropdown */}
+                  <div className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-white hover:bg-white/10 transition"
+                    >
+                      {/* Profile Avatar */}
+                      <div className="w-8 h-8 bg-yellow-400 text-black rounded-full flex items-center justify-center text-xs font-bold">
+                        {getUserInitials(user.name)}
                       </div>
-                      
-                      {/* Menu Items */}
-                      <div className="py-2">
-                        <button
-                          onClick={() => {
-                            setUserDropdownOpen(false);
-                            navigate('/profile');
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                        >
-                          <FaUser className="text-slate-400" />
-                          My Profile
-                        </button>
+
+                      {/* User Name */}
+                      <span className="max-w-[120px] truncate">
+                        {user.name || user.email}
+                      </span>
+
+                      {/* Dropdown Arrow */}
+                      <FaChevronDown
+                        className={`text-xs transition-transform ${userDropdownOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {userDropdownOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50">
+                        {/* User Info Header */}
+                        <div className="px-4 py-3 border-b border-slate-100">
+                          <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-2">
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              navigate('/profile');
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                          >
+                            <FaUser className="text-slate-400" />
+                            My Profile
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              navigate('/vault');
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                          >
+                            <FiDollarSign className="text-slate-400" />
+                            My Vault
+                          </button>
+
                         
-                        <button
-                          onClick={() => {
-                            setUserDropdownOpen(false);
-                            navigate('/vault');
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                        >
-                          <FiDollarSign className="text-slate-400" />
-                          My Vault
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            setUserDropdownOpen(false);
-                            navigate('/settings');
-                          }}
-                          className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
-                        >
-                          <FaCog className="text-slate-400" />
-                          Settings
-                        </button>
-                        
-                        <div className="h-px bg-slate-100 my-2"></div>
-                        
-                        <button
-                          onClick={handleLogout}
-                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
-                        >
-                          <FaSignOutAlt className="text-red-400" />
-                          Sign Out
-                        </button>
+
+                          <button
+                            onClick={() => {
+                              setUserDropdownOpen(false);
+                              navigate('/settings');
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                          >
+                            <FaCog className="text-slate-400" />
+                            Settings
+                          </button>
+
+                          <div className="h-px bg-slate-100 my-2"></div>
+
+                          <button
+                            onClick={handleLogout}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                          >
+                            <FaSignOutAlt className="text-red-400" />
+                            Sign Out
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                </>
               ) : (
                 /* Login/Signup Buttons */
                 <>
-                
-                 
-                 <Link to="/login">
-                   <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-yellow-400 transition cursor-pointer">
+                  <Link to="/login">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border bg-yellow-400 text-[#273470] hover:bg-yellow-400 transition cursor-pointer">
                       Log in
                     </button>
-                </Link>
+                  </Link>
 
-                <Link to="/signup">
-                  <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition cursor-pointer">
-                    Sign up
-                  </button>
-                </Link>
+                  <Link to="/signup">
+                    <button className="px-6 py-3 rounded-full text-sm font-semibold border border-white text-white hover:bg-white/10 transition cursor-pointer">
+                      Sign up
+                    </button>
+                  </Link>
 
-                 
+
                 </>
               )}
             </div>
@@ -232,8 +288,8 @@ export default function Navbar() {
                   to={link.href}
                   onClick={() => setMenuOpen(false)}
                   className={({ isActive }) =>
-                    `block text-sm font-medium transition-all duration-200 relative ${isActive 
-                      ? "text-yellow-400 border-l-4 border-yellow-400 pl-4" 
+                    `block text-sm font-medium transition-all duration-200 relative ${isActive
+                      ? "text-yellow-400 border-l-4 border-yellow-400 pl-4"
                       : "text-slate-700 hover:text-yellow-400 hover:border-l-4 hover:border-yellow-400 border-l-4 border-transparent pl-4"
                     } ${link.authRequired && !isAuthenticated ? 'opacity-75' : ''}`
                   }
@@ -249,14 +305,14 @@ export default function Navbar() {
 
               <div className="h-px bg-slate-200" />
 
-             
+
 
               {/* MOBILE USER SECTION */}
               {isAuthenticated ? (
                 <>
                   {/* User Info */}
                   <div className="flex items-center gap-3 py-2">
-                    <div className="w-10 h-10 bg-[#273470] text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    <div className="w-10 h-10 bg-yellow-400 text-black rounded-full flex items-center justify-center text-sm font-semibold">
                       {getUserInitials(user?.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -264,8 +320,9 @@ export default function Navbar() {
                       <p className="text-xs text-slate-500 truncate">{user?.email || ''}</p>
                     </div>
                   </div>
-                  
-                  {/* User Actions */}
+
+
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);
@@ -276,7 +333,7 @@ export default function Navbar() {
                     <FaUser className="text-slate-400" />
                     My Profile
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);
@@ -287,7 +344,18 @@ export default function Navbar() {
                     <FiDollarSign className="text-slate-400" />
                     My Vault
                   </button>
-                  
+
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      navigate('/rewards');
+                    }}
+                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold text-left text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                  >
+                    <FaGift className="text-slate-400" />
+                    Rewards
+                  </button>
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);
@@ -298,7 +366,7 @@ export default function Navbar() {
                     <FaCog className="text-slate-400" />
                     Settings
                   </button>
-                  
+
                   <button
                     onClick={() => {
                       setMenuOpen(false);

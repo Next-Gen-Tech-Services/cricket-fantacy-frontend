@@ -6,7 +6,8 @@ import {
   FaUser,
   FaPlus,
   FaGamepad,
-  FaBaseballBall
+  FaBaseballBall,
+  FaGift
 } from 'react-icons/fa';
 import { useAppSelector } from '../store/hooks';
 
@@ -44,11 +45,11 @@ export default function BottomNavigation() {
       authRequired: true
     },
     {
-      id: 'earn',
-      label: 'How to Score',
-      icon: FaGamepad,
-      path: '/how-to-earn-points',
-      authRequired: false
+      id: 'rewards',
+      label: 'Rewards',
+      icon: FaGift,
+      path: '/rewards',
+      authRequired: true
     }
   ];
 

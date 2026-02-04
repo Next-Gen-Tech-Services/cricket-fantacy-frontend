@@ -132,7 +132,7 @@ const Vault = () => {
           <div className="text-center">
             <div className="text-6xl mb-4">🏆</div>
             <h1 className="text-4xl font-bold mb-2">My Vault</h1>
-            <p className="text-xl opacity-90">Track your fantasy cricket earnings</p>
+            <p className="text-xl opacity-90">Track your matchplay cricket earnings</p>
           </div>
         </div>
       </div>
@@ -147,7 +147,7 @@ const Vault = () => {
             </div>
             <h3 className="text-sm font-medium text-gray-600 mb-1">Current Balance</h3>
             <p className="text-3xl font-bold text-green-600">
-              {formatNumber(walletData?.balance)} pts
+              {formatNumber(walletData?.balance)} CLG pts
             </p>
           </div>
 
@@ -158,7 +158,7 @@ const Vault = () => {
             </div>
             <h3 className="text-sm font-medium text-gray-600 mb-1">Total Earned</h3>
             <p className="text-3xl font-bold text-blue-600">
-              {formatNumber(walletData?.totalEarned)} pts
+              {formatNumber(walletData?.totalEarned)} CLG pts
             </p>
           </div>
 
@@ -180,7 +180,7 @@ const Vault = () => {
             </div>
             <h3 className="text-sm font-medium text-gray-600 mb-1">Avg per Match</h3>
             <p className="text-3xl font-bold text-orange-600">
-              {formatNumber(Math.round(walletData?.averagePointsPerMatch || 0))} pts
+              {formatNumber(Math.round(walletData?.averagePointsPerMatch || 0))} CLG pts
             </p>
           </div>
         </div>
@@ -195,10 +195,10 @@ const Vault = () => {
               <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
                 <div className="flex items-center space-x-3">
                   <FiAward className="text-green-500 text-xl" />
-                  <span className="font-medium text-gray-700">Fantasy Points</span>
+                  <span className="font-medium text-gray-700">MatchPlay Points</span>
                 </div>
                 <span className="text-lg font-bold text-green-600">
-                  {formatNumber(walletData?.breakdown?.totalFantasyPoints || 0)} pts
+                  {formatNumber(walletData?.breakdown?.totalFantasyPoints || 0)} CLG pts
                 </span>
               </div>
 
@@ -208,7 +208,7 @@ const Vault = () => {
                   <span className="font-medium text-gray-700">Contest Winnings</span>
                 </div>
                 <span className="text-lg font-bold text-purple-600">
-                  {formatNumber(walletData?.breakdown?.totalContestWinnings || 0)} pts
+                  {formatNumber(walletData?.breakdown?.totalContestWinnings || 0)} CLG pts
                 </span>
               </div>
 
@@ -218,7 +218,7 @@ const Vault = () => {
                   <span className="font-medium text-gray-700">Bonus Points</span>
                 </div>
                 <span className="text-lg font-bold text-blue-600">
-                  {formatNumber(walletData?.breakdown?.totalBonusPoints || 0)} pts
+                  {formatNumber(walletData?.breakdown?.totalBonusPoints || 0)} CLG pts
                 </span>
               </div>
             </div>

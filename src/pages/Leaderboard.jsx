@@ -61,6 +61,28 @@ const Leaderboard = () => {
     return rank;
   };
 
+  // Extract captain and vice captain names safely
+  const getCaptainName = (entry) => {
+    const captain = entry.players?.find(p => p.role === 'CAPTAIN')?.name || 
+                   entry.players?.find(p => p.role === 'CAPTAIN')?.shortName ||
+                   entry.team?.captain?.name || 
+                   entry.fantasyTeam?.captain?.name;
+    return typeof captain === 'string' ? captain : 'TBA';
+  };
+
+  const getViceCaptainName = (entry) => {
+    const viceCaptain = entry.players?.find(p => p.role === 'VICE_CAPTAIN')?.name || 
+                       entry.players?.find(p => p.role === 'VICE_CAPTAIN')?.shortName ||
+                       entry.team?.viceCaptain?.name || 
+                       entry.fantasyTeam?.viceCaptain?.name;
+    return typeof viceCaptain === 'string' ? viceCaptain : 'TBA';
+  };
+
+  const getTeamName = (entry, rank) => {
+    const teamName = entry.teamName || entry.team?.name || entry.fantasyTeam?.name;
+    return typeof teamName === 'string' ? teamName : `Team ${rank}`;
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -120,13 +142,6 @@ const Leaderboard = () => {
                 </div>
               </div>
             </div>
-
-            {/* Prize Pool Card */}
-            {/* <div className="bg-white/15 backdrop-blur-md px-6 py-4 rounded-xl border border-white/20 text-center lg:flex-shrink-0">
-              <FiAward className="mx-auto text-yellow-400 mb-2" size={24} />
-              <p className="text-2xl font-bold text-white">{currentLeaderboard?.prizePool }</p>
-              <p className="text-xs text-white/80 font-medium uppercase tracking-wide">Prize Pool</p>
-            </div> */}
           </div>
         </div>
 
@@ -140,20 +155,20 @@ const Leaderboard = () => {
                   <span className="text-white font-bold text-2xl">{getRankIcon(userPosition.rank)}</span>
                 </div>
                 <div>
-                  <p className="text-gray-800 font-bold text-xl">{userPosition.teamName || userPosition.fantasyTeam?.name || 'My Team'}</p>
+                  <p className="text-gray-800 font-bold text-xl">{getTeamName(userPosition, userPosition.rank)}</p>
                   <p className="text-gray-500 text-sm">Rank #{userPosition.rank}</p>
                 </div>
               </div>
 
               <div className="text-center">
-                <p className="text-3xl font-bold text-[#273470]">{userPosition.totalFantasyPoints || userPosition.points || 1120}</p>
+                <p className="text-3xl font-bold text-[#273470]">{userPosition.totalFantasyPoints || userPosition.points || 0}</p>
                 <p className="text-gray-500 text-sm">Points</p>
               </div>
 
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 text-[#273470] mb-1">
                   <FiShield size={16} />
-                  <span className="text-gray-800 text-sm font-semibold">{userPosition.fantasyTeam?.captain?.name || 'Virat Kohli'}</span>
+                  <span className="text-gray-800 text-sm font-semibold">{getCaptainName(userPosition)}</span>
                 </div>
                 <p className="text-gray-500 text-xs">Captain</p>
               </div>
@@ -161,7 +176,7 @@ const Leaderboard = () => {
               <div className="text-center">
                 <div className="flex items-center justify-center gap-1 text-[#273470] mb-1">
                   <FiStar size={16} />
-                  <span className="text-gray-800 text-sm font-semibold">{userPosition.fantasyTeam?.viceCaptain?.name || 'Jasprit Bumrah'}</span>
+                  <span className="text-gray-800 text-sm font-semibold">{getViceCaptainName(userPosition)}</span>
                 </div>
                 <p className="text-gray-500 text-xs">Vice Captain</p>
               </div>
@@ -282,20 +297,10 @@ const Leaderboard = () => {
                         <FiEye className="text-[#273470] flex-shrink-0" size={18} />
                       </div>
                       
-                      {/* Match Info */}
-                      {team.match?.name && (
-                        <p className="text-xs text-gray-500 mb-2 line-clamp-1">
-                          {team.match.name}
-                        </p>
-                      )}
-                      
                       {/* Team Stats */}
                       <div className="space-y-1 mb-3">
                         <p className="text-sm text-gray-600">
-                          CLG Ptss: <span className="font-bold">{team.totalFantasyPoints || team.performance?.points || 0}</span>
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Credits: <span className="font-bold">{team.totalCreditsUsed || 0}/100</span>
+                          CLG Pts: <span className="font-bold">{team.totalFantasyPoints || team.performance?.points || 0}</span>
                         </p>
                         <p className="text-sm text-gray-600">
                           Players: <span className="font-bold">{team.players?.length || 0}/11</span>
@@ -320,25 +325,16 @@ const Leaderboard = () => {
                         </div>
                       )}
                       
-                      {/* Status & Validation */}
+                      {/* Status */}
                       <div className="flex items-center justify-between">
                         <div className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                           team.status === 'DRAFT' ? 'bg-yellow-100 text-yellow-800' :
                           team.status === 'SUBMITTED' ? 'bg-blue-100 text-blue-800' :
                           team.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-                          team.status === 'COMPLETED' ? 'bg-gray-100 text-gray-800' :
                           'bg-gray-100 text-gray-800'
                         }`}>
                           {team.status || 'DRAFT'}
                         </div>
-                        
-                        {team.isValid !== undefined && (
-                          <div className={`text-xs px-2 py-1 rounded ${
-                            team.isValid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {team.isValid ? '✓ Valid' : '✗ Invalid'}
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
@@ -389,33 +385,32 @@ const Leaderboard = () => {
                     >
                       {/* Desktop Layout */}
                       <div className="hidden md:grid gap-6 items-center" style={{gridTemplateColumns: '6% 20% 20% 20% 20%'}}>
-                        {/* Rank Only */}
+                        {/* Rank */}
                         <div className="flex items-center justify-center">
-                          {/* <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${getRankColor(rank)} flex items-center justify-center shadow-md`}> */}
-                            <span className="text-white font-bold text-sm">
-                              {getRankIcon(rank)}
-                            </span>
-                          {/* </div> */}
+                          <span className="text-gray-800 font-bold text-sm">
+                            {getRankIcon(rank)}
+                          </span>
                         </div>
 
                         {/* Team Name */}
                         <div className="text-left px-2">
-                          <p className="text-gray-700 font-medium text-sm">{entry.teamName || entry.team?.name || entry.fantasyTeam?.name || `Team ${rank}`}</p>
+                          <p className="text-gray-700 font-medium text-sm">
+                            {getTeamName(entry, rank)}
+                          </p>
                         </div>
 
                         {/* Points */}
                         <div className="text-center">
-                          {/* <div className="inline-flex items-center justify-center bg-[#273470]/10 px-3 py-1.5 rounded-lg border border-[#273470]/20">
-                            <FiTrendingUp className="text-green-500 mr-1" size={14} /> */}
-                            <span className="text-gray-800 font-bold text-base">{entry.totalFantasyPoints || entry.team?.totalPoints || entry.points || 0}</span>
-                          {/* </div> */}
+                          <span className="text-gray-800 font-bold text-base">{entry.totalFantasyPoints || entry.team?.totalPoints || entry.points || 0}</span>
                         </div>
 
                         {/* Captain */}
                         <div className="text-center px-2">
                           <div className="flex items-center justify-center gap-1 text-[#273470]">
                             <FiShield size={12} />
-                            <span className="text-gray-700 text-xs font-medium truncate">{entry.players?.find(p => p.role === 'CAPTAIN')?.name || entry.team?.captain?.name || entry.fantasyTeam?.captain?.name || 'TBA'}</span>
+                            <span className="text-gray-700 text-xs font-medium truncate">
+                              {getCaptainName(entry)}
+                            </span>
                           </div>
                         </div>
 
@@ -423,7 +418,9 @@ const Leaderboard = () => {
                         <div className="text-center px-2">
                           <div className="flex items-center justify-center gap-1 text-[#273470]">
                             <FiStar size={12} />
-                            <span className="text-gray-700 text-xs font-medium truncate">{entry.players?.find(p => p.role === 'VICE_CAPTAIN')?.name || entry.team?.viceCaptain?.name || entry.fantasyTeam?.viceCaptain?.name || 'TBA'}</span>
+                            <span className="text-gray-700 text-xs font-medium truncate">
+                              {getViceCaptainName(entry)}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -438,7 +435,7 @@ const Leaderboard = () => {
                               </span>
                             </div>
                             <div>
-                              <p className="text-gray-800 font-bold text-base">{entry.teamName || entry.team?.name || entry.fantasyTeam?.name || `Team ${rank}`}</p>
+                              <p className="text-gray-800 font-bold text-base">{getTeamName(entry, rank)}</p>
                               <p className="text-gray-500 text-sm">Rank #{rank}</p>
                             </div>
                           </div>
@@ -447,9 +444,6 @@ const Leaderboard = () => {
                               <div className="flex items-center gap-1 justify-center">
                                 <FiTrendingUp className="text-green-500" size={12} />
                                 <span className="text-gray-800 font-bold text-lg">{entry.totalFantasyPoints || entry.team?.totalPoints || entry.points || 0}</span>
-                                {entry.team?.isLiveUpdated && (
-                                  <FiActivity className="text-green-500 animate-pulse" size={10} />
-                                )}
                               </div>
                               <p className="text-xs text-gray-500">Points</p>
                             </div>
@@ -462,14 +456,18 @@ const Leaderboard = () => {
                               <FiShield className="text-[#273470]" size={12} />
                               <span className="text-xs text-gray-500 font-medium">Captain</span>
                             </div>
-                            <p className="text-gray-800 text-xs font-semibold truncate">{entry.players?.find(p => p.role === 'CAPTAIN')?.name || entry.team?.captain?.name || entry.fantasyTeam?.captain?.name || 'TBA'}</p>
+                            <p className="text-gray-800 text-xs font-semibold truncate">
+                              {getCaptainName(entry)}
+                            </p>
                           </div>
                           <div className="bg-gray-50 px-3 py-2 rounded-lg">
                             <div className="flex items-center gap-1 mb-1">
                               <FiStar className="text-[#273470]" size={12} />
                               <span className="text-xs text-gray-500 font-medium">Vice Captain</span>
                             </div>
-                            <p className="text-gray-800 text-xs font-semibold truncate">{entry.players?.find(p => p.role === 'VICE_CAPTAIN')?.name || entry.team?.viceCaptain?.name || entry.fantasyTeam?.viceCaptain?.name || 'TBA'}</p>
+                            <p className="text-gray-800 text-xs font-semibold truncate">
+                              {getViceCaptainName(entry)}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -511,36 +509,6 @@ const Leaderboard = () => {
                   }}
                 />
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Prize Distribution */}
-        {currentLeaderboard?.prizeDistribution && (
-          <div className="mt-6 bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <div className="flex items-center mb-6">
-              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center mr-3">
-                <FiAward className="text-yellow-600" size={20} />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">
-                Prize Distribution
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {currentLeaderboard.prizeDistribution.slice(0, 3).map((prize, index) => {
-                const position = index + 1;
-                const borderColor = position === 1 ? 'border-yellow-400' : position === 2 ? 'border-gray-400' : 'border-orange-400';
-                const textColor = position === 1 ? 'text-yellow-600' : position === 2 ? 'text-gray-600' : 'text-orange-600';
-                const emoji = position === 1 ? '🥇' : position === 2 ? '🥈' : '🥉';
-
-                return (
-                  <div key={position} className={`bg-white rounded-xl p-4 text-center border-2 ${borderColor} shadow-md`}>
-                    <div className="text-4xl mb-2">{emoji}</div>
-                    <p className={`text-2xl font-bold ${textColor}`}>${prize.amount}</p>
-                    <p className="text-gray-600 text-sm">{prize.position} Place</p>
-                  </div>
-                );
-              })}
             </div>
           </div>
         )}

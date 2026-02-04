@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FiCalendar, FiTrendingUp, FiUsers, FiChevronRight, FiSearch, FiFilter, FiAward, FiLoader, FiAlertCircle } from "react-icons/fi";
 import { fetchTournaments } from "../store/slices/tournamentsSlice";
-
+import TournamentImage from "../assets/ground-bg.png";
 const Tournaments = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -70,8 +70,8 @@ const Tournaments = () => {
       return "Dates TBD";
     }
     
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = new Date(startDate *1000);
+    const end = new Date(endDate *1000);
     
     const startStr = start.toLocaleDateString('en-US', { 
       month: 'short', 
@@ -197,11 +197,11 @@ const Tournaments = () => {
               className="group bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               {/* Tournament Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-55 overflow-hidden">
                 <img
-                  src={getImageUrl(tournament)}
+                  src={TournamentImage}
                   alt={tournament.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-fit group-hover:scale-110 transition-transform duration-500"
                   onError={(e) => {
                     e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='240' viewBox='0 0 400 240'%3E%3Crect width='400' height='240' fill='%23f1f5f9'/%3E%3Ctext x='200' y='120' font-family='Arial' font-size='16' fill='%23475569' text-anchor='middle' dy='0.3em'%3ECricket Tournament%3C/text%3E%3C/svg%3E";
                   }}

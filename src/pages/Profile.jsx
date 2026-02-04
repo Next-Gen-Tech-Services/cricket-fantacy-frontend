@@ -2,6 +2,7 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { useState, useEffect } from 'react';
 import { FaUser, FaEnvelope, FaEdit, FaSave, FaTimes, FaCalendar, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { userService } from '../services/userService';
+import NotificationTester from '../components/NotificationTester';
 
 export default function Profile() {
     const { user, isAuthenticated } = useAppSelector(state => state.auth);
@@ -312,6 +313,13 @@ export default function Profile() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Notification Tester - Development Only */}
+                            {import.meta.env.DEV && (
+                                <div className="bg-white p-6 rounded-lg shadow-md">
+                                    <NotificationTester />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
