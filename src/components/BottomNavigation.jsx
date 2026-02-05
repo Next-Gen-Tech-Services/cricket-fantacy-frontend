@@ -43,13 +43,6 @@ export default function BottomNavigation() {
       icon: FaUsers,
       path: '/my-leagues',
       authRequired: true
-    },
-    {
-      id: 'rewards',
-      label: 'Rewards',
-      icon: FaGift,
-      path: '/rewards',
-      authRequired: true
     }
   ];
 
