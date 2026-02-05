@@ -21,7 +21,7 @@ const SimpleBanner = ({
       small: "h-12 w-full max-w-sm",
       medium: "h-24 w-full max-w-2xl", 
       large: "h-32 w-full max-w-4xl",
-      xlarge: "h-full w-full "
+      xlarge: "h-40 w-full"
     },
     vertical: {
       small: "w-32 h-48",
@@ -32,10 +32,6 @@ const SimpleBanner = ({
   };
 
   const currentSizeClass = sizeClasses[orientation][size] || sizeClasses[orientation].medium;
-
-  console.log('====================================');
-  console.log(currentSizeClass);
-  console.log('====================================');
   const handleClick = () => {
     if (redirectUrl && redirectUrl !== "#") {
       if (openInNewTab) {

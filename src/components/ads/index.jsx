@@ -1,5 +1,6 @@
 import SimpleBanner from './SimpleBanner';
 import Ads1 from "../../assets/ads/2.png";
+import MobileAds from "../../assets/ads/3.png";
 // ============= HORIZONTAL AD PLACEMENTS =============
 
 // Large horizontal banner (like newspaper style)
@@ -172,7 +173,7 @@ export const ListItemAd = ({
 
 // Mobile bottom banner (horizontal)
 export const MobileBottomBanner = ({
-  imageUrl = Ads1,
+  imageUrl = MobileAds,
   redirectUrl = "#",
   className = ""
 }) => (

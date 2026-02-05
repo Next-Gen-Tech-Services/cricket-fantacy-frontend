@@ -28,7 +28,7 @@ export default function MainLayout() {
       
       {/* Footer Area Advertisement - Simple banner with image */}
       <FooterAreaAd 
-        redirectUrl="https://example.com"
+        redirectUrl="https://cricketloversglobal.com/ticketdetails/692976e80b3853c713fa794c"
         className="hidden md:block"
       />
       
@@ -39,7 +39,7 @@ export default function MainLayout() {
       
       {/* Mobile Bottom Banner - Simple mobile ad */}
       <MobileBottomBanner 
-        redirectUrl="https://example.com"
+        redirectUrl="https://cricketloversglobal.com/ticketdetails/692976e80b3853c713fa794c"
       />
       
       {/* Mobile Bottom Navigation */}

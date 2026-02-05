@@ -95,17 +95,7 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
           )} */}
 
           {/* Notifications */}
-          {isAuthenticated && (
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 rounded-lg hover:bg-white/10 transition relative"
-              >
-                <FaBell size={16} />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-              </button>
-            </div>
-          )}
+          
 
           {/* Profile Avatar with Dropdown */}
           {isAuthenticated && user && (
