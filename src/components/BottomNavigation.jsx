@@ -111,10 +111,7 @@ export default function BottomNavigation() {
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-yellow-400 rounded-b-full"></div>
                 )}
                 
-                {/* Auth required indicator */}
-                {needsAuth && !active && (
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-yellow-400 rounded-full"></div>
-                )}
+                
               </NavLink>
             );
           })}
