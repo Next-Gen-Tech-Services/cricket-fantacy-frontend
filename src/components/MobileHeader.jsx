@@ -4,6 +4,7 @@ import { FaBell, FaSearch, FaDownload, FaUser, FaCog, FaSignOutAlt, FaChevronDow
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logoutUser } from '../store/slices/authSlice';
 import logo from '../assets/logo.svg';
+import { FiDollarSign } from 'react-icons/fi';
 
 export default function MobileHeader({ title, showBack = false, showSearch = false }) {
   const [showNotifications, setShowNotifications] = useState(false);
@@ -95,7 +96,7 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
           )} */}
 
           {/* Notifications */}
-          
+
 
           {/* Profile Avatar with Dropdown */}
           {isAuthenticated && user && (
@@ -107,9 +108,9 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
                 <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-black">
                   {getUserInitials(user.name)}
                 </div>
-                <FaChevronDown 
-                  size={12} 
-                  className={`transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`} 
+                <FaChevronDown
+                  size={12}
+                  className={`transition-transform duration-200 ${showProfileMenu ? 'rotate-180' : ''}`}
                 />
               </button>
 
@@ -121,7 +122,7 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
                     <p className="text-sm font-semibold text-slate-900">{user.name}</p>
                     <p className="text-xs text-slate-500 truncate">{user.email}</p>
                   </div>
-                  
+
                   {/* Menu Items */}
                   <div className="py-2">
                     <button
@@ -134,7 +135,16 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
                       <FaUser className="text-slate-400" />
                       My Profile
                     </button>
-                    
+                    <button
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        navigate('/vault');
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                    >
+                      <FiDollarSign className="text-slate-400" />
+                      My Vault
+                    </button>
                     <button
                       onClick={() => {
                         setShowProfileMenu(false);
@@ -145,9 +155,9 @@ export default function MobileHeader({ title, showBack = false, showSearch = fal
                       <FaCog className="text-slate-400" />
                       Settings
                     </button>
-                    
+
                     <div className="h-px bg-slate-100 my-2"></div>
-                    
+
                     <button
                       onClick={handleLogout}
                       className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
