@@ -1,14 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
-  FaHome, 
-  FaTrophy, 
-  FaUsers, 
-  FaUser,
-  FaPlus,
-  FaGamepad,
-  FaBaseballBall,
-  FaGift
-} from 'react-icons/fa';
+  HiOutlineHome,
+  HiOutlineSparkles,
+  HiOutlineUsers,
+  HiOutlineQuestionMarkCircle,
+  HiOutlinePlay,
+} from 'react-icons/hi';
 import { useAppSelector } from '../store/hooks';
 
 export default function BottomNavigation() {
@@ -19,29 +16,36 @@ export default function BottomNavigation() {
     {
       id: 'home',
       label: 'Home',
-      icon: FaHome,
+      icon: HiOutlineHome,
       path: '/',
       authRequired: false
     },
     {
       id: 'tournaments',
       label: 'Tournaments',
-      icon: FaTrophy,
+      icon: HiOutlineSparkles,
       path: '/tournaments',
       authRequired: true
     },
     {
       id: 'matches',
-      label: 'My Matches',
-      icon: FaBaseballBall,
+      label: 'Matches',
+      icon: HiOutlinePlay,
       path: '/my-matches',
       authRequired: true
     },
     {
       id: 'leagues',
-      label: 'My Leagues',
-      icon: FaUsers,
+      label: 'Leagues',
+      icon: HiOutlineUsers,
       path: '/my-leagues',
+      authRequired: true
+    },
+    {
+      id: 'score',
+      label: 'Scoring?',
+      icon: HiOutlineQuestionMarkCircle,
+      path: '/how-to-earn-points',
       authRequired: true
     }
   ];
@@ -61,7 +65,7 @@ export default function BottomNavigation() {
   return (
     <>
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 md:hidden pb-2">
         <div className="flex justify-around items-center h-16 px-2">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -72,7 +76,7 @@ export default function BottomNavigation() {
               <NavLink
                 key={tab.id}
                 to={tab.path}
-                className={`flex flex-col items-center justify-center flex-1 py-1 transition-colors duration-200 relative ${
+                className={`flex flex-col items-center justify-center text-center flex-1 py-1 transition-colors duration-200 relative ${
                   active
                     ? 'text-yellow-400'
                     : needsAuth 
@@ -100,7 +104,7 @@ export default function BottomNavigation() {
                     </>
                   )}
                 </div>
-                <span className={`text-xs font-medium mt-1 transition-colors duration-200 ${
+                <span className={`text-[14px] font-small mt-1 transition-colors duration-200 ${
                   active ? 'text-yellow-400' : needsAuth ? 'text-gray-400' : 'text-gray-500'
                 }`}>
                   {tab.label}
@@ -111,7 +115,10 @@ export default function BottomNavigation() {
                   <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-yellow-400 rounded-b-full"></div>
                 )}
                 
-                
+                {/* Auth required indicator */}
+                {/* {needsAuth && !active && (
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-yellow-400 rounded-full"></div>
+                )} */}
               </NavLink>
             );
           })}
