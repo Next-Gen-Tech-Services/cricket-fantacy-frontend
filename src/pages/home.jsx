@@ -2,7 +2,8 @@ import heroHome from "../assets/hero-home.svg";
 import home1 from "../assets/home-1.png";
 import home2 from "../assets/home-5.png";
 import home3 from "../assets/home-3.png";
-import home4 from "../assets/home-4.png";
+import home4 from "../assets/home-6.png";
+import home5 from "../assets/home-4.png";
 import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -45,7 +46,7 @@ const features = [
     title: "Invite Your Friends",
     description:
       "Share leagues with friends and compete against each other for glory.",
-    image: home4,
+    image: home5,
     link: "/leagues",
   },
 
