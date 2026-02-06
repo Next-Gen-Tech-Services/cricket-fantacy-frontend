@@ -131,7 +131,7 @@ const TournamentLeagues = ({ tournament }) => {
 
   const shareOnPlatform = (platform) => {
     const { shareLink, league } = shareModal;
-    const text = `Join my fantasy league "${league.name}" on Cricket Lover!`;
+    const text = `Join my fantasy league "${league.name}" on MatchPlay!`;
 
     switch (platform) {
       case 'whatsapp':
