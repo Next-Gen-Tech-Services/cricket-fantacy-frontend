@@ -164,14 +164,14 @@ export default function CreateTeam() {
     if (showTeamNameModal) {
       // Save current scroll position
       const scrollY = window.scrollY;
-      
+
       // Prevent scrolling on body and html
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.documentElement.style.overflow = 'hidden';
-      
+
       return () => {
         // Restore scrolling and position
         document.body.style.overflow = '';
@@ -254,7 +254,7 @@ export default function CreateTeam() {
             id: player._id || player.id,
             playerId: player.playerId,
             name: player.name,
-            shortName: player.name|| player.shortName ,
+            shortName: player.name || player.shortName,
             role: mapRole(player.role),
             team: player.team,
             teamColor: player.teamColor || '#000000',
@@ -393,12 +393,17 @@ export default function CreateTeam() {
     if (players.length === 0) return;
 
     const autoPicked = [];
-    let availableBudget = TEAM_RULES.BUDGET;
+    let availableBudget = Math.min(TEAM_RULES.BUDGET, walletBalance); // Use the lower of budget or wallet
     const roleCounts = { WK: 0, BAT: 0, AR: 0, BOWL: 0 };
     const teamCounts = {}; // Track players per team
 
-    // Create a copy of players sorted by CLG points (simpler approach)
-    const sortedPlayers = [...players].sort((a, b) => b.CLGpoints - a.CLGpoints);
+    // Create a copy of players sorted by value (CLG points per credit)
+    const sortedPlayers = [...players]
+      .map(p => ({
+        ...p,
+        value: p.price > 0 ? p.CLGpoints / p.price : 0
+      }))
+      .sort((a, b) => b.value - a.value); // Best value first
 
     // Phase 1: Fill minimum requirements for each role
     const roles = ["WK", "BAT", "AR", "BOWL"];
@@ -408,12 +413,15 @@ export default function CreateTeam() {
 
       for (const player of rolePlayers) {
         if (roleCounts[role] >= minRequired) break;
-        
+
         // Check team limit before adding
         const currentTeamCount = teamCounts[player.team] || 0;
         if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
-        
-        if (availableBudget >= player.price && !autoPicked.find(p => p.id === player.id)) {
+
+        // Skip if already selected
+        if (autoPicked.find(p => p.id === player.id)) continue;
+
+        if (availableBudget >= player.price) {
           autoPicked.push(player);
           availableBudget -= player.price;
           roleCounts[role]++;
@@ -422,7 +430,32 @@ export default function CreateTeam() {
       }
     }
 
-    // Phase 2: Fill remaining slots with best available players
+    // If we couldn't fill minimum requirements, try with cheaper players
+    for (const role of roles) {
+      const minRequired = TEAM_RULES[role].min;
+      if (roleCounts[role] < minRequired) {
+        const rolePlayers = [...players]
+          .filter(p => p.role === role)
+          .sort((a, b) => a.price - b.price); // Cheapest first
+
+        for (const player of rolePlayers) {
+          if (roleCounts[role] >= minRequired) break;
+
+          const currentTeamCount = teamCounts[player.team] || 0;
+          if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
+          if (autoPicked.find(p => p.id === player.id)) continue;
+
+          if (availableBudget >= player.price) {
+            autoPicked.push(player);
+            availableBudget -= player.price;
+            roleCounts[role]++;
+            teamCounts[player.team] = currentTeamCount + 1;
+          }
+        }
+      }
+    }
+
+    // Phase 2: Fill remaining slots with best value players
     let attempts = 0;
     const maxAttempts = 100; // Prevent infinite loops
 
@@ -444,7 +477,7 @@ export default function CreateTeam() {
         const currentTeamCount = teamCounts[player.team] || 0;
         if (currentTeamCount >= TEAM_RULES.MAX_PLAYERS_PER_TEAM) continue;
 
-        // Take the first valid player (already sorted by CLG points)
+        // Take the first valid player (already sorted by value)
         bestPlayer = player;
         break;
       }
@@ -616,7 +649,7 @@ export default function CreateTeam() {
     <main className="min-h-screen bg-white">
       {/* Team Name Modal for Desktop */}
       {showTeamNameModal && !isMobile && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4"
           onClick={handleBackdropClick}
         >
@@ -675,7 +708,7 @@ export default function CreateTeam() {
 
       {/* Team Name Bottom Sheet for Mobile */}
       {showTeamNameModal && isMobile && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 flex items-end justify-center z-[9999]"
           onClick={handleBackdropClick}
         >
@@ -822,7 +855,7 @@ export default function CreateTeam() {
             <h2 className="text-lg font-bold text-[#273470] mb-1">
               Player Selection
             </h2>
-            
+
             {/* Fantasy Cricket Rules Info */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
               <div className="flex items-start gap-2">
@@ -891,26 +924,26 @@ export default function CreateTeam() {
 
               return (
                 <div key={role}>
-                  <div className="sticky top-0 bg-[#273470] px-4 py-2 border-b border-gray-200 flex items-center justify-between text-xs font-bold text-white uppercase z-10">
-                    <span className="truncate">{roleLabel[role]}</span>
-                    <div className="flex items-center gap-4 text-white/80 min-w-0">
-                      <span className="w-6 text-center flex-shrink-0">C</span>
-                      <span className="w-8 text-center flex-shrink-0">VC</span>
+                  <div className="sticky top-0 bg-[#273470] px-2 sm:px-4 py-2 border-b border-gray-200 flex items-center justify-between text-[10px] sm:text-xs font-bold text-white uppercase z-10">
+                    <span className="truncate text-[10px] sm:text-xs">{roleLabel[role]}</span>
+                    <div className="flex items-center gap-2 sm:gap-4 text-white/80 min-w-0">
+                      <span className="w-5 sm:w-6 text-center flex-shrink-0 text-[10px] sm:text-xs">C</span>
+                      <span className="w-6 sm:w-8 text-center flex-shrink-0 text-[10px] sm:text-xs">VC</span>
                       <button
                         onClick={() => setSortBy('price')}
-                        className={`w-15 text-center flex-shrink-0 transition-colors ${sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                        className={`w-12 sm:w-15 text-center flex-shrink-0 transition-colors text-[10px] sm:text-xs ${sortBy === 'price' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
                           }`}
                       >
                         VALUE
                       </button>
                       <button
                         onClick={() => setSortBy('CLG points')}
-                        className={`w-8 text-center flex-shrink-0 transition-colors ${sortBy === 'CLG points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
+                        className={`w-6 sm:w-8 text-center flex-shrink-0 transition-colors text-[10px] sm:text-xs ${sortBy === 'CLG points' ? 'text-yellow-400' : 'text-white/80 hover:text-white'
                           }`}
                       >
                         TP
                       </button>
-                      <span className="w-8 text-center flex-shrink-0"></span>
+                      <span className="w-6 sm:w-8 text-center flex-shrink-0"></span>
                     </div>
                   </div>
 
@@ -922,26 +955,26 @@ export default function CreateTeam() {
                     return (
                       <div
                         key={player.id}
-                        className={`flex items-center justify-between px-4 py-3 border-b border-gray-200 hover:bg-gray-100 transition-colors ${isSelected ? "bg-blue-50" : ""
+                        className={`flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 border-b border-gray-200 hover:bg-gray-100 transition-colors ${isSelected ? "bg-blue-50" : ""
                           }`}
                       >
-                        <div className="flex items-center gap-3 flex-1">
-                          <div className="relative">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                          <div className="relative flex-shrink-0">
                             <div
-                              className="w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-xs shadow-sm"
+                              className="w-6 h-8 sm:w-10 sm:h-10 rounded-md flex items-center justify-center text-white font-bold text-[10px] sm:text-xs shadow-sm"
                               style={{ backgroundColor: player.teamColor }}
                             >
                               {player.team}
                             </div>
                             {isSelected && (
-                              <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#273470] rounded-full flex items-center justify-center">
+                              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-[#273470] rounded-full flex items-center justify-center">
                                 <span className="text-white text-[8px]">✓</span>
                               </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-semibold text-[#273470] truncate max-w-[120px]">
+                            <div className="flex items-center gap-1 sm:gap-2">
+                              <p className="text-xs sm:text-sm font-semibold text-[#273470] truncate max-w-[180px] sm:max-w-[200px]">
                                 {player.name}
                               </p>
                               {/* {isCaptain && (
@@ -955,20 +988,20 @@ export default function CreateTeam() {
                                 </span>
                               )} */}
                             </div>
-                            <p className="text-xs text-gray-600">
+                            <p className="text-[10px] sm:text-xs text-gray-600 truncate">
                               {player.team} • {player.role}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                           {/* Captain Button Column */}
-                          <div className="w-6 flex justify-center">
+                          <div className="w-5 sm:w-6 flex justify-center">
                             {isSelected && (
                               <button
                                 onClick={() => selectCaptain(player.id)}
                                 disabled={isCaptain}
-                                className={`px-2 py-1.5 rounded text-xs font-bold transition-colors ${isCaptain
+                                className={`px-1.5 sm:px-2 py-1 sm:py-1.5 rounded text-[10px] sm:text-xs font-bold transition-colors ${isCaptain
                                   ? "bg-yellow-400 text-black"
                                   : "bg-gray-200 hover:bg-yellow-100 hover:text-black text-gray-600"
                                   }`}
@@ -980,12 +1013,12 @@ export default function CreateTeam() {
                           </div>
 
                           {/* Vice Captain Button Column */}
-                          <div className="w-8 flex justify-center">
+                          <div className="w-6 sm:w-8 flex justify-center">
                             {isSelected && (
                               <button
                                 onClick={() => selectViceCaptain(player.id)}
                                 disabled={isViceCaptain}
-                                className={`px-1.5 py-1.5 rounded text-xs font-bold transition-colors ${isViceCaptain
+                                className={`px-1 sm:px-1.5 py-1 sm:py-1.5 rounded text-[10px] sm:text-xs font-bold transition-colors ${isViceCaptain
                                   ? "bg-blue-500 text-white"
                                   : "bg-gray-200 hover:bg-blue-100 hover:text-blue-900 text-gray-600"
                                   }`}
@@ -995,29 +1028,29 @@ export default function CreateTeam() {
                               </button>
                             )}
                           </div>
-                          <span className="text-xs font-medium text-[#273470] w-18 text-center">
-                            {player.price} CLG Pts
+                          <span className="text-[9px] sm:text-xs font-medium text-[#273470] w-12 sm:w-18 text-center">
+                            {player.price}<span className="hidden sm:inline"> CLG Pts</span>
                           </span>
-                          <span className="text-sm text-gray-600 w-8 text-center">
+                          <span className="text-[10px] sm:text-sm text-gray-600 w-6 sm:w-8 text-center font-medium">
                             {player.CLGpoints}
                           </span>
 
 
 
                           {/* Add/Remove Button Column */}
-                          <div className="w-8 flex justify-center">
+                          <div className="w-6 sm:w-8 flex justify-center">
                             <button
                               onClick={() => togglePlayer(player)}
                               disabled={!isSelected && !canAdd(player)}
                             >
                               {isSelected ? (
-                                <div className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-colors">
-                                  <FiX size={16} />
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-colors">
+                                  <FiX size={14} className="sm:w-4 sm:h-4" />
                                 </div>
                               ) : (
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors ${canAdd(player) ? "bg-yellow-400 hover:bg-yellow-500 text-[#273470]" : "bg-gray-600 cursor-not-allowed"
+                                <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white transition-colors ${canAdd(player) ? "bg-yellow-400 hover:bg-yellow-500 text-[#273470]" : "bg-gray-600 cursor-not-allowed"
                                   }`}>
-                                  <FiPlus size={16} />
+                                  <FiPlus size={14} className="sm:w-4 sm:h-4" />
                                 </div>
                               )}
                             </button>
@@ -1095,7 +1128,7 @@ export default function CreateTeam() {
                   {totalCredits.toFixed(1)}/{Math.min(TEAM_RULES.BUDGET, walletBalance).toFixed(1)} CLG Pts
                   <span className="ml-2 font-normal text-xs">Used</span>
                 </div>
-                
+
               </div>
             </div>
           </div>
@@ -1152,7 +1185,7 @@ export default function CreateTeam() {
                       // Minimum slots to show for empty positions
                       const minSlots = {
                         WK: Math.max(1, selectedCounts.WK),
-                        BAT: Math.max(2, selectedCounts.BAT),  
+                        BAT: Math.max(2, selectedCounts.BAT),
                         AR: Math.max(1, selectedCounts.AR),
                         BOWL: Math.max(2, selectedCounts.BOWL)
                       };
@@ -1160,7 +1193,7 @@ export default function CreateTeam() {
                       // Distribute remaining slots proportionally, maintaining minimums
                       const idealDistribution = { WK: 1, BAT: 4, AR: 2, BOWL: 4 };
                       allocatedSlots = { ...minSlots };
-                      
+
                       if (remainingSlots > 0) {
                         // Add remaining slots to roles that have space, preferring original distribution
                         const priorities = [
@@ -1253,7 +1286,7 @@ export default function CreateTeam() {
                               </div>
                               <div>
                                 <p className="text-sm font-semibold text-[#273470] max-w-[120px] truncate">
-                                  { player.name}
+                                  {player.name}
                                 </p>
                                 <p className="text-xs text-gray-600">
                                   {player.team} • {player.price} CLG Pt

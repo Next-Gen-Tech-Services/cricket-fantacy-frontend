@@ -35,6 +35,8 @@ import JoinLeagueByCode from "./pages/JoinLeagueByCode";
 
 import Login from "./pages/login";
 import Signup from "./pages/signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
@@ -90,6 +92,22 @@ export default function App() {
             element={
               <PublicRoute>
                 <Signup />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/forgot-password" 
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            } 
+          />
+          <Route 
+            path="/reset-password/:token" 
+            element={
+              <PublicRoute>
+                <ResetPassword />
               </PublicRoute>
             } 
           />
