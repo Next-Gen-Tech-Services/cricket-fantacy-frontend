@@ -1,12 +1,10 @@
-import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 import { useState, useEffect } from 'react';
-import { FaUser, FaEnvelope, FaEdit, FaSave, FaTimes, FaCalendar, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaEdit, FaSave, FaTimes, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { userService } from '../services/userService';
-import NotificationTester from '../components/NotificationTester';
 
 export default function Profile() {
     const { user, isAuthenticated } = useAppSelector(state => state.auth);
-    const dispatch = useAppDispatch();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -22,18 +20,6 @@ export default function Profile() {
         tournamentsJoined: 0,
         totalPoints: 0
     });
-
-    // If not authenticated, show message
-    if (!isAuthenticated || !user) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile Not Available</h1>
-                    <p className="text-gray-600">Please log in to view your profile.</p>
-                </div>
-            </div>
-        );
-    }
 
     // Fetch user profile and stats on component mount
     useEffect(() => {
@@ -66,6 +52,18 @@ export default function Profile() {
 
         fetchUserData();
     }, []);
+
+    // If not authenticated, show message
+    if (!isAuthenticated || !user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile Not Available</h1>
+                    <p className="text-gray-600">Please log in to view your profile.</p>
+                </div>
+            </div>
+        );
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -313,13 +311,6 @@ export default function Profile() {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Notification Tester - Development Only */}
-                            {import.meta.env.DEV && (
-                                <div className="bg-white p-6 rounded-lg shadow-md">
-                                    <NotificationTester />
-                                </div>
-                            )}
                         </div>
                     </div>
                 )}

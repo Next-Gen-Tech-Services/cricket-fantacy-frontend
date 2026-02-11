@@ -10,21 +10,22 @@ import { initializeAuth } from './store/slices/authSlice'
 
 // Register PWA service worker
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    // Use dev SW in development, regular SW in production
-    const swPath = import.meta.env.DEV ? '/dev-sw.js?dev-sw' : '/sw.js';
-    navigator.serviceWorker.register(swPath, {
-      scope: './',
-      updateViaCache: 'none'
-    }).then((registration) => {
-      console.log('SW registered: ', registration);
-      // Check for updates
-      registration.addEventListener('updatefound', () => {
-        console.log('New service worker available');
+  window.addEventListener('load', async () => {
+    try {
+      const swPath = import.meta.env.DEV ? '/dev-sw.js?dev-sw' : '/sw.js';
+      const mainSW = await navigator.serviceWorker.register(swPath, {
+        scope: './',
+        updateViaCache: 'none'
       });
-    }).catch((registrationError) => {
-      console.log('SW registration failed: ', registrationError);
-    });
+      console.log('✅ PWA Service Worker registered:', mainSW);
+      
+      // Check for updates
+      mainSW.addEventListener('updatefound', () => {
+        console.log('🔄 New service worker available');
+      });
+    } catch (error) {
+      console.error('❌ SW registration failed:', error);
+    }
   });
 }
 

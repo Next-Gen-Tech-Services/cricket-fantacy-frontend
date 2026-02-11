@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  FiTrendingUp, 
-  FiDollarSign, 
-  FiAward, 
+import {
+  FiTrendingUp,
+  FiDollarSign,
+  FiAward,
   FiActivity,
   FiClock,
   FiEye,
@@ -31,7 +31,7 @@ const Vault = () => {
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch wallet summary
       const summaryData = await walletAPI.getSummary();
       setWalletData(summaryData.data);
@@ -113,7 +113,7 @@ const Vault = () => {
           <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Vault</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={fetchWalletData}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -190,7 +190,7 @@ const Vault = () => {
           {/* Performance Overview */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Performance Overview</h2>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
                 <div className="flex items-center space-x-3">

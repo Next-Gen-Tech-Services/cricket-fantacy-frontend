@@ -1,0 +1,339 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  FiTrendingUp, 
+  FiDollarSign, 
+  FiAward, 
+  FiActivity,
+  FiClock,
+  FiEye,
+  FiFilter,
+  FiDownload
+} from 'react-icons/fi';
+import LoadingSpinner from './LoadingSpinner';
+import { walletAPI } from '../services/api';
+import { getWalletSummary, getWalletTransactions } from '../services/api';
+
+const Vault = () => {
+  const [walletData, setWalletData] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
+  const [transactionType, setTransactionType] = useState('all');
+  const [showTransactions, setShowTransactions] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Fetch wallet data
+  useEffect(() => {
+    fetchWalletData();
+  }, []);
+
+  const fetchWalletData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch wallet summary
+      const summaryData = await walletAPI.getSummary();
+      setWalletData(summaryData.data);
+
+      // Fetch recent transactions
+      const transactionsData = await walletAPI.getTransactions({ limit: 10 });
+      setTransactions(transactionsData.data.transactions || []);
+
+    } catch (error) {
+      console.error('Error fetching wallet data:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchTransactions = async (page = 1, filters = {}) => {
+    try {
+      const params = {
+        page: page.toString(),
+        limit: '20',
+        ...filters
+      };
+
+      const data = await walletAPI.getTransactions(params);
+      setTransactions(data.data.transactions || []);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const formatNumber = (number) => {
+    return new Intl.NumberFormat('en-US').format(number || 0);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getTransactionIcon = (type) => {
+    const iconMap = {
+      'FANTASY_POINTS_EARNED': <FiAward className="text-green-500" />,
+      'CONTEST_WINNINGS': <FiTrendingUp className="text-purple-500" />,
+      'BONUS_POINTS': <FiDollarSign className="text-blue-500" />,
+      'CONTEST_ENTRY_FEE': <FiActivity className="text-red-500" />,
+      'DEPOSIT': <FiDollarSign className="text-green-500" />,
+      'WITHDRAWAL': <FiActivity className="text-orange-500" />
+    };
+    return iconMap[type] || <FiActivity className="text-gray-500" />;
+  };
+
+  const getTransactionColor = (type) => {
+    const colorMap = {
+      'FANTASY_POINTS_EARNED': 'text-green-600',
+      'CONTEST_WINNINGS': 'text-purple-600',
+      'BONUS_POINTS': 'text-blue-600',
+      'CONTEST_ENTRY_FEE': 'text-red-600',
+      'DEPOSIT': 'text-green-600',
+      'WITHDRAWAL': 'text-orange-600'
+    };
+    return colorMap[type] || 'text-gray-600';
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Vault</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchWalletData}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#7c3aed] via-[#4f46e5] to-[#6366f1] text-white shadow-xl">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="text-6xl mb-4">🏆</div>
+            <h1 className="text-5xl font-bold mb-3 tracking-tight">My Vault</h1>
+            <p className="text-xl text-purple-100">Track your matchplay cricket earnings</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-8">
+        {/* Main Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          {/* Current Balance */}
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100">
+            <div className="flex justify-center mb-3">
+              <div className="p-3 bg-green-50 rounded-full">
+                <FiDollarSign className="text-green-500 text-2xl" />
+              </div>
+            </div>
+            <h3 className="text-sm font-medium text-gray-500 mb-2 text-center">Current Balance</h3>
+            <p className="text-3xl font-bold text-green-500 text-center">
+              {formatNumber(walletData?.balance)} <span className="text-base font-normal text-gray-500">CLG pts</span>
+            </p>
+          </div>
+
+          {/* Total Earned */}
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100">
+            <div className="flex justify-center mb-3">
+              <div className="p-3 bg-blue-50 rounded-full">
+                <FiTrendingUp className="text-blue-500 text-2xl" />
+              </div>
+            </div>
+            <h3 className="text-sm font-medium text-gray-500 mb-2 text-center">Total Earned</h3>
+            <p className="text-3xl font-bold text-blue-500 text-center">
+              {formatNumber(walletData?.totalEarned)} <span className="text-base font-normal text-gray-500">CLG pts</span>
+            </p>
+          </div>
+
+          {/* Total Matches */}
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100">
+            <div className="flex justify-center mb-3">
+              <div className="p-3 bg-purple-50 rounded-full">
+                <FiActivity className="text-purple-500 text-2xl" />
+              </div>
+            </div>
+            <h3 className="text-sm font-medium text-gray-500 mb-2 text-center">Total Matches</h3>
+            <p className="text-3xl font-bold text-purple-500 text-center">
+              {formatNumber(walletData?.totalMatches)}
+            </p>
+          </div>
+
+          {/* Average Points */}
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100">
+            <div className="flex justify-center mb-3">
+              <div className="p-3 bg-orange-50 rounded-full">
+                <FiAward className="text-orange-500 text-2xl" />
+              </div>
+            </div>
+            <h3 className="text-sm font-medium text-gray-5006 mb-8">
+          {/* Performance Overview */}
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 sm:p-8 border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="mr-2">📊</span> Performance Overview
+            </h2>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <FiAward className="text-green-500 text-xl" />
+                  </div>
+                  <span className="font-semibold text-gray-700">MatchPlay Points</span>
+                </div>
+                <span className="text-lg font-bold text-green-600">
+                  {formatNumber(walletData?.breakdown?.totalFantasyPoints || 0)} <span className="text-sm text-gray-500">CLG pts</span>
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-xl border border-purple-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <FiTrendingUp className="text-purple-500 text-xl" />
+                  </div>
+                  <span className="font-semibold text-gray-700">Contest Winnings</span>
+                </div>
+                <span className="text-lg font-bold text-purple-600">
+                  {formatNumber(walletData?.breakdown?.totalContestWinnings || 0)} <span className="text-sm text-gray-500">CLG pts</span>
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <FiDollarSign className="text-blue-500 text-xl" />
+                  </div>
+                  <span className="font-semibold text-gray-700">Bonus Points</span>
+                </div>
+                <span className="text-lg font-bold text-blue-600">
+                  {formatNumber(walletData?.breakdown?.totalBonusPoints || 0)} <span className="text-sm text-gray-500">CLG pts</span>
+                </span>
+              </div>
+            </div>
+
+            {walletData?.bestMatchPoints && (
+              <div className="mt-6 p-5 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 rounded-xl border-2 border-amber-200 shadow-sm">
+                <h3 className="text-sm font-semibold text-gray-600 mb-2 flex items-center">
+                  <span className="mr-2">🏆2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 sm:p-8 border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                <span className="mr-2">📈</span> Recent Activity
+              </h2>
+              <button
+                onClick={() => setShowTransactions(!showTransactions)}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors font-medium text-sm"
+              >
+                <FiEye className="text-base" />
+                <span>View All</span>
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {transactions.length > 0 ? (
+                transactions.slice(0, 5).map((transaction, index) => (
+                  <div key={transaction._id} className="flex items-center justify-between p-4 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50 rounded-xl transition-all border border-transparent hover:border-purple-100">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="p-2 bg-gray-50 rounded-lg">
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-800 text-sm truncate">
+                          {transaction.description}
+                        </p>
+                        <p className="text-xs text-gray-500 flex items-center mt-0.5">
+                          <FiClock className="mr-1 text-[10px]" />
+                          {formatDate(transaction.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right ml-3">
+                      <p className={`font-bold text-base ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {transaction.amount > 0 ? '+' : ''}{formatNumber(transaction.amount)}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {formatNumber(transaction.balanceAfter)}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">📭</div>
+                  <p className="text-gray-500">No transactions yet</p>
+                </div>
+              )}
+            </div>
+
+            {walletData?.lastEarningDate && (
+              <div className="mt-5 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl text-center border border-gray-200">
+                <p className="text-sm text-gray-600 font-medium flex items-center justify-center">
+                  <FiClock className="inline mr-2" />
+                  Last earning: <span className="ml-1 text-blue-600 font-semibold">{formatDate(walletData.lastEarningDate)}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-bold ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {transaction.amount > 0 ? '+' : ''}{formatNumber(transaction.amount)}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Balance: {formatNumber(transaction.balanceAfter)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {walletData?.lastEarningDate && (
+              <div className="mt-5 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl text-center border border-gray-200">
+                <p className="text-sm text-gray-600 font-medium flex items-center justify-center">
+                  <FiClock className="inline mr-2" />
+                  Last earning: <span className="ml-1 text-blue-600 font-semibold">{formatDate(walletData.lastEarningDate)}</span>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Call to Action */}
+        <div className="bg-gradient-to-r from-[#4f46e5] via-[#6366f1] to-[#7c3aed] rounded-2xl shadow-2xl text-white p-8 sm:p-12 text-center overflow-hidden relative">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2djRoNHYtNGgtNHptMCA4djRoNHYtNGgtNHptLTggOHY0aDR2LTRoLTR6bS04IDB2NGg0di00aC00em04LThWMTZoLTR2NGg0em04IDB2NGg0di00aC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-20"></div>
+          <div className="relative z-10">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4">Start Earning More Points!</h2>
+            <p className="text-xl sm:text-2xl mb-8 text-purple-100">
+              Join upcoming matches and climb the leaderboard
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="w-full sm:w-auto bg-white text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-50 hover:scale-105 transition-all duration-200 shadow-lg">
+                Browse Matches
+              </button>
+              <button className="w-full sm:w-auto bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-blue-600 hover:scale-105 transition-all duration-200">
+                View Leaderboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Vault;

@@ -4,13 +4,11 @@ import { FiDollarSign } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
-import notificationService from "../services/notificationService";
 import logo from "../assets/logo.svg"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [notificationPermissionChecked, setNotificationPermissionChecked] = useState(false);
   const dropdownRef = useRef(null);
 
   const dispatch = useAppDispatch();
@@ -37,60 +35,8 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Check notification permissions for logged-in users
-  useEffect(() => {
-    const checkNotificationPermission = async () => {
-      console.log('🔍 Checking notification permission. Authenticated:', isAuthenticated, 'Already checked:', notificationPermissionChecked);
-
-      // Only check if user is authenticated and we haven't checked before
-      if (isAuthenticated && !notificationPermissionChecked) {
-        try {
-          console.log('📱 Initializing notification service for authenticated user...');
-
-          // Initialize notification service for authenticated user
-          const initResult = await notificationService.initialize();
-          console.log('🔧 Notification service initialization result:', initResult);
-
-          // Check current permission status
-          const permissionStatus = notificationService.getPermissionStatus();
-          console.log('🔐 Current permission status:', permissionStatus);
-
-          // If permission is default (not asked), request it
-          if (permissionStatus === 'default') {
-            console.log('🔔 Requesting notification permission for logged-in user...');
-            const permResult = await notificationService.requestPermission();
-            console.log('📋 Permission request result:', permResult);
-          } else if (permissionStatus === 'granted') {
-            // If already granted, just get and save token
-            console.log('✅ Notification permission already granted');
-            const tokenResult = await notificationService.getAndSaveToken();
-            console.log('🎫 Token save result:', tokenResult);
-          }
-
-          setNotificationPermissionChecked(true);
-        } catch (error) {
-          console.error('❌ Error checking notification permission:', error);
-          setNotificationPermissionChecked(true);
-        }
-      }
-
-      // Reset check flag when user logs out
-      if (!isAuthenticated && notificationPermissionChecked) {
-        console.log('🔄 User logged out, resetting notification check flag');
-        setNotificationPermissionChecked(false);
-        notificationService.resetOnLogout();
-      }
-    };
-
-    checkNotificationPermission();
-  }, [isAuthenticated, notificationPermissionChecked]);
-
   const handleLogout = async () => {
     try {
-      // Reset notification service on logout
-      notificationService.resetOnLogout();
-      setNotificationPermissionChecked(false);
-
       await dispatch(logoutUser()).unwrap();
       setUserDropdownOpen(false);
       navigate('/');
