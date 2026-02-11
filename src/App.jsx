@@ -38,12 +38,19 @@ import Signup from "./pages/signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ScrollToTop from "./components/ScrollToTop";
+import { useEffect } from "react";
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Check if splash screen has been shown before
+    const hasSeenSplash = localStorage.getItem('hasSeenSplash');
+    return !hasSeenSplash; // Show splash only if not seen before
+  });
 
   const handleSplashComplete = () => {
     setShowSplash(false);
+    // Mark splash screen as seen
+    localStorage.setItem('hasSeenSplash', 'true');
   };
 
   if (showSplash) {
