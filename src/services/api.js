@@ -408,9 +408,21 @@ export const leaguesAPI = {
     return response.data;
   },
 
+  // Create match league
+  createMatchLeague: async (matchId, leagueData) => {
+    const response = await api.post(`/leagues/match/${matchId}`, leagueData);
+    return response.data;
+  },
+
   // Get tournament leagues
   getTournamentLeagues: async (tournamentId, params = {}) => {
     const response = await api.get(`/leagues/tournament/${tournamentId}`, { params });
+    return response.data;
+  },
+
+  // Get match leagues
+  getMatchLeagues: async (matchId, params = {}) => {
+    const response = await api.get(`/leagues/match/${matchId}`, { params });
     return response.data;
   },
 

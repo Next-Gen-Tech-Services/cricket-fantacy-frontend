@@ -1,15 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FiChevronLeft, FiAward, FiUsers, FiClock, FiMapPin, FiShield, FiLoader, FiAlertCircle, FiTrendingUp, FiStar, FiBarChart2, FiEdit } from "react-icons/fi";
 import { fetchMatchById } from "../store/slices/matchesSlice";
 import { fetchMyFantasyTeams } from "../store/slices/fantasyTeamsSlice";
+import CreateMatchLeague from "../components/CreateMatchLeague";
+import MatchLeagues from "../components/MatchLeagues";
 
 const MatchDetails = () => {
   const { tournamentId, matchId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const [showCreateLeague, setShowCreateLeague] = useState(false);
+  const [leaguesRefreshKey, setLeaguesRefreshKey] = useState(0);
 
   // Redux state
   const {
@@ -278,6 +282,16 @@ const MatchDetails = () => {
                   <span className="font-semibold">Final Results</span>
                 </button>
               )}
+              {/* Create Match League Button (hidden on completed matches) */}
+              {currentMatch.status !== 'completed' && (
+                <button
+                  onClick={() => setShowCreateLeague(true)}
+                  className="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border border-white/30 font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-sm lg:text-base"
+                >
+                  <FiUsers size={18} className="flex-shrink-0" />
+                  <span className="font-semibold">Create Match League</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -361,28 +375,22 @@ const MatchDetails = () => {
               </h3>
             </div>
             <div className="space-y-3">
-              {currentMatch.matchType && (
+              {currentMatch.format && (
                 <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
-                  <span className="text-gray-600 font-medium text-sm">Match Type</span>
-                  <span className="font-bold text-gray-800 text-sm">{currentMatch.matchType}</span>
+                  <span className="text-gray-600 font-medium text-sm">Format</span>
+                  <span className="font-bold text-gray-800 text-sm">{currentMatch.format.toUpperCase()}</span>
                 </div>
               )}
-              {currentMatch.series && (
+              {currentMatch.tournament?.name && (
                 <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
-                  <span className="text-gray-600 font-medium text-sm">Series</span>
-                  <span className="font-bold text-gray-800 text-sm">{currentMatch.series}</span>
+                  <span className="text-gray-600 font-medium text-sm">Tournament</span>
+                  <span className="font-bold text-gray-800 text-sm">{currentMatch.tournament.name}</span>
                 </div>
               )}
-              {currentMatch.tossWinner && (
+              {currentMatch.startedAt && (
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 border-0 rounded-xl gap-1 sm:gap-0">
-                  <span className="text-gray-600 font-medium text-sm">Toss Winner</span>
-                  <span className="font-bold text-gray-800 text-sm">{currentMatch.tossWinner} (Elected to {currentMatch.tossChoice || 'TBA'})</span>
-                </div>
-              )}
-              {!currentMatch.tossWinner && (currentMatch.status === 'scheduled' || currentMatch.status === 'upcoming') && (
-                <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
-                  <span className="text-gray-600 font-medium text-sm">Toss</span>
-                  <span className="font-bold text-gray-800 text-sm">Yet to happen</span>
+                  <span className="text-gray-600 font-medium text-sm">Match Date & Time</span>
+                  <span className="font-bold text-gray-800 text-sm">{formatDate(currentMatch.startedAt)} • {formatTime(currentMatch.startedAt)}</span>
                 </div>
               )}
               {currentMatch.venue && (
@@ -394,12 +402,28 @@ const MatchDetails = () => {
                   </span>
                 </div>
               )}
-              {currentMatch.fantasyEnabled !== undefined && (
+              {currentMatch.status && (
                 <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
-                  <span className="text-gray-600 font-medium text-sm">MatchPlay</span>
-                  <span className={`font-bold text-sm ${currentMatch.fantasyEnabled ? 'text-green-600' : 'text-red-600'}`}>
-                    {currentMatch.fantasyEnabled ? '✅ Enabled' : '❌ Disabled'}
+                  <span className="text-gray-600 font-medium text-sm">Status</span>
+                  <span className={`font-bold text-sm px-3 py-1 rounded-full ${
+                    currentMatch.status === 'live' ? 'bg-red-100 text-red-700' :
+                    currentMatch.status === 'completed' ? 'bg-green-100 text-green-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {currentMatch.status.charAt(0).toUpperCase() + currentMatch.status.slice(1)}
                   </span>
+                </div>
+              )}
+              {currentMatch.tossWinner && (
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 border-0 rounded-xl gap-1 sm:gap-0">
+                  <span className="text-gray-600 font-medium text-sm">Toss Winner</span>
+                  <span className="font-bold text-gray-800 text-sm">{currentMatch.tossWinner} (Elected to {currentMatch.tossChoice || 'TBA'})</span>
+                </div>
+              )}
+              {currentMatch.gender && (
+                <div className="flex justify-between items-center p-4 bg-gray-50 border-0 rounded-xl">
+                  <span className="text-gray-600 font-medium text-sm">Gender</span>
+                  <span className="font-bold text-gray-800 text-sm capitalize">{currentMatch.gender}</span>
                 </div>
               )}
             </div>
@@ -417,49 +441,138 @@ const MatchDetails = () => {
             </div>
             <div className="space-y-5">
               <div className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-bold text-gray-800 mb-3 text-sm">{currentMatch.teams?.a?.name || 'Team A'}</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-800 text-sm">{currentMatch.teams?.a?.name || 'Team A'}</h4>
+                  {currentMatch.teams?.a?.recentMatches?.length > 0 && (
+                    <div className="flex gap-1">
+                      {currentMatch.teams.a.recentMatches.slice(0, 5).map((match, idx) => (
+                        <div 
+                          key={idx}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            match.result === 'W' ? 'bg-green-500 text-white' :
+                            match.result === 'L' ? 'bg-red-500 text-white' :
+                            'bg-gray-400 text-white'
+                          }`}
+                          title={`${match.resultText} vs ${match.opponent}`}
+                        >
+                          {match.result}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-2">
                   {currentMatch.teams?.a?.recentMatches?.length > 0 ? (
-                    currentMatch.teams.a.recentMatches.slice(0, 3).map((match, index) => (
-                      <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3">
-                        <span className="text-gray-600 font-medium">vs {match.opponent}</span>
-                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${match.result === 'W' ? 'text-green-700 bg-green-100' :
+                    currentMatch.teams.a.recentMatches.slice(0, 5).map((match, index) => (
+                      <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3 hover:shadow-md transition-shadow">
+                        <div className="flex-1">
+                          <span className="text-gray-600 font-medium">vs {match.opponent}</span>
+                          {match.matchName && (
+                            <span className="text-xs text-gray-400 ml-2">• {match.matchName}</span>
+                          )}
+                        </div>
+                        <span className={`font-bold px-3 py-1 rounded-full text-xs ${
+                          match.result === 'W' ? 'text-green-700 bg-green-100' :
                           match.result === 'L' ? 'text-red-700 bg-red-100' :
-                            'text-gray-700 bg-gray-100'
-                          }`}>
+                          'text-gray-700 bg-gray-100'
+                        }`}>
                           {match.resultText || match.result}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-sm text-gray-500 bg-white rounded-lg p-3 text-center">Recent match data not available</div>
+                    <div className="text-sm text-gray-500 bg-white rounded-lg p-4 text-center">
+                      <div className="text-gray-400 mb-1">📊</div>
+                      <div>No recent match data available</div>
+                    </div>
                   )}
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-bold text-gray-800 mb-3 text-sm">{currentMatch.teams?.b?.name || 'Team B'}</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-bold text-gray-800 text-sm">{currentMatch.teams?.b?.name || 'Team B'}</h4>
+                  {currentMatch.teams?.b?.recentMatches?.length > 0 && (
+                    <div className="flex gap-1">
+                      {currentMatch.teams.b.recentMatches.slice(0, 5).map((match, idx) => (
+                        <div 
+                          key={idx}
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            match.result === 'W' ? 'bg-green-500 text-white' :
+                            match.result === 'L' ? 'bg-red-500 text-white' :
+                            'bg-gray-400 text-white'
+                          }`}
+                          title={`${match.resultText} vs ${match.opponent}`}
+                        >
+                          {match.result}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-2">
                   {currentMatch.teams?.b?.recentMatches?.length > 0 ? (
-                    currentMatch.teams.b.recentMatches.slice(0, 3).map((match, index) => (
-                      <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3">
-                        <span className="text-gray-600 font-medium">vs {match.opponent}</span>
-                        <span className={`font-bold px-2 py-1 rounded-full text-xs ${match.result === 'W' ? 'text-green-700 bg-green-100' :
+                    currentMatch.teams.b.recentMatches.slice(0, 5).map((match, index) => (
+                      <div key={index} className="flex justify-between items-center text-sm bg-white rounded-lg p-3 hover:shadow-md transition-shadow">
+                        <div className="flex-1">
+                          <span className="text-gray-600 font-medium">vs {match.opponent}</span>
+                          {match.matchName && (
+                            <span className="text-xs text-gray-400 ml-2">• {match.matchName}</span>
+                          )}
+                        </div>
+                        <span className={`font-bold px-3 py-1 rounded-full text-xs ${
+                          match.result === 'W' ? 'text-green-700 bg-green-100' :
                           match.result === 'L' ? 'text-red-700 bg-red-100' :
-                            'text-gray-700 bg-gray-100'
-                          }`}>
+                          'text-gray-700 bg-gray-100'
+                        }`}>
                           {match.resultText || match.result}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <div className="text-sm text-gray-500 bg-white rounded-lg p-3 text-center">Recent match data not available</div>
+                    <div className="text-sm text-gray-500 bg-white rounded-lg p-4 text-center">
+                      <div className="text-gray-400 mb-1">📊</div>
+                      <div>No recent match data available</div>
+                    </div>
                   )}
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Match Leagues Section */}
+        <section className="max-w-[1440px] mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-lg border border-gray-100 mb-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">Match Leagues</h2>
+                <p className="text-gray-600">Create or join private leagues for this match</p>
+              </div>
+              {currentMatch.status !== 'completed' && (
+                <button
+                  onClick={() => setShowCreateLeague(true)}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <FiUsers size={16} />
+                  <span>Create League</span>
+                </button>
+              )}
+            </div>
+            <MatchLeagues match={currentMatch} key={leaguesRefreshKey} />
+          </div>
+        </section>
+
+        {/* Create League Modal */}
+        <CreateMatchLeague
+          match={currentMatch}
+          isOpen={showCreateLeague}
+          onClose={() => setShowCreateLeague(false)}
+          onSuccess={(league) => {
+            setShowCreateLeague(false);
+            setLeaguesRefreshKey((k) => k + 1);
+          }}
+        />
       </section>
     </main>
   );

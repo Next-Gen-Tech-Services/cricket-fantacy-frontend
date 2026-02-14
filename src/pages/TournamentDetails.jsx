@@ -67,7 +67,7 @@ const TournamentDetails = () => {
       if (!aIsToday && bIsToday) return 1;
 
       // If both are today or both are not today, sort by status priority
-      const statusPriority = { 'live': 0, 'scheduled': 1, 'upcoming': 1, 'completed': 2 };
+      const statusPriority = { 'live': 1, 'scheduled': 2, 'upcoming': 2, 'completed': 0};
       const aPriority = statusPriority[a.status] || 3;
       const bPriority = statusPriority[b.status] || 3;
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FiChevronLeft, FiAward, FiTrendingUp, FiUser, FiShield, FiStar, FiLoader, FiAlertCircle, FiEye, FiBarChart2 } from "react-icons/fi";
-import { fetchMatchLeaderboard } from "../store/slices/matchesSlice";
+import { fetchMatchLeaderboard, fetchMatchById } from "../store/slices/matchesSlice";
 import FantasyTeamDetail from "../components/FantasyTeamDetail";
 import MatchStatsOverview from "../components/MatchStatsOverview";
 import useMatchFantasyTeams from "../hooks/useMatchFantasyTeams";
@@ -37,9 +37,10 @@ const Leaderboard = () => {
       leaderboardData.find(entry => entry.team?.id === selectedTeamId)?.team)
     : null;
 
-  // Fetch leaderboard on mount
+  // Fetch match details and leaderboard on mount
   useEffect(() => {
     if (matchId) {
+      dispatch(fetchMatchById(matchId));
       dispatch(fetchMatchLeaderboard({
         matchId,
         params: { type: activeTab === 'top-100' ? 'top100' : activeTab }
@@ -98,12 +99,13 @@ const Leaderboard = () => {
 
   // Error state
   if (error) {
+    const errorMessage = typeof error === 'object' ? (error?.message || JSON.stringify(error)) : error;
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <FiAlertCircle className="mx-auto text-red-500 mb-4" size={48} />
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Failed to Load</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-600 mb-4">{errorMessage}</p>
           <button
             onClick={() => dispatch(fetchMatchLeaderboard({ matchId, params: { type: activeTab } }))}
             className="px-6 py-3 bg-[#273470] hover:bg-[#1e2859] text-white rounded-lg transition-colors"
@@ -236,7 +238,7 @@ const Leaderboard = () => {
                 <div className="text-center py-8">
                   <FiAlertCircle className="mx-auto text-red-500 mb-2" size={32} />
                   <p className="text-red-600 mb-2">Failed to load fantasy teams</p>
-                  <p className="text-gray-500 text-sm mb-2">{error}</p>
+                  <p className="text-gray-500 text-sm mb-2">{typeof error === 'object' ? (error?.message || JSON.stringify(error)) : error}</p>
                   <p className="text-gray-400 text-xs mb-3">Match ID: {matchId}</p>
 
                   {error.includes('Not authorized') && (
@@ -346,13 +348,15 @@ const Leaderboard = () => {
           /* Leaderboard Table */
           <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             {/* Table Header - Desktop */}
-            <div className="hidden md:block bg-gradient-to-r from-[#273470] to-[#1e2859] px-6 py-4">
-              <div className="grid gap-6 text-white font-bold text-sm uppercase tracking-wide" style={{gridTemplateColumns: '6% 20% 20% 20% 20%'}}>
+            <div className="hidden md:block bg-gradient-to-r from-[#273470] to-[#1e2859] px-4 py-4">
+              <div className="grid gap-2 text-white font-bold text-xs uppercase tracking-wide" style={{gridTemplateColumns: '5% 17% 13% 10% 19% 19% 10%'}}>
                 <div className="text-center">RANK</div>
-                <div className="text-left pl-2">TEAM NAME</div>
-                <div className="text-center">POINTS</div>
+                <div className="text-left pl-1">TEAM NAME</div>
+                <div className="text-left pl-1">USERNAME</div>
+                <div className="text-center">PTS</div>
                 <div className="text-center">CAPTAIN</div>
                 <div className="text-center">VICE CAPTAIN</div>
+                <div className="text-center">ACTION</div>
               </div>
             </div>
 
@@ -362,7 +366,7 @@ const Leaderboard = () => {
             </div>
 
             {/* Table Body */}
-            <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
+            <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto overflow-x-hidden">
               {leaderboardData.length === 0 ? (
                 <div className="px-6 py-12 text-center">
                   <p className="text-gray-500 text-lg">No participants yet</p>
@@ -384,7 +388,7 @@ const Leaderboard = () => {
                       }`}
                     >
                       {/* Desktop Layout */}
-                      <div className="hidden md:grid gap-6 items-center" style={{gridTemplateColumns: '6% 20% 20% 20% 20%'}}>
+                      <div className="hidden md:grid gap-2 items-center" style={{gridTemplateColumns: '5% 17% 13% 10% 19% 19% 10%'}}>
                         {/* Rank */}
                         <div className="flex items-center justify-center">
                           <span className="text-gray-800 font-bold text-sm">
@@ -393,35 +397,59 @@ const Leaderboard = () => {
                         </div>
 
                         {/* Team Name */}
-                        <div className="text-left px-2">
-                          <p className="text-gray-700 font-medium text-sm">
+                        <div className="text-left px-1">
+                          <p className="text-gray-700 font-medium text-xs truncate" title={getTeamName(entry, rank)}>
                             {getTeamName(entry, rank)}
+                          </p>
+                        </div>
+
+                        {/* Username */}
+                        <div className="text-left px-1">
+                          <p className="text-gray-600 text-xs truncate" title={entry.user?.username || entry.user?.name || 'Unknown'}>
+                            {entry.user?.username || entry.user?.name || 'Unknown'}
                           </p>
                         </div>
 
                         {/* Points */}
                         <div className="text-center">
-                          <span className="text-gray-800 font-bold text-base">{entry.totalFantasyPoints || entry.team?.totalPoints || entry.points || 0}</span>
+                          <span className="text-gray-800 font-bold text-sm">{entry.totalFantasyPoints || entry.team?.totalPoints || entry.points || 0}</span>
                         </div>
 
                         {/* Captain */}
-                        <div className="text-center px-2">
+                        <div className="text-center px-1">
                           <div className="flex items-center justify-center gap-1 text-[#273470]">
-                            <FiShield size={12} />
-                            <span className="text-gray-700 text-xs font-medium truncate">
+                            <FiShield size={11} />
+                            <span className="text-gray-700 text-xs font-medium truncate" title={getCaptainName(entry)}>
                               {getCaptainName(entry)}
                             </span>
                           </div>
                         </div>
 
                         {/* Vice Captain */}
-                        <div className="text-center px-2">
+                        <div className="text-center px-1">
                           <div className="flex items-center justify-center gap-1 text-[#273470]">
-                            <FiStar size={12} />
-                            <span className="text-gray-700 text-xs font-medium truncate">
+                            <FiStar size={11} />
+                            <span className="text-gray-700 text-xs font-medium truncate" title={getViceCaptainName(entry)}>
                               {getViceCaptainName(entry)}
                             </span>
                           </div>
+                        </div>
+
+                        {/* Action - View Team */}
+                        <div className="text-center">
+                          {currentMatch?.status === 'live' || currentMatch?.status === 'completed' ? (
+                            <button
+                              onClick={() => {
+                                setSelectedTeamId(entry._id);
+                                setShowTeamDetails(true);
+                              }}
+                              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#273470] bg-[#273470]/10 hover:bg-[#273470]/20 rounded-lg transition-colors"
+                            >
+                              <FiEye size={11} />
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-400">-</span>
+                          )}
                         </div>
                       </div>
 
@@ -436,6 +464,7 @@ const Leaderboard = () => {
                             </div>
                             <div>
                               <p className="text-gray-800 font-bold text-base">{getTeamName(entry, rank)}</p>
+                              <p className="text-gray-600 text-xs">@{entry.user?.username || entry.user?.name || 'unknown'}</p>
                               <p className="text-gray-500 text-sm">Rank #{rank}</p>
                             </div>
                           </div>
@@ -470,6 +499,20 @@ const Leaderboard = () => {
                             </p>
                           </div>
                         </div>
+                        
+                        {/* View Team Button - Mobile */}
+                        {(currentMatch?.status === 'live' || currentMatch?.status === 'completed') && (
+                          <button
+                            onClick={() => {
+                              setSelectedTeamId(entry._id);
+                              setShowTeamDetails(true);
+                            }}
+                            className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-[#273470] to-[#1e2859] hover:shadow-lg rounded-lg transition-all"
+                          >
+                            <FiEye size={14} />
+                            View Team Details
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
