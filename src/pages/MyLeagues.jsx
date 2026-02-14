@@ -139,7 +139,7 @@ const MyLeagues = () => {
                                                 <div className="text-xs text-gray-500">Members</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-lg font-bold" style={{ color: '#273470' }}>{league.tournamentContests?.length || 0}</div>
+                                                <div className="text-lg font-bold" style={{ color: '#273470' }}>{league.scope === 'MATCH' ? 1 : (league.tournamentContests?.length || 0)}</div>
                                                 <div className="text-xs text-gray-500">Matches</div>
                                             </div>
                                             <div className="text-center">
@@ -162,16 +162,7 @@ const MyLeagues = () => {
                                                 View Details
                                             </Link>
 
-                                            {league.tournamentContests && league.tournamentContests.length > 0 && (
-                                                <Link
-                                                    to={`/tournaments/${league.primaryTournament}/leaderboard?league=${league._id}`}
-                                                    className="flex items-center gap-1 px-3 py-2 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-colors"
-                                                    style={{ backgroundColor: '#273470' }}
-                                                >
-                                                    <FaTrophy size={12} />
-                                                    Leaderboard
-                                                </Link>
-                                            )}
+                                           
                                         </div>
                                     </div>
                                 </div>
