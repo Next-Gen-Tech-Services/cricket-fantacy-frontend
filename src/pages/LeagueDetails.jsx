@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiUsers, FiShare2, FiStar, FiUserPlus, FiSettings, FiCopy, FiAward, FiCalendar } from 'react-icons/fi';
-import { leaguesAPI, fantasyTeamsAPI, matchesAPI } from '../services/api';
+import { FiArrowLeft, FiUsers, FiShare2, FiStar, FiCopy, FiAward } from 'react-icons/fi';
+import { leaguesAPI } from '../services/api';
 import { toast } from 'react-hot-toast';
 
 const LeagueDetails = () => {
@@ -14,6 +14,7 @@ const LeagueDetails = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [enhancedLeaderboard, setEnhancedLeaderboard] = useState([]);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     loadLeagueDetails();
@@ -43,7 +44,11 @@ const LeagueDetails = () => {
       }
     } catch (error) {
       console.error('Load league details error:', error);
-      toast.error('Failed to load league details');
+      if (error?.response?.status === 403) {
+        setAccessDenied(true);
+      } else {
+        toast.error('Failed to load league details');
+      }
     } finally {
       setLoading(false);
     }
@@ -105,6 +110,34 @@ const LeagueDetails = () => {
     );
   }
 
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl p-8 shadow-lg max-w-lg w-full text-center">
+          <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiUsers className="text-yellow-600" size={28} />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Private League</h2>
+          <p className="text-gray-600 mb-6">Access restricted. Please join via an invite link to view this league.</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/tournaments')}
+              className="flex-1 bg-[#273470] text-white px-6 py-3 rounded-lg hover:bg-[#1e2859]"
+            >
+              Browse Tournaments
+            </button>
+            <button
+              onClick={() => navigate('/leagues')}
+              className="flex-1 border border-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50"
+            >
+              My Leagues
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!league) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,31 +169,31 @@ const LeagueDetails = () => {
           </button>
           
           {/* League Header Card */}
-          <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-8 text-white shadow-lg">
-            <div className="flex items-start justify-between">
+          <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] rounded-xl p-6 md:p-8 text-white shadow-lg">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-4 mb-3">
-                  <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                  <div className="w-14 h-14 bg-white/20 bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
                     <FiAward size={28} className="text-white" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold mb-1">{league.name}</h1>
-                    <div className="flex items-center space-x-3 text-white/80">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-1">{league.name}</h1>
+                    <div className="flex flex-wrap items-center gap-3 text-white/80">
                       <span className="text-sm">Created by {league.createdBy?.name}</span>
-                      <span className="w-1 h-1 bg-white/50 rounded-full"></span>
+                      <span className="w-1 h-1 bg-white/50 rounded-full hidden md:inline-block"></span>
                       <span className="text-sm font-medium">{league.type.toUpperCase()} League</span>
                     </div>
                   </div>
                 </div>
                 {league.description && (
-                  <p className="text-white/80 mt-3 text-lg">{league.description}</p>
+                  <p className="text-white/80 mt-3 text-base md:text-lg">{league.description}</p>
                 )}
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex items-center space-x-3 md:justify-end">
                 <button
                   onClick={handleGenerateShareLink}
-                  className="px-6 py-3 bg-white bg-opacity-15 hover:bg-opacity-25 rounded-xl flex items-center space-x-2 transition-all duration-200 backdrop-blur-sm border border-white border-opacity-20"
+                  className="px-5 md:px-6 py-3 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 backdrop-blur-sm border border-white/20"
                 >
                   <FiShare2 size={18} />
                   <span className="font-medium">Share</span>
@@ -203,7 +236,7 @@ const LeagueDetails = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 bg-white rounded-xl p-2 shadow-sm mb-8 border border-gray-100">
+        <div className="flex flex-wrap md:flex-nowrap gap-2 bg-white rounded-xl p-2 shadow-sm mb-8 border border-gray-100">
           <button
             onClick={() => setActiveTab('leaderboard')}
             className={`flex-1 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-200 ${

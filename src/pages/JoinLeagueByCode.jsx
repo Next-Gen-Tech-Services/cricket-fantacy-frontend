@@ -50,7 +50,8 @@ const JoinLeagueByCode = () => {
       }
     } catch (error) {
       console.error('Join league error:', error);
-      toast.error(error.message || 'Failed to join league');
+      const message = error?.response?.data?.message || error?.message || 'Failed to join league';
+      toast.error(message);
     } finally {
       setJoining(false);
     }

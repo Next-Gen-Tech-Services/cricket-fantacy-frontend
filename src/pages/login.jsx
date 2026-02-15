@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { loginUser, clearError, signInWithGoogle } from "../store/slices/authSlice";
 import image1 from '../assets/img1-login.png';
@@ -28,13 +28,18 @@ export default function Login() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, isLoading, error: authError } = useAppSelector(state => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      const fromState = location.state?.from;
+      const targetPath = fromState
+        ? `${fromState.pathname}${fromState.search || ''}`
+        : '/';
+      navigate(targetPath, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, location]);
 
   // Clear errors when component unmounts
   useEffect(() => {
@@ -220,6 +225,7 @@ export default function Login() {
             Don't have an account?{" "}
             <Link
               to="/signup"
+              state={location.state?.from ? { from: location.state.from } : undefined}
               className="font-semibold text-yellow-600 hover:text-yellow-700 transition"
             >
               Sign up

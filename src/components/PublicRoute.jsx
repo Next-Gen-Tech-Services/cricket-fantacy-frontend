@@ -1,8 +1,9 @@
 import { useAppSelector } from '../store/hooks';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isLoading, isInitialized } = useAppSelector(state => state.auth);
+  const location = useLocation();
 
   // Show loading while checking authentication or initializing
   if (isLoading || !isInitialized) {
@@ -18,7 +19,11 @@ const PublicRoute = ({ children }) => {
 
   // Redirect to home if already authenticated
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    const fromState = location.state?.from;
+    const targetPath = fromState
+      ? `${fromState.pathname}${fromState.search || ''}`
+      : '/';
+    return <Navigate to={targetPath} replace />;
   }
 
   return children;

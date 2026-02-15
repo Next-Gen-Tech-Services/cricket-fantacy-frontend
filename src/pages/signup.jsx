@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signupUser, clearError, signInWithGoogle } from "../store/slices/authSlice";
 
@@ -29,13 +29,18 @@ export default function Signup() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, isLoading, error: reduxError } = useAppSelector(state => state.auth);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      const fromState = location.state?.from;
+      const targetPath = fromState
+        ? `${fromState.pathname}${fromState.search || ''}`
+        : '/';
+      navigate(targetPath, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, location]);
 
   // Clear errors when component unmounts
   useEffect(() => {
@@ -108,9 +113,10 @@ export default function Signup() {
         confirmPassword: ""
       });
 
-      // Redirect to login after 2 seconds
+      // Redirect to login after 2 seconds, preserving original intent
       setTimeout(() => {
-        navigate('/login');
+        const fromState = location.state?.from;
+        navigate('/login', { state: fromState ? { from: fromState } : undefined });
       }, 2000);
 
     } catch (err) {
@@ -308,6 +314,7 @@ export default function Signup() {
             Already have an account?{" "}
             <Link
               to="/login"
+              state={location.state?.from ? { from: location.state.from } : undefined}
               className="font-semibold text-yellow-600 hover:text-yellow-700 transition"
             >
               Login

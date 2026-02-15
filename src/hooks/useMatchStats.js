@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import MatchStatsService from '../services/matchStatsService';
+import PlayerService from '../services/playerService';
 
 const useMatchStats = (matchId, options = {}) => {
   const {
@@ -92,7 +93,43 @@ const useMatchStats = (matchId, options = {}) => {
       }
       
       if (scorecardResponse.status === 'fulfilled') {
-        setScorecard(scorecardResponse.value.data);
+        const sc = scorecardResponse.value.data;
+        // Attempt DB-based name resolution for keys found in scorecard
+        try {
+          const collectKeys = (inn) => {
+            const keys = new Set();
+            if (Array.isArray(inn.batting_order)) inn.batting_order.forEach(k => k && keys.add(k));
+            if (Array.isArray(inn.bowling_order)) inn.bowling_order.forEach(k => k && keys.add(k));
+            if (Array.isArray(inn.wicket_order)) inn.wicket_order.forEach(k => k && keys.add(k));
+            if (Array.isArray(inn.partnerships)) {
+              inn.partnerships.forEach(p => {
+                if (p.player_a_key) keys.add(p.player_a_key);
+                if (p.player_b_key) keys.add(p.player_b_key);
+              });
+            }
+            const rawBowling = inn.bowling || inn.bowler_stats || inn.bowlers;
+            const arr = Array.isArray(rawBowling) ? rawBowling : (rawBowling && typeof rawBowling === 'object' ? Object.values(rawBowling) : []);
+            arr.forEach(b => {
+              const k = b?.player_key || b?.playerKey || b?.key || b?.id || b?.player;
+              if (k) keys.add(k);
+            });
+            return Array.from(keys);
+          };
+
+          const allKeys = Array.isArray(sc.innings) ? sc.innings.flatMap(collectKeys) : [];
+          const uniqueKeys = Array.from(new Set(allKeys.filter(Boolean)));
+
+          let resolvedNames = {};
+          if (uniqueKeys.length > 0) {
+            const resolvedResp = await PlayerService.resolveKeys(uniqueKeys);
+            resolvedNames = resolvedResp?.data || {};
+          }
+
+          setScorecard({ ...sc, resolvedNames });
+        } catch (nameErr) {
+          console.warn('⚠️ Name resolution failed, using raw scorecard:', nameErr?.message || nameErr);
+          setScorecard(sc);
+        }
         console.log('✅ Scorecard loaded');
       } else {
         console.error('❌ Scorecard failed:', scorecardResponse.reason);
