@@ -108,12 +108,12 @@ const JoinLeagueByCode = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="max-w-[1440px] w-full mx-auto px-4 md:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 mb-4"
+            className="flex items-center space-x-2 text-gray-600 hover:text-[#273470] mb-4 transition-colors"
           >
             <FiArrowLeft size={20} />
             <span>Back</span>
@@ -122,29 +122,29 @@ const JoinLeagueByCode = () => {
         </div>
 
         {/* League Preview Card */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="w-full bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white">
+          <div className="bg-gradient-to-r from-[#273470] to-[#1e2859] p-6 text-white">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="w-12 h-12 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <FiAward size={24} />
               </div>
               <div>
                 <h2 className="text-xl font-bold">{league.name}</h2>
-                <div className="flex items-center space-x-2 text-blue-100">
+                <div className="flex items-center space-x-2 text-white/80">
                   <FiLock size={14} />
                   <span className="text-sm">Private League</span>
                 </div>
               </div>
             </div>
             {league.description && (
-              <p className="text-blue-100 mt-2">{league.description}</p>
+              <p className="text-white/80 mt-2">{league.description}</p>
             )}
           </div>
 
           {/* League Details */}
           <div className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-gray-900">
                   {league.currentMembers}
@@ -167,9 +167,8 @@ const JoinLeagueByCode = () => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div
-                  className={`h-3 rounded-full transition-all duration-300 ${
-                    isLeagueFull() ? 'bg-red-500' : 'bg-blue-600'
-                  }`}
+                  className={`h-3 rounded-full transition-all duration-300 ${isLeagueFull() ? 'bg-red-500' : 'bg-yellow-400'
+                    }`}
                   style={{ width: `${getFillPercentage()}%` }}
                 ></div>
               </div>
@@ -216,16 +215,15 @@ const JoinLeagueByCode = () => {
             {/* Join Button */}
             <div className="space-y-3">
               {league.isUserMember ? (
-                <div className={`w-full px-4 py-3 rounded-md text-center flex items-center justify-center space-x-2 ${
-                  league.userRole === 'OWNER' ? 'bg-purple-50 border border-purple-200 text-purple-700' :
-                  league.userRole === 'ADMIN' ? 'bg-orange-50 border border-orange-200 text-orange-700' :
-                  'bg-green-50 border border-green-200 text-green-700'
-                }`}>
+                <div className={`w-full px-4 py-3 rounded-md text-center flex items-center justify-center space-x-2 ${league.userRole === 'OWNER' ? 'bg-yellow-50 border border-yellow-200 text-yellow-800' :
+                    league.userRole === 'ADMIN' ? 'bg-[#273470]/10 border border-[#273470]/20 text-[#273470]' :
+                      'bg-green-50 border border-green-200 text-green-700'
+                  }`}>
                   <FiCheck size={20} />
                   <span className="font-medium">
                     {league.userRole === 'OWNER' ? 'You are the Owner' :
-                     league.userRole === 'ADMIN' ? 'You are an Admin' :
-                     'Already Joined'}
+                      league.userRole === 'ADMIN' ? 'You are an Admin' :
+                        'Already Joined'}
                   </span>
                 </div>
               ) : isLeagueFull() ? (
@@ -233,14 +231,17 @@ const JoinLeagueByCode = () => {
                   League is full - No more spots available
                 </div>
               ) : !isAuthenticated ? (
-                <div className="w-full bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-md text-center">
-                  Please login to join this league
-                </div>
+                <button
+                  onClick={() => navigate('/login', { state: { from: { pathname: `/leagues/join/${shareCode}` } } })}
+                  className="w-full bg-yellow-400 text-[#273470] px-4 py-3 rounded-md hover:bg-[#c4722a] transition-colors font-semibold"
+                >
+                  Login to Join
+                </button>
               ) : (
                 <button
                   onClick={handleJoinLeague}
                   disabled={joining}
-                  className="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="w-full bg-[#273470] text-white px-4 py-3 rounded-md hover:bg-[#1e2859] transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 shadow-sm"
                 >
                   {joining ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -255,7 +256,7 @@ const JoinLeagueByCode = () => {
 
               <button
                 onClick={() => navigate('/tournaments')}
-                className="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                className="w-full border border-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors"
               >
                 Browse Other Tournaments
               </button>
